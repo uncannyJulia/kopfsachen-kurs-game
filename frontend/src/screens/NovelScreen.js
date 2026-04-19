@@ -33,7 +33,13 @@ export function NovelScreen(path) {
   // Chapter-Slug aus Route extrahieren (z.B. /novel/kapitel-1)
   const slug = path?.replace('/novel/', '') || 'intro'
 
-  el.innerHTML = `
+  // TopMenu oben; Progress initial 0, wird in goToNode aktualisiert.
+  const topMenu = TopMenu({ progress: 0 })
+  el.appendChild(topMenu)
+
+  const main = document.createElement('div')
+  main.className = 'novel-main'
+  main.innerHTML = `
     <div class="novel-bg"></div>
     <div class="novel-content">
       <div class="novel-speaker-label"></div>
@@ -48,26 +54,18 @@ export function NovelScreen(path) {
       </div>
       <button class="novel-continue btn-primary" type="button">Weiter</button>
     </div>
-    <div class="side-tabs">
-      <button class="side-tab side-tab--purple" type="button" data-action="cave" title="Sicherer Ort" style="display:none">&#127807;</button>
-      <button class="side-tab side-tab--orange" type="button" data-action="toolbox" title="Schachtel" style="display:none">&#129520;</button>
-      <button class="side-tab" style="background:var(--border);display:none" type="button" data-action="menu" title="Menü">&#9776;</button>
-    </div>
     <div class="novel-loading">
       <p>Lade Dialog …</p>
     </div>
   `
+  el.appendChild(main)
 
-  el.querySelectorAll('.side-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const action = tab.dataset.action
-      if (action === 'cave') window.location.hash = '#/cave'
-      else if (action === 'toolbox') window.location.hash = '#/toolbox'
-      else if (action === 'menu') openSideMenu()
-    })
-  })
+  const progressTrack = topMenu.querySelector('.top-menu-progress-fill')
+  function setProgress(frac) {
+    if (progressTrack) progressTrack.style.width = `${Math.max(0, Math.min(1, frac)) * 100}%`
+  }
 
-  const bubbleArea   = el.querySelector('.novel-bubble-area')
+  const bubbleArea   = main.querySelector('.novel-bubble-area')
   const bubble       = el.querySelector('.novel-bubble')
   const speakerLabel = el.querySelector('.novel-speaker-label')
   const choicesEl    = el.querySelector('.novel-choices')
@@ -79,25 +77,10 @@ export function NovelScreen(path) {
   const nameInput    = el.querySelector('.novel-name-input')
   const nameSubmit   = el.querySelector('.novel-input-submit')
 
-  // Side-tab elements for progressive reveal
-  const tabCave    = el.querySelector('[data-action="cave"]')
-  const tabToolbox = el.querySelector('[data-action="toolbox"]')
-  const tabMenu    = el.querySelector('[data-action="menu"]')
-
   let nodes = []
   let currentNode = null
   let likertAnswers = [] // Collect all inline Likert answers
   let username = null    // Loaded from settings or entered by user
-
-  // Reveal a side-tab
-  function showTab(tab) { if (tab) tab.style.display = '' }
-
-  // Reveal tabs based on which nodes the user has already passed
-  function revealTabsForNode(nodeId) {
-    if (nodeId >= 40) showTab(tabMenu)
-    if (nodeId >= 50) showTab(tabToolbox)
-    if (nodeId >= 52) showTab(tabCave)
-  }
 
   // ── Node rendern ─────────────────────────────────────────
 
@@ -105,8 +88,11 @@ export function NovelScreen(path) {
     currentNode = node
     if (!node) return handleSceneEnd()
 
-    // Progressive tab reveal
-    revealTabsForNode(node.nodeId)
+    // Progress-Bar aktualisieren (Anteil im aktuellen Node-Array)
+    if (nodes.length > 0) {
+      const idx = nodes.findIndex(n => n.nodeId === node.nodeId)
+      if (idx >= 0) setProgress((idx + 1) / nodes.length)
+    }
 
     const config = SPEAKER_CONFIG[node.speaker] || SPEAKER_CONFIG.narrator
 
@@ -427,9 +413,6 @@ export function NovelScreen(path) {
     const startId = (progress.currentChapter === slug && progress.currentNodeId > 0)
       ? progress.currentNodeId
       : nodes[0]?.nodeId || 1
-
-    // Reveal tabs for all nodes up to the start point
-    revealTabsForNode(startId)
 
     goToNode(startId)
   }
