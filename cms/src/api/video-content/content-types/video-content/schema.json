@@ -1,0 +1,64 @@
+{
+  "kind": "collectionType",
+  "collectionName": "video_contents",
+  "info": {
+    "singularName": "video-content",
+    "pluralName": "video-contents",
+    "displayName": "Video Content",
+    "description": "Psychoedukations-Videos (Talking-Head Psycholog*in) fuer die Informieren-Phase"
+  },
+  "options": { "draftAndPublish": true },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "description": "z.B. 'Innerer sicherer Ort + Erholung'"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "videoSource": {
+      "type": "enumeration",
+      "enum": ["upload", "youtube", "vimeo"],
+      "default": "upload",
+      "required": true
+    },
+    "videoFile": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["videos"],
+      "description": "Nur wenn videoSource=upload"
+    },
+    "videoUrl": {
+      "type": "string",
+      "description": "Nur wenn videoSource=youtube oder vimeo"
+    },
+    "poster": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"],
+      "description": "Vorschaubild"
+    },
+    "duration": {
+      "type": "integer",
+      "description": "Dauer in Sekunden"
+    },
+    "transcript": {
+      "type": "richtext",
+      "description": "Voll-Transkript fuer Barrierefreiheit"
+    },
+    "subtitles": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["files"],
+      "description": "WebVTT-Untertitel-Datei (.vtt)"
+    },
+    "chapter": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::chapter.chapter"
+    }
+  }
+}

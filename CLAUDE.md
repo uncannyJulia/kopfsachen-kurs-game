@@ -145,18 +145,18 @@ Aktuelle Screens und ihre Routes:
 
 | Screen | Route | Status |
 |--------|-------|--------|
-| SplashScreen | `#/` | Stub |
-| HomeScreen | `#/home` | Stub (2 Zustände: initial / nach Kapitel 1) |
-| ChaptersScreen | `#/chapters` | Stub (8 Kapitel, Zeitgate) |
-| NovelScreen | `#/novel/:slug` | Implementiert (Dialog-Engine mit Likert + Name-Input) |
-| ContentScreen | `#/content/:slug` | **TODO** (Figur klein, Info-Blöcke bauen sich auf) |
-| VideoScreen | `#/video/:slug` | **TODO** (Controls-Overlay, Auto-Close bei Ende) |
-| CaveScreen | `#/cave` | Stub (Innerer sicherer Ort, 3 Tabs + Sticker) |
-| ExerciseScreen | `#/exercise/:slug` | Stub (Übungskarte mit Audio + Anleitung) |
+| SplashScreen | `#/` | Auto-Forward zu `/home` |
+| HomeScreen | `#/home` | 2 Zustände (initial / nach Kapitel 1) |
+| ChaptersScreen | `#/chapters` | 8 Kapitel mit Zeitgate |
+| NovelScreen | `#/novel/:slug` | Dialog-Engine mit Likert, Name-Input, Trigger, TopMenu + Progress. Fallback-Daten je Slug: `onboarding`, `ein-moment-nur-fuer-dich` |
+| ContentScreen | `#/content/:slug` | Slug-Dispatcher: `energie-reflexion` (Swipe + Rating), `wenn-dann-plan` (3-Schritt-Plan) |
+| VideoScreen | `#/video/:slug` | YouTube/Vimeo/Upload + Platzhalter-Modus, Auto-Close bei Ende |
+| CaveScreen | `#/cave` | 3 Tabs (Hintergründe/Elemente/Athmo), progressives Freischalten, Speichern via `saveCave` |
+| ExerciseScreen | `#/exercise/:slug` | Dispatcher: `box_atmung` (Animation), audio/innerer_ort (Audio-Player), guided_text (Fallback) |
 | ToolboxScreen | `#/toolbox` | Stub (= Selfcare-Schachtel) |
-| HilfsangeboteScreen | `#/hilfsangebote` | Stub (früher: HelpScreen) |
-| KopfsachenScreen | `#/kopfsachen` | **TODO** (Kontakt/Credits/FAQ Submenu) |
-| QuestionnaireScreen | `#/questionnaire` | Stub (12 Fragen, inkl. Mika-Fallbeispiel) |
+| HilfsangeboteScreen | `#/hilfsangebote` | Krisenanlaufstellen (Krisenchat/JugendNotmail/116117) |
+| KopfsachenScreen | `#/kopfsachen` | Submenu Kontakt/Credits/FAQ (Stubs) |
+| QuestionnaireScreen | `#/questionnaire` | Stub (eigenständig; Fragebogen läuft aktuell über NovelScreen-Dialog) |
 
 ### Screen-Typen (Formenspiel)
 
@@ -273,28 +273,19 @@ git push
 
 ---
 
-## Was noch fehlt / Prioritäten (Stand 2026-04-19)
+## Status (Stand 2026-04-19)
 
-**Welle 1 — Fundament**
-1. Charakter-Rename: `noen→neo`, `furi→manu`, `evu` neu (SPEAKER_CONFIG + DEMO_NODES)
-2. **TopMenu**-Komponente (Home, Kopfsachen-Logo, Hilfsangebote, Progress Bar)
-3. Menü-Rename: `HelpScreen→HilfsangeboteScreen`, neuer `KopfsachenScreen` (Submenu Kontakt/Credits/FAQ)
+**Fertig:**
+- Welle 1: CLAUDE.md, Charakter-Rename, TopMenu, Menü-Rename (Hilfsangebote/Kopfsachen)
+- Welle 2: SplashScreen, HomeScreen (2 Zustände), Onboarding-Dialog mit Evu (12 Fragen, Mika), ChaptersScreen mit Zeitgate
+- Welle 3: Kapitel-1-Story (Fitnessstudio/Manu), Box-Atmung (Animation), CaveScreen (3 Tabs), Innerer-Sicherer-Ort-Übung, Energie-Reflexion-Swipe, Wenn-Dann-Plan
+- Welle 4: ContentScreen, VideoScreen, TopMenu integriert, SideMenu entfernt
+- Strapi A: journal-page gelöscht; Strapi B: Schemas ans neue Konzept angepasst (dialog-node/scene, exercise, chapter + neue Types: video-content, questionnaire-question, wenn-dann-situation, energie-aktivitaet); Strapi C: Seed-Skript (`cms/scripts/seed.js`) + Daten-JSONs
 
-**Welle 2 — Onboarding + Kapitelauswahl**
-4. **SplashScreen** – einfacher Loader/Entry
-5. **HomeScreen** – 2 Zustände (initial: Start/Hilfsangebote vs. nach Kapitel 1: + Kurs fortsetzen, Kapitelauswahl, Selfcare-Schachtel, Kopfsachen)
-6. **Onboarding-Flow** als Evu-Dialogszene (Willkommen → Hilfebedürftigkeit → Kopfsachen-Video → Zeit → 12-Fragen-Fragebogen → Wünsche → Kursstruktur)
-7. **ChaptersScreen** – 8 Kapitel laden, Zeitgate (1 Woche), Fortschritt anzeigen
-
-**Welle 3 — Kapitel 1 Inhalt**
-8. NovelScreen `DEMO_NODES` auf neue Story umstellen (Fitnessstudio-Szene mit Manu statt Furi-Szene)
-9. **Box-Atmung**-Übung (Animation, nicht 4-7-8)
-10. **Innerer sicherer Ort (Cave)** — Tabs + Sticker
-11. **Übung "Innerer sicherer Ort" (Vorstellung)** — Übungskarte mit Audio
-12. **Energie-Fresser/Geber-Swipe** (Reflexion Erholungsräume)
-13. **Wenn-Dann-Plan** (Transfer)
-
-**Welle 4 — CMS + Polish**
-14. Strapi-Schemas an neue Charaktere/Kapitel/Übungen anpassen
-15. ContentScreen + VideoScreen
-16. Handout-E-Mail-Integration (Abschluss-Mail nach Kapitel)
+**Noch offen:**
+- **Handout-E-Mail** (Abschluss-Mail nach Kapitel) — braucht E-Mail-Backend
+- **Toolbox / Selfcare-Schachtel** — enthält kennengelernte Übungen dynamisch statt Stub
+- **ChaptersScreen Status-Icon** über 8 Kapitel hinweg (nur 1 derzeit getestet)
+- **Psycholog*in-Video-Asset** für Kapitel 1 Informieren-Phase (VideoScreen-Platzhalter zeigt Transcript)
+- **Strapi Cloud**: Schemas hochdeployen + `npm run seed` ausführen, damit Customer im Admin editieren kann
+- **CMS-Alt-Daten auf Strapi Cloud**: journal-page-Daten im Admin-Panel löschen (Schema ist hier im Repo raus)

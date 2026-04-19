@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "wenn_dann_situations",
+  "info": {
+    "singularName": "wenn-dann-situation",
+    "pluralName": "wenn-dann-situations",
+    "displayName": "Wenn-Dann Situation",
+    "description": "Vorgefertigte Wenn-Situationen fuer den Wenn-Dann-Plan (Transfer-Phase)"
+  },
+  "options": { "draftAndPublish": true },
+  "attributes": {
+    "text": {
+      "type": "string",
+      "required": true,
+      "description": "z.B. 'Wenn ich nach einem anstrengenden Tag nach Hause komme'"
+    },
+    "sortOrder": {
+      "type": "integer",
+      "default": 99
+    },
+    "chapter": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::chapter.chapter",
+      "description": "Optional: Kapitel-Bezug. Leer = chapter-uebergreifend."
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

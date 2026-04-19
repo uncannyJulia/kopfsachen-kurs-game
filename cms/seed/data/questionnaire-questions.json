@@ -1,0 +1,114 @@
+[
+  {
+    "questionId": "stimmung_prae",
+    "order": 1,
+    "questionnaire": "prae",
+    "category": "stimmung",
+    "questionText": "Wie geht es dir?",
+    "responseType": "smiley_5",
+    "scaleLabels": ["Gar nicht gut", "Nicht so", "Geht so", "Gut", "Sehr gut"]
+  },
+  {
+    "questionId": "mhl_selfcare_prae",
+    "order": 2,
+    "questionnaire": "prae",
+    "category": "mental_health_literacy",
+    "questionText": "Weißt du, was dir hilft, wenn du einen schlechten Tag hast?",
+    "responseType": "likert_5",
+    "scaleLabels": ["stimmt gar nicht", "stimmt eher nicht", "teils/teils", "stimmt eher", "stimmt voll"]
+  },
+  {
+    "questionId": "mhl_self_disclosure_prae",
+    "order": 3,
+    "questionnaire": "prae",
+    "category": "mental_health_literacy",
+    "introText": "Manche Menschen sprechen mit anderen darüber, wie es ihnen psychisch geht. Andere machen das eher weniger.",
+    "questionText": "Kannst du mit Personen, die dir nahe stehen, über deine psychische Gesundheit sprechen?",
+    "responseType": "likert_5",
+    "scaleLabels": ["stimmt gar nicht", "stimmt eher nicht", "teils/teils", "stimmt eher", "stimmt voll"]
+  },
+  {
+    "questionId": "stigma_mika_1",
+    "order": 4,
+    "questionnaire": "prae",
+    "category": "stigma",
+    "introText": "Stell dir folgende Situation vor: Mika (16) geht eigentlich gern zur Schule, aber seit einigen Wochen fühlt sich Mika oft traurig und erschöpft. Es fällt Mika schwer, sich zu konzentrieren, und Mika zieht sich immer mehr von Freund*innen zurück. Manchmal hat Mika das Gefühl, dass alles sinnlos ist. Schließlich überlegt Mika, sich Hilfe bei einer Beratungsstelle zu holen.\n\nWas denkst du über folgende Aussage?",
+    "questionText": "Mika ist selbst schuld daran, dass es Mika so schlecht geht.",
+    "responseType": "likert_5",
+    "scaleLabels": ["stimmt gar nicht", "stimmt eher nicht", "teils/teils", "stimmt eher", "stimmt voll"]
+  },
+  {
+    "questionId": "stigma_mika_2",
+    "order": 5,
+    "questionnaire": "prae",
+    "category": "stigma",
+    "questionText": "Wenn Mika sich Hilfe sucht, ist das ein Zeichen von Schwäche.",
+    "responseType": "likert_5",
+    "scaleLabels": ["stimmt gar nicht", "stimmt eher nicht", "teils/teils", "stimmt eher", "stimmt voll"]
+  },
+  {
+    "questionId": "stigma_mika_3",
+    "order": 6,
+    "questionnaire": "prae",
+    "category": "stigma",
+    "questionText": "Jede*r könnte sich in einer Situation wie Mika befinden.",
+    "responseType": "likert_5",
+    "scaleLabels": ["stimmt gar nicht", "stimmt eher nicht", "teils/teils", "stimmt eher", "stimmt voll"],
+    "reversed": true
+  },
+  {
+    "questionId": "mhl_openness_professional_prae",
+    "order": 7,
+    "questionnaire": "prae",
+    "category": "openness",
+    "introText": "Es gibt in Deutschland die Möglichkeit, Psychotherapie zu bekommen.",
+    "questionText": "Kannst du dir vorstellen, irgendwann in deinem Leben eine Psychotherapie zu machen?",
+    "responseType": "likert_5",
+    "scaleLabels": ["stimmt gar nicht", "stimmt eher nicht", "teils/teils", "stimmt eher", "stimmt voll"]
+  },
+  {
+    "questionId": "ese_negative_prae",
+    "order": 8,
+    "questionnaire": "prae",
+    "category": "emotionale_selbstwirksamkeit",
+    "questionText": "Wenn du dich gestresst fühlst, weißt du, wie du deine Gefühle beeinflussen kannst?",
+    "responseType": "likert_5",
+    "scaleLabels": ["stimmt gar nicht", "stimmt eher nicht", "teils/teils", "stimmt eher", "stimmt voll"]
+  },
+  {
+    "questionId": "ese_erkennen_prae",
+    "order": 9,
+    "questionnaire": "prae",
+    "category": "emotionale_selbstwirksamkeit",
+    "questionText": "Kannst du erkennen, wenn du dich unglücklich oder wütend fühlst?",
+    "responseType": "likert_5",
+    "scaleLabels": ["stimmt gar nicht", "stimmt eher nicht", "teils/teils", "stimmt eher", "stimmt voll"]
+  },
+  {
+    "questionId": "ese_verstehen_prae",
+    "order": 10,
+    "questionnaire": "prae",
+    "category": "emotionale_selbstwirksamkeit",
+    "questionText": "Wenn du dich unglücklich fühlst, weißt du dann auch, warum?",
+    "responseType": "likert_5",
+    "scaleLabels": ["stimmt gar nicht", "stimmt eher nicht", "teils/teils", "stimmt eher", "stimmt voll"]
+  },
+  {
+    "questionId": "ese_andere_prae",
+    "order": 11,
+    "questionnaire": "prae",
+    "category": "emotionale_selbstwirksamkeit",
+    "questionText": "Weißt du, wie man jemanden aufmuntert, wenn er oder sie sich unglücklich fühlt?",
+    "responseType": "likert_5",
+    "scaleLabels": ["stimmt gar nicht", "stimmt eher nicht", "teils/teils", "stimmt eher", "stimmt voll"]
+  },
+  {
+    "questionId": "mhl_anlaufstellen_prae",
+    "order": 12,
+    "questionnaire": "prae",
+    "category": "mental_health_literacy",
+    "questionText": "Kennst du Anlaufstellen, an die man sich mit psychischen Problemen wenden kann, wie z.B. Beratungsstellen, Krisen-Hotline oder Hilfe-Chat?",
+    "responseType": "likert_5",
+    "scaleLabels": ["stimmt gar nicht", "stimmt eher nicht", "teils/teils", "stimmt eher", "stimmt voll"]
+  }
+]

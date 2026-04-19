@@ -243,35 +243,6 @@ body {
   z-index: 1;
 }
 
-/* Linke Tab-Leiste (Novel / Journal) */
-.side-tabs {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  z-index: 10;
-}
-
-.side-tab {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 1.125rem;
-  border: none;
-  transition: opacity var(--transition);
-}
-
-.side-tab:active { opacity: 0.7; }
-.side-tab--purple { background: #A78BFA; }
-.side-tab--orange { background: #FB923C; }
-
 /* Emoji-Likert-Skala */
 .likert {
   display: flex;
@@ -375,6 +346,15 @@ body {
 .novel-screen {
   background: var(--bg);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.novel-main {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .novel-bg {
@@ -391,7 +371,6 @@ body {
   flex-direction: column;
   height: 100%;
   padding: var(--space-lg);
-  padding-left: 3rem;
   padding-bottom: var(--space-xl);
 }
 
@@ -1894,88 +1873,3 @@ body {
   cursor: not-allowed;
 }
 
-/* ── Side Menu ──────────────────────────────────────────────── */
-
-.side-menu {
-  position: absolute;
-  inset: 0;
-  z-index: 5000;
-  pointer-events: none;
-}
-
-.side-menu--open {
-  pointer-events: auto;
-}
-
-.side-menu-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0);
-  transition: background 0.3s ease;
-}
-
-.side-menu--open .side-menu-backdrop {
-  background: rgba(0,0,0,0.4);
-}
-
-.side-menu-panel {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 70%;
-  max-width: 18rem;
-  background: var(--surface);
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-  padding: var(--space-xl) var(--space-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-}
-
-.side-menu--open .side-menu-panel {
-  transform: translateX(0);
-}
-
-.side-menu-close {
-  align-self: flex-end;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: var(--text);
-  width: 2.75rem;
-  height: 2.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.side-menu-links {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-.side-menu-link {
-  display: block;
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-sm);
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--text);
-  text-decoration: none;
-  transition: background var(--transition);
-}
-
-.side-menu-link:active {
-  background: var(--accent-light);
-}
-
-.side-menu-link--ext::after {
-  content: ' \2197';
-  font-size: 0.75rem;
-  opacity: 0.5;
-}

@@ -1,0 +1,65 @@
+{
+  "kind": "collectionType",
+  "collectionName": "questionnaire_questions",
+  "info": {
+    "singularName": "questionnaire-question",
+    "pluralName": "questionnaire-questions",
+    "displayName": "Questionnaire Question",
+    "description": "Einzelne Frage im Praefragebogen/Postfragebogen (12 Fragen inkl. Mika-Fallbeispiel)"
+  },
+  "options": { "draftAndPublish": true },
+  "attributes": {
+    "questionId": {
+      "type": "uid",
+      "required": true,
+      "description": "Eindeutige ID fuer Speicherung, z.B. stimmung_prae, stigma_mika_1"
+    },
+    "order": {
+      "type": "integer",
+      "required": true,
+      "description": "Reihenfolge im Fragebogen, z.B. 1..12"
+    },
+    "questionnaire": {
+      "type": "enumeration",
+      "enum": ["prae", "post", "kapitel_start"],
+      "required": true,
+      "default": "prae"
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": ["stimmung", "mental_health_literacy", "emotionale_selbstwirksamkeit", "stigma", "openness", "sonstiges"],
+      "required": true
+    },
+    "questionText": {
+      "type": "richtext",
+      "required": true
+    },
+    "introText": {
+      "type": "richtext",
+      "description": "Optionaler Einleitungstext (z.B. Mika-Fallbeispiel vor Frage 4)"
+    },
+    "responseType": {
+      "type": "enumeration",
+      "enum": ["likert_5", "smiley_5", "text", "single_choice", "multi_choice"],
+      "required": true,
+      "default": "likert_5"
+    },
+    "scaleLabels": {
+      "type": "json",
+      "description": "Array fuer Likert-Labels, z.B. ['stimmt gar nicht', ..., 'stimmt voll']"
+    },
+    "options": {
+      "type": "json",
+      "description": "Array fuer single/multi_choice-Optionen"
+    },
+    "reversed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Umgepolt? z.B. 'Jede*r koennte sich in Situation wie Mika befinden'"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

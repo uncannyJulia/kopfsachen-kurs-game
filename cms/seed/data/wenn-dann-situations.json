@@ -1,0 +1,7 @@
+[
+  { "text": "Wenn ich nach einem anstrengenden Tag nach Hause komme", "sortOrder": 1, "isActive": true },
+  { "text": "Wenn ich merke, dass ich total gestresst bin", "sortOrder": 2, "isActive": true },
+  { "text": "Wenn ich lange am Handy war und mich leer fühle", "sortOrder": 3, "isActive": true },
+  { "text": "Wenn ich mich einsam fühle", "sortOrder": 4, "isActive": true },
+  { "text": "Wenn ich mich nach dem Lernen erschöpft fühle", "sortOrder": 5, "isActive": true }
+]

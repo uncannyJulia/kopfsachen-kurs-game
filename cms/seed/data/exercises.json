@@ -1,0 +1,23 @@
+[
+  {
+    "slug": "box-atmung",
+    "title": "Box-Atmung",
+    "type": "guided_text",
+    "category": "box_atmung",
+    "phase": "erleben",
+    "duration": 240,
+    "description": "Zu viel los im Kopf? Angespannt? Gestresst? Diese Atemtechnik hilft dir, wieder runterzukommen und klarer zu werden — überall und ohne dass jemand etwas merkt.",
+    "guidedText": "**Ziel:** Durch bewusstes Atmen deinen Körper in einen ruhigeren Zustand bringen.\n\n1. **Entspannte Position finden** – ob auf dem Stuhl, Sofa oder im Bett.\n2. **4 Sekunden einatmen** durch die Nase.\n3. **4 Sekunden Atem halten**.\n4. **4 Sekunden ausatmen** durch den Mund.\n5. **4 Sekunden Atem halten**.\n6. **Das Ganze 4x wiederholen**.\n\n**Tipp:** Die Übung wirkt stärker, wenn du sie regelmäßig machst — auch dann, wenn es dir grundsätzlich gut geht."
+  },
+  {
+    "slug": "innerer-sicherer-ort-vorstellung",
+    "title": "Innerer sicherer Ort (Vorstellung)",
+    "type": "audio",
+    "category": "innerer_ort",
+    "phase": "ueben",
+    "duration": 600,
+    "description": "Das ist dein persönlicher Ort, um runterzukommen. Egal, ob du gestresst, traurig oder genervt bist — hier kannst du dich entspannen, Energie tanken und dich kurz sammeln. Du entscheidest, wie er aussieht und was passiert. Cool daran: Du kannst jederzeit dorthin gehen.",
+    "guidedText": "**Ziel:** In deiner Vorstellung ein Bild von einem Ort entwickeln, an dem du dich sicher, geborgen und wohl fühlst.\n\n1. **Entspannte Position finden** – sitzen oder liegen, wie es für dich passt.\n2. **Tief durchatmen** – atme 2-3 Mal tief ein und aus.\n3. **Augen schließen oder fixieren** einen Punkt vor dir.\n4. **Deinen sicheren Ort vorstellen** – aus Erinnerungen oder Fantasie.\n5. **Mit allen Sinnen gestalten:** Was siehst, hörst, fühlst, riechst du?\n6. **Bleib, solange du willst**. Nimm wahr, wie Körper und Kopf sich beruhigen.\n7. **Zurückkehren** – bewege Hände und Füße und öffne die Augen.\n\n**Tipp:** Dein sicherer Ort ist jederzeit für dich da — du kannst immer dorthin zurückkehren.",
+    "subtitle": "Audio-Anleitung zum inneren sicheren Ort, ca. 10 Minuten."
+  }
+]

@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "energie_aktivitaeten",
+  "info": {
+    "singularName": "energie-aktivitaet",
+    "pluralName": "energie-aktivitaeten",
+    "displayName": "Energie Aktivitaet",
+    "description": "Moegliche Aktivitaet/Erlebnis fuer die Energie-Fresser/Geber-Sortieruebung"
+  },
+  "options": { "draftAndPublish": true },
+  "attributes": {
+    "text": {
+      "type": "string",
+      "required": true,
+      "description": "z.B. 'Eine Pruefung schreiben' oder 'Zeit mit Freund*innen verbringen'"
+    },
+    "sortOrder": {
+      "type": "integer",
+      "default": 99
+    },
+    "tendency": {
+      "type": "enumeration",
+      "enum": ["fresser", "geber", "unklar"],
+      "default": "unklar",
+      "description": "Vermutliche Tendenz (nur fuer Auswertung/Reihenfolge, User entscheidet selbst)"
+    },
+    "chapter": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::chapter.chapter",
+      "description": "Optional: Kapitel-Bezug (in Kapitel 1 aktiv)"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

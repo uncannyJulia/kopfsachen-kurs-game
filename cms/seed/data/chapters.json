@@ -1,0 +1,66 @@
+[
+  {
+    "slug": "ein-moment-nur-fuer-dich",
+    "title": "Ein Moment nur für dich",
+    "subtitle": "Ankommen und durchatmen",
+    "order": 1,
+    "unlockAfterDays": 0,
+    "description": "Lerne, einen inneren sicheren Ort zu gestalten und mit Atemübungen runterzukommen. Reflektiere, was dir Energie gibt und kostet."
+  },
+  {
+    "slug": "wie-geht-es-dir-danke-gut",
+    "title": "Wie geht es dir? Danke gut.",
+    "subtitle": "Mit dir selbst in Verbindung kommen",
+    "order": 2,
+    "unlockAfterDays": 7,
+    "description": "Spüre, was du fühlst. Lerne deine Gefühle besser kennen und verstehen."
+  },
+  {
+    "slug": "unter-druck",
+    "title": "Unter Druck",
+    "subtitle": "Mit Stress umgehen",
+    "order": 3,
+    "unlockAfterDays": 7,
+    "description": "Was ist Stress und wie kannst du damit umgehen?"
+  },
+  {
+    "slug": "frueh-merken-wenns-zu-viel-wird",
+    "title": "Früh merken, wenn's zu viel wird",
+    "subtitle": "Deine Warnsignale verstehen",
+    "order": 4,
+    "unlockAfterDays": 7,
+    "description": "Dein Körper und Kopf sagen dir oft früh, wenn es zu viel wird. Lerne die Signale zu lesen."
+  },
+  {
+    "slug": "deine-groesste-unterstuetzung-du-selbst",
+    "title": "Deine größte Unterstützung: du selbst!",
+    "subtitle": "Selbstmitgefühl statt Selbstkritik",
+    "order": 5,
+    "unlockAfterDays": 7,
+    "description": "Wie kannst du freundlich mit dir umgehen, gerade wenn es schwierig wird?"
+  },
+  {
+    "slug": "was-will-ich-eigentlich",
+    "title": "Was will ich eigentlich?",
+    "subtitle": "Orientierung und Richtung finden",
+    "order": 6,
+    "unlockAfterDays": 7,
+    "description": "Finde heraus, was dir wirklich wichtig ist."
+  },
+  {
+    "slug": "was-traegt-dich",
+    "title": "Was trägt dich?",
+    "subtitle": "Ressourcen stärken",
+    "order": 7,
+    "unlockAfterDays": 7,
+    "description": "Menschen, Orte, Rituale — was gibt dir Halt?"
+  },
+  {
+    "slug": "dein-weg",
+    "title": "Dein Weg",
+    "subtitle": "Recap und langfristig am Ball bleiben",
+    "order": 8,
+    "unlockAfterDays": 7,
+    "description": "Zusammenfassung und Ausblick, wie du das Gelernte im Alltag weiter nutzt."
+  }
+]

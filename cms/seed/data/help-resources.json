@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Krisenchat",
+    "description": "Online-Chat für Krisen und Themen aller Art für junge Erwachsene bis 25 Jahre. Immer online verfügbar, 24h an 7 Tagen der Woche.",
+    "url": "https://www.krisenchat.de/",
+    "availability": "24/7",
+    "sortOrder": 1,
+    "isActive": true
+  },
+  {
+    "name": "JugendNotmail",
+    "description": "Online-Beratung: Hilfe bei Themen wie Depression, Selbstverletzung, Suizidgedanken, Gewalt, Mobbing, Missbrauch, familiäre Probleme oder Essstörungen. Auch als App 'Junoma' verfügbar.",
+    "url": "https://jugendnotmail.de/",
+    "availability": "Live-Chat: Mo, Di & Do • Themenchat: Mo 19-20:30 Uhr",
+    "sortOrder": 2,
+    "isActive": true
+  },
+  {
+    "name": "Patientenservice: Psychotherapie",
+    "description": "Wenn du unter psychischen Belastungen leidest und Unterstützung von einem*einer Psychotherapeut*in möchtest, kannst du hier einen Termin in einer Psychotherapie-Praxis vereinbaren.",
+    "url": "https://www.116117.de/de/psychotherapie.php",
+    "phone": "116 117",
+    "sortOrder": 3,
+    "isActive": true
+  }
+]

@@ -1,0 +1,19 @@
+[
+  { "text": "Viele Aufgaben gleichzeitig erledigen", "sortOrder": 1, "tendency": "fresser" },
+  { "text": "Lernen oder arbeiten unter Zeitdruck", "sortOrder": 2, "tendency": "fresser" },
+  { "text": "Über die eigene Zukunft nachdenken", "sortOrder": 3, "tendency": "fresser" },
+  { "text": "In der Freizeit arbeitsbezogene Nachrichten lesen", "sortOrder": 4, "tendency": "fresser" },
+  { "text": "Eine Prüfung schreiben", "sortOrder": 5, "tendency": "fresser" },
+  { "text": "Streit mit Familienmitgliedern oder Freund*innen", "sortOrder": 6, "tendency": "fresser" },
+  { "text": "Weniger als 7 Stunden schlafen", "sortOrder": 7, "tendency": "fresser" },
+  { "text": "Eine Serie schauen", "sortOrder": 8, "tendency": "unklar" },
+  { "text": "Mit Freund*innen texten", "sortOrder": 9, "tendency": "unklar" },
+  { "text": "1h am Stück auf Social Media verbringen", "sortOrder": 10, "tendency": "unklar" },
+  { "text": "Bewusst Pause machen und nichts tun", "sortOrder": 11, "tendency": "geber" },
+  { "text": "Nach Schule/Arbeit nicht mehr darüber nachdenken", "sortOrder": 12, "tendency": "geber" },
+  { "text": "Dinge aufschreiben, um sie loszulassen", "sortOrder": 13, "tendency": "geber" },
+  { "text": "Etwas erledigen und abhaken", "sortOrder": 14, "tendency": "geber" },
+  { "text": "Etwas Neues lernen oder ausprobieren", "sortOrder": 15, "tendency": "geber" },
+  { "text": "Völlig spontan und frei entscheiden, wie man einen Abend verbringt", "sortOrder": 16, "tendency": "geber" },
+  { "text": "Zeit mit Freund*innen oder anderen Menschen verbringen", "sortOrder": 17, "tendency": "geber" }
+]
