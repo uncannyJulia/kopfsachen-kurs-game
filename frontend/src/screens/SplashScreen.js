@@ -1,7 +1,7 @@
 // screens/SplashScreen.js
-// Logo-Animation, dann Weiterleitung zu Home oder Chapters.
+// Kurze Logo-Anzeige, dann Weiterleitung je nach Spielstand.
 
-import { getProgress } from '../store.js'
+import { getProgress, getSettings } from '../store.js'
 
 export function SplashScreen() {
   const el = document.createElement('div')
@@ -16,19 +16,22 @@ export function SplashScreen() {
     </div>
   `
 
-  // Nach 2s weiterleiten
   setTimeout(async () => {
     try {
+      const settings = await getSettings()
       const progress = await getProgress()
-      if (progress.completedChapters.length > 0 || progress.currentNodeId > 0) {
-        window.location.hash = '#/chapters'
+
+      if (!settings.onboardingDone) {
+        window.location.hash = '#/home'
+      } else if (progress.completedChapters.length > 0 || progress.currentNodeId > 0) {
+        window.location.hash = '#/home'
       } else {
         window.location.hash = '#/home'
       }
     } catch {
       window.location.hash = '#/home'
     }
-  }, 2000)
+  }, 1500)
 
   return el
 }

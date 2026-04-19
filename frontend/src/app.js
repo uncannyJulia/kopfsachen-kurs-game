@@ -4,15 +4,15 @@
 import { Router }              from './router.js'
 import { SplashScreen }        from './screens/SplashScreen.js'
 import { HomeScreen }          from './screens/HomeScreen.js'
-import { DisclaimerScreen }    from './screens/DisclaimerScreen.js'
 import { ChaptersScreen }      from './screens/ChaptersScreen.js'
-import { TimeCheckScreen }     from './screens/TimeCheckScreen.js'
 import { NovelScreen }         from './screens/NovelScreen.js'
-import { JournalScreen }       from './screens/JournalScreen.js'
 import { CaveScreen }          from './screens/CaveScreen.js'
 import { ExerciseScreen }      from './screens/ExerciseScreen.js'
+import { ContentScreen }       from './screens/ContentScreen.js'
+import { VideoScreen }         from './screens/VideoScreen.js'
 import { ToolboxScreen }       from './screens/ToolboxScreen.js'
-import { HelpScreen }          from './screens/HelpScreen.js'
+import { HilfsangeboteScreen } from './screens/HilfsangeboteScreen.js'
+import { KopfsachenScreen }    from './screens/KopfsachenScreen.js'
 import { QuestionnaireScreen } from './screens/QuestionnaireScreen.js'
 
 const app    = document.getElementById('app')
@@ -21,15 +21,15 @@ const router = new Router(app)
 router
   .on('/',               () => SplashScreen())
   .on('/home',           () => HomeScreen())
-  .on('/disclaimer',     () => DisclaimerScreen())
   .on('/chapters',       () => ChaptersScreen())
-  .on('/timecheck',      (path) => TimeCheckScreen(path))
   .on('/novel',          (path) => NovelScreen(path))
-  .on('/journal',        (path) => JournalScreen(path))
   .on('/cave',           () => CaveScreen())
   .on('/exercise',       (path) => ExerciseScreen(path))
+  .on('/content',        (path) => ContentScreen(path))
+  .on('/video',          (path) => VideoScreen(path))
   .on('/toolbox',        () => ToolboxScreen())
-  .on('/help',           () => HelpScreen())
+  .on('/hilfsangebote',  () => HilfsangeboteScreen())
+  .on('/kopfsachen',     () => KopfsachenScreen())
   .on('/questionnaire',  (path) => QuestionnaireScreen(path))
 
 // Dev-Navigationsleiste (nur in Entwicklung sichtbar)
@@ -45,15 +45,17 @@ function mountDevNav(app, router) {
   const routes = [
     ['/', 'Splash'],
     ['/home', 'Home'],
-    ['/disclaimer', 'Disclaimer'],
     ['/chapters', 'Kapitel'],
-    ['/timecheck/intro', 'Zeit'],
-    ['/novel/intro', 'Novel'],
-    ['/journal', 'Journal'],
+    ['/novel/onboarding', 'Onboarding'],
+    ['/novel/ein-moment-nur-fuer-dich', 'Kapitel 1'],
     ['/cave', 'Cave'],
-    ['/exercise/1', 'Übung'],
+    ['/exercise/box-atmung', 'Box-Atmung'],
+    ['/exercise/innerer-sicherer-ort-vorstellung', 'Innerer Ort'],
+    ['/content/energie-reflexion', 'Energie'],
+    ['/content/wenn-dann-plan', 'Wenn-Dann'],
     ['/toolbox', 'Schachtel'],
-    ['/help', 'Hilfe'],
+    ['/hilfsangebote', 'Hilfsangebote'],
+    ['/kopfsachen', 'Kopfsachen'],
     ['/questionnaire', 'Fragebogen'],
   ]
 

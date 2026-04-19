@@ -1,32 +1,46 @@
 // screens/CaveScreen.js
-// Innerer sicherer Ort – Hintergrund, Sticker, Sound wählen.
+// Innerer sicherer Ort: 3 Tabs (Hintergründe / Elemente / Athmo) mit progressivem Freischalten.
+// Nach dem Speichern: zurück zur aufrufenden Route (Novel-Dialog).
 
 import { getCaveAssets } from '../api.js'
 import { getCave, saveCave } from '../store.js'
-import { openSideMenu } from '../components/SideMenu.js'
 
 const DEMO_ASSETS = {
-  backgrounds: [
-    { key: 'forest', label: 'Wald', color: '#2D5016' },
-    { key: 'beach', label: 'Strand', color: '#0EA5E9' },
-    { key: 'mountain', label: 'Berge', color: '#6B7280' },
-    { key: 'space', label: 'Weltraum', color: '#1E1B4B' },
+  background: [
+    { key: 'forest',   label: 'Wald',          color: '#2D5016' },
+    { key: 'beach',    label: 'Strand',        color: '#0EA5E9' },
+    { key: 'mountain', label: 'Berge',         color: '#6B7280' },
+    { key: 'space',    label: 'Weltraum',      color: '#1E1B4B' },
+    { key: 'meadow',   label: 'Wiese',         color: '#84CC16' },
+    { key: 'cave',     label: 'Höhle',         color: '#44403C' },
   ],
-  stickers: [
-    { key: 'candle', emoji: '🕯️', label: 'Kerze' },
-    { key: 'plant', emoji: '🪴', label: 'Pflanze' },
-    { key: 'cat', emoji: '🐱', label: 'Katze' },
-    { key: 'star', emoji: '⭐', label: 'Stern' },
-    { key: 'book', emoji: '📖', label: 'Buch' },
+  sticker: [
+    { key: 'candle',  emoji: '🕯️', label: 'Kerze' },
+    { key: 'plant',   emoji: '🪴', label: 'Pflanze' },
+    { key: 'cat',     emoji: '🐱', label: 'Katze' },
+    { key: 'dog',     emoji: '🐶', label: 'Hund' },
+    { key: 'star',    emoji: '⭐', label: 'Stern' },
+    { key: 'moon',    emoji: '🌙', label: 'Mond' },
+    { key: 'book',    emoji: '📖', label: 'Buch' },
     { key: 'blanket', emoji: '🧶', label: 'Decke' },
+    { key: 'cloud',   emoji: '☁️', label: 'Wolke' },
+    { key: 'tea',     emoji: '🍵', label: 'Tee' },
   ],
-  sounds: [
-    { key: 'rain', label: 'Regen' },
-    { key: 'fire', label: 'Kaminfeuer' },
-    { key: 'ocean', label: 'Meeresrauschen' },
-    { key: 'birds', label: 'Vogelgezwitscher' },
+  sound: [
+    { key: 'silence', label: 'Stille' },
+    { key: 'rain',    label: 'Regen' },
+    { key: 'fire',    label: 'Kaminfeuer' },
+    { key: 'ocean',   label: 'Meeresrauschen' },
+    { key: 'birds',   label: 'Vogelgezwitscher' },
+    { key: 'wind',    label: 'Windrauschen' },
   ],
 }
+
+const TABS = [
+  { key: 'background', label: 'Hintergründe' },
+  { key: 'sticker',    label: 'Elemente' },
+  { key: 'sound',      label: 'Athmo' },
+]
 
 export function CaveScreen() {
   const el = document.createElement('div')
@@ -34,119 +48,36 @@ export function CaveScreen() {
 
   el.innerHTML = `
     <div class="topbar">
-      <button class="btn-menu cave-back" type="button">&#8592;</button>
+      <button class="btn-menu cave-back" type="button" aria-label="Zurück">&#8592;</button>
       <h1 class="cave-heading">Dein sicherer Ort</h1>
       <div style="width:44px"></div>
     </div>
-    <div class="cave-preview"></div>
-    <div class="cave-sections">
-      <div class="cave-section">
-        <h3 class="cave-section-title">Hintergrund</h3>
-        <div class="cave-carousel cave-backgrounds"></div>
-      </div>
-      <div class="cave-section">
-        <h3 class="cave-section-title">Sticker</h3>
-        <div class="cave-carousel cave-stickers"></div>
-      </div>
-      <div class="cave-section">
-        <h3 class="cave-section-title">Klang</h3>
-        <div class="cave-carousel cave-sounds"></div>
-      </div>
+    <div class="cave-stage">
+      <div class="cave-canvas"></div>
     </div>
-    <button class="btn-primary cave-save" type="button">Speichern</button>
-    <div class="side-tabs">
-      <button class="side-tab side-tab--purple" type="button" data-action="novel" title="Zurück zur Story">&#128172;</button>
-      <button class="side-tab side-tab--orange" type="button" data-action="menu" title="Menü">&#9776;</button>
+    <nav class="cave-tabs" role="tablist">
+      ${TABS.map((t, i) => `
+        <button class="cave-tab" role="tab" data-tab="${t.key}" ${i > 0 ? 'disabled' : ''}>${t.label}</button>
+      `).join('')}
+    </nav>
+    <div class="cave-panel"></div>
+    <div class="cave-footer">
+      <button class="btn-primary cave-save" type="button">Speichern &amp; zurück</button>
     </div>
   `
 
-  el.querySelectorAll('.side-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const action = tab.dataset.action
-      if (action === 'novel') history.back()
-      else if (action === 'menu') openSideMenu()
-    })
-  })
+  const canvasEl = el.querySelector('.cave-canvas')
+  const tabsEl   = el.querySelector('.cave-tabs')
+  const panelEl  = el.querySelector('.cave-panel')
 
-  const previewEl = el.querySelector('.cave-preview')
-  const bgCarousel = el.querySelector('.cave-backgrounds')
-  const stickerCarousel = el.querySelector('.cave-stickers')
-  const soundCarousel = el.querySelector('.cave-sounds')
+  el.querySelector('.cave-back').addEventListener('click', () => history.back())
 
+  let assets = DEMO_ASSETS
   let selectedBg = null
   let selectedStickers = []
   let selectedSound = null
-
-  el.querySelector('.cave-back').addEventListener('click', () => {
-    history.back()
-  })
-
-  function updatePreview() {
-    const bgAsset = (DEMO_ASSETS.backgrounds).find(b => b.key === selectedBg)
-    previewEl.style.background = bgAsset ? bgAsset.color : 'var(--accent-light)'
-
-    const stickerHtml = selectedStickers.map(key => {
-      const s = DEMO_ASSETS.stickers.find(st => st.key === key)
-      return s ? `<span class="cave-preview-sticker">${s.emoji}</span>` : ''
-    }).join('')
-
-    previewEl.innerHTML = stickerHtml || '<span class="cave-preview-empty">Wähle Elemente aus</span>'
-  }
-
-  function renderCarousels(assets, saved) {
-    // Backgrounds
-    bgCarousel.innerHTML = ''
-    assets.backgrounds.forEach(bg => {
-      const btn = document.createElement('button')
-      btn.className = 'cave-item'
-      if (selectedBg === bg.key) btn.classList.add('cave-item--selected')
-      btn.innerHTML = `<span class="cave-item-swatch" style="background:${bg.color}"></span><span>${bg.label}</span>`
-      btn.addEventListener('click', () => {
-        selectedBg = bg.key
-        renderCarousels(assets, saved)
-        updatePreview()
-      })
-      bgCarousel.appendChild(btn)
-    })
-
-    // Stickers (multi-select)
-    stickerCarousel.innerHTML = ''
-    assets.stickers.forEach(s => {
-      const btn = document.createElement('button')
-      btn.className = 'cave-item'
-      if (selectedStickers.includes(s.key)) btn.classList.add('cave-item--selected')
-      btn.innerHTML = `<span class="cave-item-emoji">${s.emoji}</span><span>${s.label}</span>`
-      btn.addEventListener('click', () => {
-        if (selectedStickers.includes(s.key)) {
-          selectedStickers = selectedStickers.filter(k => k !== s.key)
-        } else {
-          selectedStickers = [...selectedStickers, s.key]
-        }
-        renderCarousels(assets, saved)
-        updatePreview()
-      })
-      stickerCarousel.appendChild(btn)
-    })
-
-    // Sounds
-    soundCarousel.innerHTML = ''
-    assets.sounds.forEach(snd => {
-      const btn = document.createElement('button')
-      btn.className = 'cave-item'
-      if (selectedSound === snd.key) btn.classList.add('cave-item--selected')
-      btn.innerHTML = `<span>${snd.label}</span>`
-      btn.addEventListener('click', () => {
-        selectedSound = selectedSound === snd.key ? null : snd.key
-        renderCarousels(assets, saved)
-      })
-      soundCarousel.appendChild(btn)
-    })
-  }
-
-  el.querySelector('.cave-save').addEventListener('click', async () => {
-    await saveCave({ backgroundKey: selectedBg, stickerKeys: selectedStickers, soundKey: selectedSound })
-    history.back()
-  })
+  let activeTab = 'background'
+  let unlocked = { background: true, sticker: false, sound: false }
 
   async function init() {
     const saved = await getCave()
@@ -154,22 +85,142 @@ export function CaveScreen() {
     selectedStickers = saved.stickerKeys || []
     selectedSound = saved.soundKey
 
-    let assets = null
+    // Freischalt-Status aus Spielstand rekonstruieren
+    if (selectedBg)                    unlocked.sticker = true
+    if (selectedStickers.length > 0)   unlocked.sound = true
+
     try {
-      assets = await getCaveAssets()
+      const strapi = await getCaveAssets()
+      if (strapi && strapi.length) {
+        assets = groupAssets(strapi)
+      }
     } catch (e) {
-      console.warn('Strapi nicht erreichbar, nutze Demo-Daten:', e.message)
+      console.warn('Strapi nicht erreichbar, nutze Demo-Cave-Assets:', e.message)
     }
 
-    // Normalize Strapi response or use demo
-    if (!assets || !assets.backgrounds) {
-      assets = DEMO_ASSETS
-    }
-
-    renderCarousels(assets, saved)
-    updatePreview()
+    renderTabs()
+    renderPanel()
+    renderCanvas()
   }
+
+  function renderTabs() {
+    tabsEl.querySelectorAll('.cave-tab').forEach(btn => {
+      const tab = btn.dataset.tab
+      btn.disabled = !unlocked[tab]
+      btn.classList.toggle('cave-tab--active', tab === activeTab)
+      btn.onclick = () => {
+        if (!unlocked[tab]) return
+        activeTab = tab
+        renderTabs()
+        renderPanel()
+      }
+    })
+  }
+
+  function renderPanel() {
+    panelEl.innerHTML = ''
+    const list = assets[activeTab] || []
+
+    list.forEach(item => {
+      const btn = document.createElement('button')
+      btn.className = 'cave-item'
+
+      const isSelected =
+        (activeTab === 'background' && selectedBg === item.key) ||
+        (activeTab === 'sticker'    && selectedStickers.includes(item.key)) ||
+        (activeTab === 'sound'      && selectedSound === item.key)
+      if (isSelected) btn.classList.add('cave-item--selected')
+
+      if (activeTab === 'background') {
+        btn.innerHTML = `<span class="cave-item-swatch" style="background:${item.color || 'var(--border)'}"></span><span>${item.label}</span>`
+      } else if (activeTab === 'sticker') {
+        btn.innerHTML = `<span class="cave-item-emoji">${item.emoji || '·'}</span><span>${item.label}</span>`
+      } else {
+        btn.innerHTML = `<span>${item.label}</span>`
+      }
+
+      btn.addEventListener('click', () => onSelect(item))
+      panelEl.appendChild(btn)
+    })
+  }
+
+  function onSelect(item) {
+    if (activeTab === 'background') {
+      selectedBg = item.key
+      if (!unlocked.sticker) {
+        unlocked.sticker = true
+        activeTab = 'sticker'
+        renderTabs()
+        renderPanel()
+        flashHint('Super. Jetzt kannst du Elemente platzieren.')
+      } else {
+        renderPanel()
+      }
+    } else if (activeTab === 'sticker') {
+      if (selectedStickers.includes(item.key)) {
+        selectedStickers = selectedStickers.filter(k => k !== item.key)
+      } else {
+        selectedStickers = [...selectedStickers, item.key]
+      }
+      if (!unlocked.sound && selectedStickers.length > 0) {
+        unlocked.sound = true
+        renderTabs()
+        flashHint('Du kannst jetzt auch eine Athmo wählen.')
+      }
+      renderPanel()
+    } else if (activeTab === 'sound') {
+      selectedSound = selectedSound === item.key ? null : item.key
+      renderPanel()
+    }
+    renderCanvas()
+  }
+
+  function renderCanvas() {
+    const bg = (assets.background || []).find(b => b.key === selectedBg)
+    canvasEl.style.background = bg ? (bg.color || 'var(--accent-light)') : 'var(--accent-light)'
+    canvasEl.innerHTML = ''
+
+    selectedStickers.forEach((key, i) => {
+      const s = (assets.sticker || []).find(st => st.key === key)
+      if (!s) return
+      const span = document.createElement('span')
+      span.className = 'cave-canvas-sticker'
+      span.textContent = s.emoji || '·'
+      span.style.left = `${10 + (i * 17) % 75}%`
+      span.style.top  = `${20 + (i * 31) % 60}%`
+      canvasEl.appendChild(span)
+    })
+
+    if (!selectedBg && !selectedStickers.length) {
+      const hint = document.createElement('span')
+      hint.className = 'cave-canvas-hint'
+      hint.textContent = 'Wähle einen Hintergrund, um zu starten.'
+      canvasEl.appendChild(hint)
+    }
+  }
+
+  function flashHint(text) {
+    const hint = document.createElement('div')
+    hint.className = 'cave-flash'
+    hint.textContent = text
+    el.appendChild(hint)
+    setTimeout(() => hint.remove(), 2600)
+  }
+
+  el.querySelector('.cave-save').addEventListener('click', async () => {
+    await saveCave({ backgroundKey: selectedBg, stickerKeys: selectedStickers, soundKey: selectedSound })
+    history.back()
+  })
 
   init()
   return el
+}
+
+// Strapi cave-assets: array of { type, key, label, file, ... } → nach Typ gruppieren
+function groupAssets(list) {
+  const grouped = { background: [], sticker: [], sound: [] }
+  list.forEach(a => {
+    if (grouped[a.type]) grouped[a.type].push(a)
+  })
+  return grouped
 }

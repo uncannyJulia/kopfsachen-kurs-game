@@ -21,16 +21,27 @@
       "default": 1,
       "min": 1
     },
+    "phase": {
+      "type": "enumeration",
+      "enum": ["ankommen", "erleben", "informieren", "ueben", "alltag"],
+      "required": true,
+      "default": "ankommen",
+      "description": "Welche der 5 Kapitel-Phasen diese Szene gehoert"
+    },
+    "title": {
+      "type": "string",
+      "description": "Interner Szenen-Titel fuers Admin, z.B. Intro mit Evu"
+    },
     "background": {
       "type": "media",
       "multiple": false,
-      "required": true,
-      "allowedTypes": ["images"]
+      "allowedTypes": ["images"],
+      "description": "Optional. Wenn leer: schlichter Hintergrund."
     },
     "character": {
       "type": "enumeration",
-      "enum": ["toni", "noen", "furi", "niemand"],
-      "default": "toni",
+      "enum": ["evu", "toni", "neo", "manu", "psycholog", "niemand"],
+      "default": "evu",
       "required": true
     },
     "startNodeId": {

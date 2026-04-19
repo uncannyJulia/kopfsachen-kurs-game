@@ -1,5 +1,11 @@
 // screens/HomeScreen.js
-// Titelscreen – Start führt IMMER über Disclaimer (Hilfebedürftigkeitsabfrage).
+// Home-Menü mit zwei Zuständen:
+//   1. Initial (kein Onboarding abgeschlossen): Start, Hilfsangebote, Kopfsachen
+//   2. Nach Kapitel 1: Kurs fortsetzen, Kapitelauswahl, Selfcare-Schachtel, Hilfsangebote, Kopfsachen
+//
+// Start → /novel/onboarding (erstes Mal) oder /novel/<currentChapter> (Kurs fortsetzen)
+
+import { getProgress, getSettings } from '../store.js'
 
 export function HomeScreen() {
   const el = document.createElement('div')
@@ -11,21 +17,78 @@ export function HomeScreen() {
         <h1 class="home-title">Kopfsachen</h1>
         <p class="home-tagline">Dein Kurs für mentale Stärke</p>
       </div>
-      <div class="home-actions">
-        <button class="btn-primary home-start" type="button">Start</button>
-        <button class="btn-secondary home-help" type="button">Hilfe</button>
+      <div class="home-actions home-actions--loading">
+        <div class="home-loading">Lade …</div>
       </div>
     </div>
   `
 
-  // Start geht IMMER über Disclaimer (Hilfebedürftigkeitsabfrage)
-  el.querySelector('.home-start').addEventListener('click', () => {
-    window.location.hash = '#/disclaimer'
-  })
+  const actionsEl = el.querySelector('.home-actions')
 
-  el.querySelector('.home-help').addEventListener('click', () => {
-    window.location.hash = '#/help'
-  })
+  async function init() {
+    const settings  = await getSettings()
+    const progress  = await getProgress()
 
+    const onboardingDone = !!settings.onboardingDone
+    const hasStarted     = progress.completedChapters.length > 0 || (onboardingDone && progress.currentNodeId > 0)
+
+    actionsEl.classList.remove('home-actions--loading')
+    actionsEl.innerHTML = ''
+
+    if (hasStarted) {
+      renderPostOnboarding(actionsEl, progress)
+    } else {
+      renderInitial(actionsEl, onboardingDone)
+    }
+  }
+
+  init()
   return el
+}
+
+function renderInitial(container, onboardingDone) {
+  container.innerHTML = `
+    <button class="btn-primary home-btn home-start" type="button">Start</button>
+    <button class="btn-secondary home-btn home-hilfsangebote" type="button">Hilfsangebote</button>
+    <button class="btn-secondary home-btn home-kopfsachen" type="button">Kopfsachen</button>
+  `
+  container.querySelector('.home-start').addEventListener('click', () => {
+    // Onboarding ist die erste Evu-Szene
+    window.location.hash = onboardingDone ? '#/chapters' : '#/novel/onboarding'
+  })
+  container.querySelector('.home-hilfsangebote').addEventListener('click', () => {
+    window.location.hash = '#/hilfsangebote'
+  })
+  container.querySelector('.home-kopfsachen').addEventListener('click', () => {
+    window.location.hash = '#/kopfsachen'
+  })
+}
+
+function renderPostOnboarding(container, progress) {
+  const resumeTarget = progress.currentChapter
+    ? `#/novel/${progress.currentChapter}`
+    : '#/chapters'
+
+  container.innerHTML = `
+    <button class="btn-primary home-btn home-resume" type="button">Kurs fortsetzen</button>
+    <button class="btn-secondary home-btn home-chapters" type="button">Kapitelauswahl</button>
+    <button class="btn-secondary home-btn home-toolbox" type="button">Selfcare-Schachtel</button>
+    <button class="btn-secondary home-btn home-hilfsangebote" type="button">Hilfsangebote</button>
+    <button class="btn-secondary home-btn home-kopfsachen" type="button">Kopfsachen</button>
+  `
+  container.querySelector('.home-resume').addEventListener('click', () => {
+    window.location.hash = resumeTarget
+  })
+  container.querySelector('.home-chapters').addEventListener('click', () => {
+    window.location.hash = '#/chapters'
+  })
+  container.querySelector('.home-toolbox').addEventListener('click', () => {
+    window.location.hash = '#/toolbox'
+  })
+  container.querySelector('.home-hilfsangebote').addEventListener('click', () => {
+    window.location.hash = '#/hilfsangebote'
+  })
+  container.querySelector('.home-kopfsachen').addEventListener('click', () => {
+    window.location.hash = '#/kopfsachen'
+  })
 }

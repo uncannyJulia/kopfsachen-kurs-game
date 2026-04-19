@@ -45,20 +45,26 @@ export const getDialogScene = (chapterSlug) =>
     'nodes.choices,chapter'
   )
 
-export const getJournal = (chapterSlug) =>
-  fetchAPI(
-    `/journal-pages?filters[chapter][slug][$eq]=${chapterSlug}&sort=pageOrder:asc`,
-    'content.exercise,content.audioFile,content.image,content.backgroundImage,content.videoFile,content.videoPoster,chapter,stickers.asset'
-  )
-
 export const getExercises = () =>
   fetchAPI('/exercises')
 
-export const getExercise = (id) =>
-  fetchAPI(`/exercises/${id}`)
+export const getExercise = (slug) =>
+  fetchAPI(`/exercises?filters[slug][$eq]=${slug}`)
 
 export const getCaveAssets = () =>
   fetchAPI('/cave-assets')
 
 export const getHelpResources = () =>
-  fetchAPI('/help-resources')
+  fetchAPI('/help-resources?sort=sortOrder:asc&filters[isActive][$eq]=true')
+
+export const getVideoContent = (slug) =>
+  fetchAPI(`/video-contents?filters[slug][$eq]=${slug}`)
+
+export const getQuestionnaireQuestions = (type = 'prae') =>
+  fetchAPI(`/questionnaire-questions?filters[questionnaire][$eq]=${type}&sort=order:asc`)
+
+export const getEnergieAktivitaeten = () =>
+  fetchAPI('/energie-aktivitaeten?sort=sortOrder:asc&filters[isActive][$eq]=true')
+
+export const getWennDannSituations = () =>
+  fetchAPI('/wenn-dann-situations?sort=sortOrder:asc&filters[isActive][$eq]=true')

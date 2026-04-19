@@ -15,9 +15,10 @@ export function openSideMenu() {
       <ul class="side-menu-links">
         <li><a href="#/home" class="side-menu-link">Home</a></li>
         <li><a href="#/chapters" class="side-menu-link">Kapitel</a></li>
-        <li><a href="#/toolbox" class="side-menu-link">Übungsschachtel</a></li>
-        <li><a href="#/cave" class="side-menu-link">Sicherer Ort</a></li>
-        <li><a href="#/help" class="side-menu-link">Hilfe</a></li>
+        <li><a href="#/toolbox" class="side-menu-link">Selfcare-Schachtel</a></li>
+        <li><a href="#/cave" class="side-menu-link">Innerer sicherer Ort</a></li>
+        <li><a href="#/hilfsangebote" class="side-menu-link">Hilfsangebote</a></li>
+        <li><a href="#/kopfsachen" class="side-menu-link">Kopfsachen</a></li>
         <li><a href="https://kopfsachen.de" target="_blank" rel="noopener" class="side-menu-link side-menu-link--ext">kopfsachen.de</a></li>
       </ul>
     </nav>

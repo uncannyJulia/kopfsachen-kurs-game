@@ -26,8 +26,13 @@
     },
     "category": {
       "type": "enumeration",
-      "enum": ["atemübung", "achtsamkeit", "innerer_ort", "reflexion", "sonstiges"],
+      "enum": ["box_atmung", "atemuebung", "achtsamkeit", "innerer_ort", "energie_reflexion", "wenn_dann_plan", "reflexion", "sonstiges"],
       "default": "sonstiges"
+    },
+    "phase": {
+      "type": "enumeration",
+      "enum": ["ankommen", "erleben", "informieren", "ueben", "alltag"],
+      "description": "In welcher Phase wird die Uebung eingefuehrt? Fuer Sortierung in der Selfcare-Schachtel."
     },
     "duration": {
       "type": "integer",

@@ -60,9 +60,10 @@ function idbPut(store, value) {
 
 const DEFAULT_PROGRESS = {
   id: 'main',
-  currentChapter: 'intro',
+  currentChapter: null,
   currentNodeId: 0,
   completedChapters: [],
+  chapterCompletions: {},  // { [slug]: ISO-Timestamp } — für Zeitgate
   lastActive: null,
 }
 
@@ -79,7 +80,8 @@ export async function saveProgress(patch) {
 export async function completeChapter(slug) {
   const p = await getProgress()
   const completed = [...new Set([...p.completedChapters, slug])]
-  await saveProgress({ completedChapters: completed })
+  const completions = { ...(p.chapterCompletions || {}), [slug]: new Date().toISOString() }
+  await saveProgress({ completedChapters: completed, chapterCompletions: completions })
 }
 
 // ── Cave-Konfiguration ────────────────────────────────────────
@@ -118,6 +120,19 @@ export async function getSettings() {
 export async function saveSettings(patch) {
   const current = await getSettings()
   await idbPut('settings', { ...current, ...patch })
+}
+
+// ── Kapitel-spezifische Daten (z.B. Energie-Reflexion, Wenn-Dann-Plan) ──
+
+export async function saveCourseData(key, value) {
+  const p = await getProgress()
+  const courseData = { ...(p.courseData || {}), [key]: value }
+  await saveProgress({ courseData })
+}
+
+export async function getCourseData(key) {
+  const p = await getProgress()
+  return (p.courseData || {})[key]
 }
 
 // ── Fragebögen ────────────────────────────────────────────────

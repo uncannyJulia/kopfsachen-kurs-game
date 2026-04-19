@@ -23,9 +23,9 @@
     },
     "speaker": {
       "type": "enumeration",
-      "enum": ["toni", "user", "narrator", "noen", "furi"],
+      "enum": ["evu", "toni", "neo", "manu", "user", "narrator", "psycholog"],
       "required": true,
-      "default": "toni"
+      "default": "evu"
     },
     "text": {
       "type": "richtext",
@@ -33,7 +33,7 @@
     },
     "emotion": {
       "type": "enumeration",
-      "enum": ["neutral", "happy", "sad", "surprised", "thinking", "worried"],
+      "enum": ["neutral", "happy", "sad", "surprised", "thinking", "worried", "calm"],
       "default": "neutral"
     },
     "nextNodeId": {
@@ -52,7 +52,7 @@
     },
     "triggerAction": {
       "type": "enumeration",
-      "enum": ["none", "open_journal", "open_cave", "open_exercise", "open_help", "input_username"],
+      "enum": ["none", "open_cave", "open_exercise", "open_hilfsangebote", "open_toolbox", "open_questionnaire", "open_video", "open_content", "input_username"],
       "default": "none",
       "description": "Optionale App-Aktion die dieser Node ausloest"
     }

@@ -11,7 +11,12 @@
   "attributes": {
     "title": {
       "type": "string",
-      "required": true
+      "required": true,
+      "description": "Haupttitel, z.B. 'Ein Moment nur für dich'"
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "Untertitel, z.B. 'Ankommen und durchatmen'"
     },
     "slug": {
       "type": "uid",
@@ -21,7 +26,8 @@
     "order": {
       "type": "integer",
       "required": true,
-      "min": 1
+      "min": 1,
+      "max": 8
     },
     "unlockAfterDays": {
       "type": "integer",
@@ -41,12 +47,6 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::dialog-scene.dialog-scene",
-      "mappedBy": "chapter"
-    },
-    "journalPages": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::journal-page.journal-page",
       "mappedBy": "chapter"
     },
     "exercises": {
