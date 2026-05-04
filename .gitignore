@@ -5,10 +5,15 @@ frontend/dist/
 cms/build/
 cms/.cache/
 
-# Lokale Env-Dateien – NIE committen
+# Env-Dateien mit Secrets – NIE committen
+.env
 .env.local
 .env.*.local
+.env.production
+.env.development
 frontend/.env.local
+frontend/.env.production
+cms/.env
 
 # Strapi
 cms/.tmp/
@@ -18,3 +23,7 @@ cms/public/uploads/
 # OS
 .DS_Store
 Thumbs.db
+
+# IDE
+.idea/
+.vscode/
