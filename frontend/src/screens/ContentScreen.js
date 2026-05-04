@@ -62,12 +62,76 @@ export function ContentScreen(path) {
   } else if (slug === 'wenn-dann-plan') {
     headingEl.textContent = 'Dein Energie-Plan'
     renderWennDannPlan(bodyEl)
+  } else if (slug === 'wuensche-auswahl') {
+    headingEl.textContent = 'Was wünschst du dir?'
+    renderWuenscheAuswahl(bodyEl)
   } else {
     headingEl.textContent = 'Content'
     bodyEl.innerHTML = `<p class="content-placeholder">Kein Content für Slug '${escape(slug)}' gefunden.</p>`
   }
 
   return el
+}
+
+// ══════════════════════════════════════════════════════════
+// Wünsche-Auswahl (Multi-Select + Freitext)
+// ══════════════════════════════════════════════════════════
+async function renderWuenscheAuswahl(container) {
+  const OPTIONS = [
+    'Ich möchte besser verstehen, was in mir vorgeht.',
+    'Ich möchte wissen, was mir hilft, wenn es mir nicht gut geht.',
+    'Ich möchte lernen, wie ich mit schwierigen Gefühlen umgehe.',
+    'Ich bin einfach neugierig.',
+    'Ich weiß es noch nicht genau.',
+  ]
+
+  const saved = (await getCourseData('wuensche')) || { selected: [], freetext: '' }
+  const selected = new Set(saved.selected || [])
+
+  container.innerHTML = `
+    <p class="wuensche-intro">Wähle alles aus, was zutrifft.</p>
+    <ul class="wuensche-list"></ul>
+    <div class="wuensche-freetext">
+      <label for="wuensche-freitext-input">Etwas anderes:</label>
+      <input id="wuensche-freitext-input" type="text" class="wuensche-freetext-input" placeholder="Schreib deinen Wunsch …" value="${escape(saved.freetext || '')}">
+    </div>
+    <button class="btn-primary wuensche-save" type="button">Weiter</button>
+  `
+
+  const listEl = container.querySelector('.wuensche-list')
+  const freiInput = container.querySelector('.wuensche-freetext-input')
+  const saveBtn = container.querySelector('.wuensche-save')
+
+  OPTIONS.forEach(opt => {
+    const li = document.createElement('li')
+    li.innerHTML = `
+      <label class="wuensche-option ${selected.has(opt) ? 'wuensche-option--checked' : ''}">
+        <input type="checkbox" class="wuensche-checkbox" ${selected.has(opt) ? 'checked' : ''}>
+        <span class="wuensche-text">${escape(opt)}</span>
+      </label>
+    `
+    const cb = li.querySelector('input')
+    const wrapper = li.querySelector('label')
+    cb.addEventListener('change', () => {
+      if (cb.checked) {
+        selected.add(opt)
+        wrapper.classList.add('wuensche-option--checked')
+      } else {
+        selected.delete(opt)
+        wrapper.classList.remove('wuensche-option--checked')
+      }
+    })
+    listEl.appendChild(li)
+  })
+
+  saveBtn.addEventListener('click', async () => {
+    await saveCourseData('wuensche', {
+      selected: Array.from(selected),
+      freetext: freiInput.value.trim(),
+      savedAt: new Date().toISOString(),
+    })
+    history.back()
+  })
 }
 
 // ══════════════════════════════════════════════════════════
@@ -88,83 +152,184 @@ async function renderEnergieReflexion(container) {
 
   const responses = {}  // { text: { tendency: 'fresser'|'geber'|'skip', rating?: 1-5 } }
   let idx = 0
-  let stage = 'sort' // sort → rate → done
-  let pendingTendency = null
+  let pendingTendency = null   // null → swipe-Phase; 'fresser'|'geber' → rating-Phase
+  const SWIPE_THRESHOLD = 100  // Pixel die geswiped werden müssen
 
   container.innerHTML = `
     <div class="energie-intro">
       <p>Denke an deine letzte Woche.</p>
-      <p><strong>Energie-Fresser?</strong> Karte nach links.<br><strong>Energie-Geber?</strong> Nach rechts.<br><strong>Nicht erlebt?</strong> Mitte.</p>
+      <p>Wische die Karte <strong>nach links</strong>, wenn dich das Energie gekostet hat — <strong>nach rechts</strong>, wenn es dir Energie gegeben hat.</p>
     </div>
-    <div class="energie-card"></div>
-    <div class="energie-actions"></div>
+    <div class="energie-stage">
+      <div class="energie-tray energie-tray--left" aria-label="Energie-Fresser">
+        <span class="energie-tray-icon">✕</span>
+        <div class="energie-tray-dots"></div>
+      </div>
+      <div class="energie-card-wrap">
+        <div class="energie-card" role="button" aria-label="Karte zum Wischen">
+          <div class="energie-card-label">Situation</div>
+          <div class="energie-card-text"></div>
+          <div class="energie-card-badge"></div>
+        </div>
+      </div>
+      <div class="energie-tray energie-tray--right" aria-label="Energie-Geber">
+        <span class="energie-tray-icon">♥</span>
+        <div class="energie-tray-dots"></div>
+      </div>
+    </div>
+    <div class="energie-rating-area" hidden>
+      <p class="energie-rating-prompt"></p>
+      <div class="energie-scale">
+        ${[1, 2, 3, 4, 5].map(n => `<button class="energie-scale-btn" data-value="${n}" type="button">${n}</button>`).join('')}
+      </div>
+    </div>
+    <div class="energie-bottom">
+      <button class="energie-skip-btn" type="button">ist nicht passiert</button>
+    </div>
     <div class="energie-progress"></div>
   `
-  const cardEl    = container.querySelector('.energie-card')
-  const actionsEl = container.querySelector('.energie-actions')
+
+  const cardWrap   = container.querySelector('.energie-card-wrap')
+  const cardEl     = container.querySelector('.energie-card')
+  const cardTextEl = container.querySelector('.energie-card-text')
+  const cardBadge  = container.querySelector('.energie-card-badge')
+  const trayLeftDots  = container.querySelector('.energie-tray--left  .energie-tray-dots')
+  const trayRightDots = container.querySelector('.energie-tray--right .energie-tray-dots')
+  const ratingArea = container.querySelector('.energie-rating-area')
+  const ratingPrompt = container.querySelector('.energie-rating-prompt')
+  const skipBtn    = container.querySelector('.energie-skip-btn')
   const progressEl = container.querySelector('.energie-progress')
 
   function renderCurrent() {
     progressEl.textContent = `${Math.min(idx + 1, items.length)} / ${items.length}`
 
     if (idx >= items.length) {
-      stage = 'done'
       return renderDone()
     }
 
     const current = items[idx]
+    cardTextEl.textContent = current.text
+    cardBadge.textContent = ''
+    cardBadge.className = 'energie-card-badge'
+    cardEl.style.transition = ''
+    cardEl.style.transform = ''
+    cardEl.style.opacity = ''
+    pendingTendency = null
+    ratingArea.hidden = true
+    skipBtn.hidden = false
 
-    if (stage === 'sort') {
-      cardEl.innerHTML = `
-        <div class="energie-card-label">Situation</div>
-        <div class="energie-card-text">${escape(current.text)}</div>
-      `
-      actionsEl.innerHTML = `
-        <button class="btn-secondary energie-fresser" type="button">Energie-Fresser ←</button>
-        <button class="btn-secondary energie-skip"    type="button">Nicht erlebt</button>
-        <button class="btn-secondary energie-geber"   type="button">→ Energie-Geber</button>
-      `
-      actionsEl.querySelector('.energie-fresser').addEventListener('click', () => chooseTendency('fresser'))
-      actionsEl.querySelector('.energie-geber').addEventListener('click',   () => chooseTendency('geber'))
-      actionsEl.querySelector('.energie-skip').addEventListener('click',    () => skipCurrent())
-    } else if (stage === 'rate') {
-      const prompt = pendingTendency === 'fresser'
-        ? 'Wie viel Energie hat dich das gekostet?'
-        : 'Wie viel Energie hat dir das gegeben?'
-      cardEl.innerHTML = `
-        <div class="energie-card-label">${prompt}</div>
-        <div class="energie-card-text">${escape(current.text)}</div>
-      `
-      actionsEl.innerHTML = `
-        <div class="energie-scale">
-          ${[1, 2, 3, 4, 5].map(n =>
-            `<button class="energie-scale-btn" data-value="${n}" type="button">${n}</button>`
-          ).join('')}
-        </div>
-      `
-      actionsEl.querySelectorAll('.energie-scale-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const rating = parseInt(btn.dataset.value)
-          responses[current.text] = { tendency: pendingTendency, rating }
-          idx++
-          stage = 'sort'
-          pendingTendency = null
-          renderCurrent()
-        })
-      })
+    // Drift-Animation für jede neue Bubble neu starten
+    cardEl.style.animation = 'none'
+    void cardEl.offsetWidth
+    cardEl.style.animation = ''
+
+    enableSwipe()
+  }
+
+  // ── Swipe-Logik ──────────────────────────────────────────
+  let dragging = false
+  let startX = 0, currentX = 0
+
+  function enableSwipe() {
+    cardEl.addEventListener('pointerdown', onPointerDown, { passive: true })
+  }
+  function disableSwipe() {
+    cardEl.removeEventListener('pointerdown', onPointerDown)
+  }
+  function onPointerDown(e) {
+    if (pendingTendency) return
+    dragging = true
+    startX = e.clientX
+    currentX = 0
+    cardEl.setPointerCapture(e.pointerId)
+    cardEl.style.transition = 'none'
+    window.addEventListener('pointermove', onPointerMove)
+    window.addEventListener('pointerup', onPointerUp, { once: true })
+    window.addEventListener('pointercancel', onPointerUp, { once: true })
+  }
+  function onPointerMove(e) {
+    if (!dragging) return
+    currentX = e.clientX - startX
+    const rotation = currentX / 20  // °
+    cardEl.style.transform = `translateX(${currentX}px) rotate(${rotation}deg)`
+    // Badge-Hinweis je nach Richtung
+    if (currentX < -30) {
+      cardBadge.textContent = '✕'
+      cardBadge.className = 'energie-card-badge energie-card-badge--fresser'
+    } else if (currentX > 30) {
+      cardBadge.textContent = '♥'
+      cardBadge.className = 'energie-card-badge energie-card-badge--geber'
+    } else {
+      cardBadge.textContent = ''
+      cardBadge.className = 'energie-card-badge'
+    }
+  }
+  function onPointerUp() {
+    if (!dragging) return
+    dragging = false
+    window.removeEventListener('pointermove', onPointerMove)
+
+    if (Math.abs(currentX) >= SWIPE_THRESHOLD) {
+      const tendency = currentX < 0 ? 'fresser' : 'geber'
+      flyOutAndRate(tendency)
+    } else {
+      // Nicht weit genug → zurück
+      cardEl.style.transition = 'transform var(--transition)'
+      cardEl.style.transform = ''
+      cardBadge.textContent = ''
+      cardBadge.className = 'energie-card-badge'
     }
   }
 
-  function chooseTendency(tendency) {
+  function flyOutAndRate(tendency) {
     pendingTendency = tendency
-    stage = 'rate'
-    renderCurrent()
+    disableSwipe()
+    cardEl.style.transition = 'transform 280ms ease, opacity 280ms ease'
+    const offset = tendency === 'fresser' ? -window.innerWidth : window.innerWidth
+    cardEl.style.transform = `translateX(${offset}px) rotate(${tendency === 'fresser' ? -25 : 25}deg)`
+    cardEl.style.opacity = '0.4'
+
+    // Rating-Bereich einblenden
+    setTimeout(() => {
+      ratingPrompt.textContent = tendency === 'fresser'
+        ? `Wie viel Energie hat dich das gekostet?`
+        : `Wie viel Energie hat dir das gegeben?`
+      ratingArea.hidden = false
+      skipBtn.hidden = true
+    }, 100)
   }
 
-  function skipCurrent() {
+  // Rating-Click
+  ratingArea.querySelectorAll('.energie-scale-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!pendingTendency) return
+      const rating = parseInt(btn.dataset.value)
+      const current = items[idx]
+      responses[current.text] = { tendency: pendingTendency, rating }
+      addDot(pendingTendency)
+      idx++
+      renderCurrent()
+    })
+  })
+
+  // Skip-Button
+  skipBtn.addEventListener('click', () => {
+    if (pendingTendency) return
     responses[items[idx].text] = { tendency: 'skip' }
-    idx++
-    renderCurrent()
+    cardEl.style.transition = 'transform 240ms ease, opacity 240ms ease'
+    cardEl.style.transform = `translateY(${window.innerHeight}px)`
+    cardEl.style.opacity = '0'
+    setTimeout(() => {
+      idx++
+      renderCurrent()
+    }, 250)
+  })
+
+  function addDot(tendency) {
+    const target = tendency === 'fresser' ? trayLeftDots : trayRightDots
+    const dot = document.createElement('span')
+    dot.className = `energie-dot energie-dot--${tendency}`
+    target.appendChild(dot)
   }
 
   async function renderDone() {

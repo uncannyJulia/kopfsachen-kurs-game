@@ -10,7 +10,7 @@
   {
     "slug": "wie-geht-es-dir-danke-gut",
     "title": "Wie geht es dir? Danke gut.",
-    "subtitle": "Mit dir selbst in Verbindung kommen",
+    "subtitle": "Gefühle wahrnehmen und verstehen",
     "order": 2,
     "unlockAfterDays": 7,
     "description": "Spüre, was du fühlst. Lerne deine Gefühle besser kennen und verstehen."
@@ -32,8 +32,8 @@
     "description": "Dein Körper und Kopf sagen dir oft früh, wenn es zu viel wird. Lerne die Signale zu lesen."
   },
   {
-    "slug": "deine-groesste-unterstuetzung-du-selbst",
-    "title": "Deine größte Unterstützung: du selbst!",
+    "slug": "gut-zu-dir-sein",
+    "title": "Gut zu dir sein",
     "subtitle": "Selbstmitgefühl statt Selbstkritik",
     "order": 5,
     "unlockAfterDays": 7,

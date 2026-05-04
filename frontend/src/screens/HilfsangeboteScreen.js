@@ -62,7 +62,10 @@ export function HilfsangeboteScreen() {
       console.warn('Strapi nicht erreichbar, nutze Demo-Daten:', e.message)
     }
 
-    resources = resources || DEMO_RESOURCES
+    // Fallback auch bei leerem Array — Strapi liefert teils [] wenn nichts gepflegt
+    if (!Array.isArray(resources) || resources.length === 0) {
+      resources = DEMO_RESOURCES
+    }
     loadingEl.style.display = 'none'
 
     resources.forEach(r => {

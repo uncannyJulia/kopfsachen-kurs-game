@@ -214,7 +214,8 @@ body {
 .speech-bubble {
   background: var(--surface);
   border: 0.15rem solid var(--accent);
-  border-radius: var(--radius-md);
+  /* mehr Bubble-Look: stark abgerundet */
+  border-radius: 1.5rem;
   padding: var(--space-md) var(--space-lg);
   position: relative;
   font-size: 0.9375rem;
@@ -374,6 +375,33 @@ body {
   padding-bottom: var(--space-xl);
 }
 
+.novel-character {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  margin-bottom: var(--space-sm);
+  /* Schiebt sich + alles darunter (Label, Bubble, Buttons) ans untere Ende */
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+.character-avatar {
+  display: block;
+  filter: drop-shadow(0 0.125rem 0.5rem rgba(0,0,0,0.08));
+  animation: characterFadeIn 0.3s ease;
+}
+
+.character-avatar svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@keyframes characterFadeIn {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .novel-speaker-label {
   font-size: 0.8125rem;
   font-weight: 700;
@@ -381,25 +409,38 @@ body {
   letter-spacing: 0.05em;
   margin-bottom: var(--space-xs);
   padding-left: var(--space-sm);
+  text-align: center;
 }
 
 .novel-bubble-area {
-  flex: 1;
+  /* Auto-Größe, kein flex:1 — Layout pusht den ganzen Block via .novel-character ans untere Ende */
+  flex: 0 0 auto;
   display: flex;
-  align-items: center;
-  min-height: 0;
+  justify-content: center;
+  margin-bottom: var(--space-sm);
 }
 
 .novel-bubble {
   width: 100%;
-  min-height: 5rem;
-  font-size: 1rem;
-  line-height: 1.6;
+  /* Feste Höhe: ~4 Zeilen Text + Padding. Längerer Text wird sauber abgeschnitten. */
+  height: 7rem;
+  overflow: hidden;
+  font-size: 0.9375rem;
+  line-height: 1.55;
   cursor: pointer;
   user-select: none;
 }
 
-/* Narrator-Stil: kein Rand, kursiv */
+.novel-bubble--enter {
+  animation: bubbleSlideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes bubbleSlideUp {
+  from { transform: translateY(20%); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+
+/* Narrator-Stil: kein Rand, kursiv. Höhe behalten für Layout-Stabilität. */
 .novel-bubble--narrator .novel-bubble {
   border-color: transparent;
   background: transparent;
@@ -461,6 +502,15 @@ body {
 .novel-likert {
   padding: 0 var(--space-sm);
   margin-top: var(--space-md);
+}
+
+.novel-likert--enter {
+  animation: likertSlideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes likertSlideUp {
+  from { transform: translateY(120%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
 .novel-likert .likert {
@@ -994,6 +1044,33 @@ body {
   color: var(--text-muted);
 }
 
+.kopfsachen-reset {
+  margin-top: auto;
+  padding: var(--space-md);
+  border-top: 0.0625rem solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.kopfsachen-reset-btn {
+  background: transparent;
+  border: 0.0625rem solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.kopfsachen-reset-btn:active { background: var(--border); }
+
+.kopfsachen-reset-hint {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
 /* Audio-Player: Zusatz-Klassen für ExerciseScreen */
 .audio-duration {
   font-size: 0.75rem;
@@ -1055,7 +1132,7 @@ body {
   color: var(--text-muted);
 }
 
-/* ── Energie-Reflexion ──────────────────────────────────────── */
+/* ── Energie-Reflexion (Swipe-Cards) ────────────────────────── */
 
 .energie-intro {
   padding: var(--space-md);
@@ -1067,16 +1144,104 @@ body {
 .energie-intro p { margin-bottom: var(--space-xs); }
 .energie-intro p:last-child { margin-bottom: 0; }
 
-.energie-card {
-  padding: var(--space-lg);
-  background: var(--surface);
-  border: 0.125rem solid var(--border);
-  border-radius: var(--radius-md);
-  min-height: 6rem;
+.energie-stage {
+  display: grid;
+  grid-template-columns: 2.25rem 1fr 2.25rem;
+  align-items: end;        /* Bubbles unten in der Stage */
+  gap: var(--space-sm);
+  padding: var(--space-md) 0;
+  flex: 1 1 auto;
+  min-height: 14rem;
+  overflow: hidden;        /* Karte fliegt aus dem Stage-Bereich */
+}
+
+.energie-tray {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.energie-tray-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  background: var(--surface);
+  border: 0.0625rem solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.energie-tray-dots {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.energie-dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  display: block;
+  animation: energieDotIn 0.25s ease;
+}
+
+.energie-dot--fresser { background: var(--accent-dark); }
+.energie-dot--geber   { background: var(--accent); }
+
+@keyframes energieDotIn {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.energie-card-wrap {
+  position: relative;
+  display: flex;
+  align-items: flex-end;     /* Bubble sitzt unten im wrap */
+  justify-content: center;
+  min-height: 12rem;
+}
+
+.energie-card {
+  position: relative;
+  width: 100%;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--surface);
+  /* Bubble-Look: leicht oval/asymmetrisch, weicher Rand */
+  border: none;
+  border-radius: 50% / 30%;
+  min-height: 6.5rem;        /* ca. 3 Zeilen Text + Padding */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  box-shadow:
+    0 0.5rem 1.25rem rgba(124, 58, 237, 0.12),
+    inset 0 -0.25rem 0.5rem rgba(0, 0, 0, 0.04);
+  /* Schwebende Animation nach oben → Endposition unten */
+  animation: energieBubbleDrift 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes energieBubbleDrift {
+  0%   { transform: translateY(-100%) scale(0.92); opacity: 0; }
+  60%  { opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.energie-card:active {
+  cursor: grabbing;
 }
 
 .energie-card-label {
@@ -1087,14 +1252,61 @@ body {
 }
 
 .energie-card-text {
-  font-size: 1.0625rem;
+  font-size: 0.9375rem;
   font-weight: 600;
+  line-height: 1.4;
+  /* maximal 3 Zeilen, Rest mit … */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.energie-actions {
+.energie-card-badge {
+  position: absolute;
+  bottom: -0.75rem;
+  right: -0.75rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: var(--surface);
+  color: transparent;
+  border: 0.125rem solid transparent;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  pointer-events: none;
+}
+
+.energie-card-badge--fresser {
+  color: var(--accent-dark);
+  border-color: var(--accent-dark);
+  background: var(--surface);
+}
+
+.energie-card-badge--geber {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.energie-rating-area {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--accent-light);
+  border-radius: var(--radius-md);
+}
+
+.energie-rating-prompt {
+  font-size: 0.9375rem;
+  color: var(--accent-dark);
+  font-weight: 600;
+  text-align: center;
 }
 
 .energie-scale {
@@ -1113,10 +1325,29 @@ body {
   font-weight: 700;
   font-family: var(--font-body);
   cursor: pointer;
-  transition: border-color var(--transition);
+  transition: border-color var(--transition), background var(--transition);
 }
 
 .energie-scale-btn:active { border-color: var(--accent); background: var(--accent-light); }
+
+.energie-bottom {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-sm);
+}
+
+.energie-skip-btn {
+  background: transparent;
+  border: 0.0625rem solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: var(--space-xs) var(--space-md);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+.energie-skip-btn:active { background: var(--accent-light); }
 
 .energie-progress {
   text-align: center;
@@ -1182,6 +1413,79 @@ body {
   border-radius: var(--radius-md);
   font-size: 0.8125rem;
   color: var(--accent-dark);
+}
+
+/* ── Wünsche-Auswahl ────────────────────────────────────────── */
+
+.wuensche-intro {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.wuensche-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: 0;
+}
+
+.wuensche-option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--surface);
+  border: 0.125rem solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+
+.wuensche-option--checked {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.wuensche-checkbox {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+  margin-top: 0.125rem;
+}
+
+.wuensche-text {
+  font-size: 0.9375rem;
+  flex: 1;
+}
+
+.wuensche-freetext {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+}
+
+.wuensche-freetext label {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.wuensche-freetext-input {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface);
+  border: 0.125rem solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  outline: none;
+}
+
+.wuensche-freetext-input:focus { border-color: var(--accent); }
+
+.wuensche-save {
+  margin-top: var(--space-md);
 }
 
 /* ── Wenn-Dann-Plan ─────────────────────────────────────────── */
@@ -1542,6 +1846,19 @@ body {
   position: absolute;
   font-size: 2.5rem;
   animation: caveStickerIn 0.3s ease;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  /* Sticker am angegebenen x/y zentrieren */
+  transform: translate(-50%, -50%);
+}
+
+.cave-canvas-sticker--dragging {
+  cursor: grabbing;
+  z-index: 5;
+  filter: drop-shadow(0 0.25rem 0.5rem rgba(0,0,0,0.2));
+  transform: translate(-50%, -50%) scale(1.1);
+  animation: none;
 }
 
 .cave-canvas-hint {
@@ -1759,37 +2076,36 @@ body {
   text-align: center;
 }
 
+.toolbox-intro {
+  padding: 0 var(--space-md) var(--space-md);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
 .toolbox-list {
   flex: 1;
   overflow-y: auto;
   padding: 0 var(--space-md) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
 }
 
-.toolbox-loading {
-  text-align: center;
+.toolbox-empty {
   padding: var(--space-xl);
+  text-align: center;
   color: var(--text-muted);
   font-size: 0.875rem;
-}
-
-.toolbox-group {
-  margin-bottom: var(--space-lg);
-}
-
-.toolbox-group-title {
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  margin-bottom: var(--space-sm);
-  padding-left: var(--space-xs);
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
 }
 
 .toolbox-card {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-md);
   width: 100%;
   padding: var(--space-md);
   background: var(--surface);
@@ -1798,7 +2114,6 @@ body {
   cursor: pointer;
   font-family: var(--font-body);
   transition: border-color var(--transition);
-  margin-bottom: var(--space-sm);
   text-align: left;
 }
 
@@ -1806,16 +2121,36 @@ body {
   border-color: var(--accent);
 }
 
+.toolbox-card-icon {
+  font-size: 1.75rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.toolbox-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  flex: 1;
+  min-width: 0;
+}
+
 .toolbox-card-title {
-  font-size: 0.9375rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 600;
   color: var(--text);
 }
 
-.toolbox-card-duration {
+.toolbox-card-desc {
   font-size: 0.8125rem;
   color: var(--text-muted);
-  flex-shrink: 0;
+  line-height: 1.5;
+}
+
+.toolbox-card-duration {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 /* ── Questionnaire Screen ───────────────────────────────────── */

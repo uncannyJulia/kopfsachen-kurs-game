@@ -4,6 +4,7 @@
 import { getDialogScene } from '../api.js'
 import { getProgress, saveProgress, saveQuestionnaire, getSettings, saveSettings, completeChapter } from '../store.js'
 import { TopMenu } from '../components/TopMenu.js'
+import { CharacterAvatar, hasAvatar } from '../components/CharacterAvatar.js'
 import { ONBOARDING_NODES } from '../data/onboarding.js'
 import { KAPITEL_1_NODES }   from '../data/kapitel-1.js'
 
@@ -42,6 +43,7 @@ export function NovelScreen(path) {
   main.innerHTML = `
     <div class="novel-bg"></div>
     <div class="novel-content">
+      <div class="novel-character"></div>
       <div class="novel-speaker-label"></div>
       <div class="novel-bubble-area">
         <div class="speech-bubble novel-bubble"></div>
@@ -68,6 +70,7 @@ export function NovelScreen(path) {
   const bubbleArea   = main.querySelector('.novel-bubble-area')
   const bubble       = el.querySelector('.novel-bubble')
   const speakerLabel = el.querySelector('.novel-speaker-label')
+  const characterEl  = el.querySelector('.novel-character')
   const choicesEl    = el.querySelector('.novel-choices')
   const likertEl     = el.querySelector('.novel-likert')
   const continueBtn  = el.querySelector('.novel-continue')
@@ -96,6 +99,16 @@ export function NovelScreen(path) {
 
     const config = SPEAKER_CONFIG[node.speaker] || SPEAKER_CONFIG.narrator
 
+    // Character-Avatar (Platzhalter-SVG je Speaker)
+    characterEl.innerHTML = ''
+    if (hasAvatar(node.speaker)) {
+      const av = CharacterAvatar(node.speaker)
+      if (av) characterEl.appendChild(av)
+      characterEl.style.display = ''
+    } else {
+      characterEl.style.display = 'none'
+    }
+
     // Speaker-Label
     if (node.speaker === 'narrator') {
       speakerLabel.textContent = ''
@@ -118,6 +131,11 @@ export function NovelScreen(path) {
     const displayText = username
       ? (node.text || '').replace(/\[Username\]/g, username)
       : (node.text || '')
+
+    // Slide-In-Animation der Bubble bei jedem Node-Wechsel
+    bubble.classList.remove('novel-bubble--enter')
+    void bubble.offsetWidth
+    bubble.classList.add('novel-bubble--enter')
 
     // Text mit Typewriter-Effekt
     typeText(bubble, displayText)
@@ -190,6 +208,10 @@ export function NovelScreen(path) {
   function renderInlineLikert(likert) {
     likertEl.style.display = ''
     likertEl.innerHTML = ''
+    // Slide-In-Animation neu starten
+    likertEl.classList.remove('novel-likert--enter')
+    void likertEl.offsetWidth
+    likertEl.classList.add('novel-likert--enter')
 
     const scale = document.createElement('div')
     scale.className = 'likert'
@@ -390,19 +412,33 @@ export function NovelScreen(path) {
   async function init() {
     let loadedNodes = null
 
-    try {
-      const scenes = await getDialogScene(slug)
-      if (scenes && scenes.length > 0) {
-        const scene = scenes[0]
-        loadedNodes = scene.nodes
+    // Wenn wir Demo-Daten für diesen Slug haben, überspringen wir Strapi —
+    // sonst bekommt der User beim Zurückkehren einen langen Loading-Hänger.
+    // (Customer-Edits werden später wieder berücksichtigt, wenn Strapi befüllt ist.)
+    const hasDemo = !!DEMO_NODES_BY_SLUG[slug]
+    if (!hasDemo) {
+      try {
+        const scenes = await getDialogScene(slug)
+        if (scenes && scenes.length > 0) {
+          const scene = scenes[0]
+          loadedNodes = scene.nodes
+        }
+      } catch (e) {
+        console.warn('Strapi nicht erreichbar, nutze Demo-Daten:', e.message)
       }
-    } catch (e) {
-      console.warn('Strapi nicht erreichbar, nutze Demo-Daten:', e.message)
     }
 
     nodes = loadedNodes || DEMO_NODES_BY_SLUG[slug] || []
     loadingEl.style.display = 'none'
     contentEl.style.display = ''
+
+    // Unbekannter Slug oder leeres Node-Set → ab zur Kapitelauswahl, statt "Szene beendet"
+    if (!nodes.length) {
+      console.warn(`Keine Dialog-Nodes für slug "${slug}" gefunden — leite weiter`)
+      saveProgress({ currentChapter: null, currentNodeId: 0 })
+      window.location.hash = '#/chapters'
+      return
+    }
 
     // Load username from settings
     const settings = await getSettings()
@@ -410,9 +446,16 @@ export function NovelScreen(path) {
 
     // Fortschritt laden → ggf. an letzter Stelle weitermachen
     const progress = await getProgress()
-    const startId = (progress.currentChapter === slug && progress.currentNodeId > 0)
+    let startId = (progress.currentChapter === slug && progress.currentNodeId > 0)
       ? progress.currentNodeId
-      : nodes[0]?.nodeId || 1
+      : nodes[0].nodeId
+
+    // Defensive: gespeicherter Node existiert nicht (z.B. nach Datenmodell-Wechsel) → von vorne starten
+    if (!nodes.find(n => n.nodeId === startId)) {
+      console.warn(`Gespeicherter Node ${startId} nicht in slug "${slug}" — starte von vorne`)
+      startId = nodes[0].nodeId
+      saveProgress({ currentChapter: slug, currentNodeId: startId })
+    }
 
     goToNode(startId)
   }
