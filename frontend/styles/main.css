@@ -393,11 +393,11 @@ body {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  /* Alle Children am unteren Rand — funktioniert auch wenn der Avatar (User-Speaker) ausgeblendet ist */
-  justify-content: flex-end;
   height: 100%;
   padding: var(--space-lg);
   padding-bottom: var(--space-xl);
+  /* Default: alles am unteren Rand. Layout-Klassen unten überschreiben das. */
+  justify-content: flex-end;
 }
 
 .novel-character {
@@ -406,6 +406,234 @@ body {
   align-items: flex-end;
   margin-bottom: var(--space-sm);
   flex-shrink: 0;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Layout-Varianten je Speaker
+   - monologue: Evu/Mika reden zum User (Text oben, große Figur unten-mitte)
+   - scene:     Toni/Neo/Manu/Psycholog in der Geschichte (Bubble-mit-Tail oben, Figur in Mitte, Thought-Pill-Choices unten)
+   - narrator:  zentrierter kursiver Text
+   - user:      keine Figur, Bubble nur wenn echter Text
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Layout: Monologue (Evu / Mika) ────────────────────────── */
+.novel-layout--monologue {
+  justify-content: flex-start;
+}
+
+.novel-layout--monologue .novel-bubble-area {
+  order: 1;
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.novel-layout--monologue .novel-bubble {
+  /* Kein Bubble-Rahmen — nur Text wie im Wireframe */
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.55;
+  height: auto;
+  max-height: 16rem;
+  padding: var(--space-sm) var(--space-md);
+  text-align: center;
+  overflow: visible;
+}
+
+.novel-layout--monologue .speech-bubble::before,
+.novel-layout--monologue .speech-bubble::after {
+  display: none;
+}
+
+.novel-layout--monologue .novel-character {
+  order: 50;
+  flex: 1;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.novel-layout--monologue .novel-likert,
+.novel-layout--monologue .novel-choices,
+.novel-layout--monologue .novel-input {
+  order: 80;
+  margin-top: var(--space-md);
+}
+
+.novel-layout--monologue .novel-continue {
+  order: 99;
+}
+
+/* ── Layout: Scene (Toni / Neo / Manu / Psycholog) ─────────── */
+.novel-layout--scene {
+  justify-content: flex-start;
+}
+
+.novel-layout--scene .novel-bubble-area {
+  order: 1;
+  margin-top: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.novel-layout--scene .novel-bubble {
+  /* Bubble mit Rahmen + Tail nach unten zur Figur */
+  height: auto;
+  min-height: 4rem;
+  max-height: 9rem;
+  overflow: hidden;
+}
+
+.novel-layout--scene .novel-character {
+  order: 50;
+  flex: 1;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Thought-Pill-Choices unten (für Toni-Style) */
+.novel-layout--scene .novel-choices {
+  order: 80;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  align-items: center;
+  padding-top: var(--space-lg); /* Platz für die Bubble-Pünktchen */
+  margin-top: var(--space-sm);
+}
+
+.novel-layout--scene .novel-choices .novel-choice,
+.novel-layout--scene .novel-choices .btn-secondary {
+  position: relative;
+  border-radius: var(--radius-pill);
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--surface);
+  border: 0.125rem solid var(--accent);
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 500;
+  width: auto;
+  min-width: 8rem;
+}
+
+/* Wölkchen-Punkte über der Pill (Andeutung Gedanken-Bubble) */
+.novel-layout--scene .novel-choices .novel-choice::before,
+.novel-layout--scene .novel-choices .btn-secondary::before {
+  content: '';
+  position: absolute;
+  top: -0.625rem;
+  left: 1rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 0.125rem solid var(--accent);
+}
+.novel-layout--scene .novel-choices .novel-choice::after,
+.novel-layout--scene .novel-choices .btn-secondary::after {
+  content: '';
+  position: absolute;
+  top: -1.25rem;
+  left: 0.5rem;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 0.125rem solid var(--accent);
+}
+
+.novel-layout--scene .novel-likert,
+.novel-layout--scene .novel-input {
+  order: 80;
+  margin-top: var(--space-md);
+}
+
+.novel-layout--scene .novel-continue {
+  order: 99;
+}
+
+/* ── Layout: Compact (Evu klein oben-rechts, Content prominent) ──
+   Gilt z.B. bei Fragebogen-Likert mit Evu, oder bei Mehrfachauswahl-Listen. */
+.novel-layout--compact {
+  position: relative;
+  justify-content: flex-start;
+}
+
+.novel-layout--compact .novel-character {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  z-index: 5;
+  margin: 0;
+}
+
+.novel-layout--compact .character-avatar--lottie {
+  /* Klein in Portrait — überschreibt Inline-Styles */
+  height: 9rem !important;
+  width: calc(9rem * 9 / 16) !important;
+}
+
+.novel-layout--compact .novel-bubble-area {
+  order: 1;
+  /* Platz für Evu rechts-oben freilassen */
+  padding-right: 6rem;
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.novel-layout--compact .novel-bubble {
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.55;
+  height: auto;
+  max-height: 10rem;
+  padding: var(--space-sm) var(--space-md) var(--space-sm) 0;
+  text-align: left;
+  overflow: visible;
+}
+
+.novel-layout--compact .speech-bubble::before,
+.novel-layout--compact .speech-bubble::after {
+  display: none;
+}
+
+.novel-layout--compact .novel-likert,
+.novel-layout--compact .novel-choices,
+.novel-layout--compact .novel-input {
+  order: 50;
+  margin-top: var(--space-md);
+}
+
+.novel-layout--compact .novel-continue {
+  order: 99;
+  margin-top: auto;
+}
+
+/* ── Layout: Narrator (Story-Vignette) ─────────────────────── */
+.novel-layout--narrator {
+  justify-content: center;
+}
+
+.novel-layout--narrator .novel-character {
+  display: none !important;
+}
+
+/* ── Layout: User (Choice-Only ohne Bubble) ────────────────── */
+.novel-layout--user .novel-character {
+  display: none !important;
+}
+
+.novel-layout--user .novel-choices {
+  order: 50;
+}
+
+.novel-layout--user .novel-continue {
+  order: 99;
 }
 
 .character-avatar {
@@ -1446,10 +1674,21 @@ body {
   font-size: 0.875rem;
 }
 
+.energie-done-intro {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
 .energie-rating {
   font-size: 0.75rem;
   color: var(--text-muted);
   flex-shrink: 0;
+  background: var(--accent-light);
+  padding: 0.125rem var(--space-xs);
+  border-radius: var(--radius-pill);
+  color: var(--accent-dark);
+  font-weight: 600;
 }
 
 .energie-empty {
@@ -1463,6 +1702,151 @@ body {
   border-radius: var(--radius-md);
   font-size: 0.8125rem;
   color: var(--accent-dark);
+}
+
+/* "Liste nochmal anpassen"-Flow ─ Wireframe energie-auswertung-1.png */
+.energie-edit-btn {
+  margin-top: var(--space-sm);
+  width: 100%;
+  background: transparent;
+  border: 0.0625rem dashed var(--accent);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  font-size: 0.8125rem;
+  color: var(--accent-dark);
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.energie-edit-btn:active { background: var(--accent-light); }
+
+.energie-edit-panel {
+  margin-top: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--accent-light);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.energie-edit-prompt {
+  font-size: 0.875rem;
+  color: var(--accent-dark);
+  line-height: 1.4;
+}
+
+.energie-edit-input-label {
+  font-size: 0.8125rem;
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+
+.energie-edit-input {
+  width: 100%;
+  padding: var(--space-sm);
+  border: 0.125rem solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-family: var(--font-body);
+  background: var(--surface);
+  box-sizing: border-box;
+}
+
+.energie-edit-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.energie-edit-rating-prompt {
+  font-size: 0.8125rem;
+  color: var(--accent-dark);
+  font-weight: 600;
+  margin-top: var(--space-xs);
+}
+
+.energie-edit-rating {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.energie-edit-rating-btn {
+  flex: 1;
+  padding: var(--space-sm) 0;
+  background: var(--surface);
+  border: 0.125rem solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.energie-edit-rating-btn--selected {
+  background: var(--accent);
+  color: var(--kopfsachen-white);
+  border-color: var(--accent);
+}
+
+.energie-edit-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+
+.energie-edit-actions button {
+  flex: 1;
+}
+
+.energie-edit-no,
+.energie-edit-cancel {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface);
+  border: 0.125rem solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+  color: var(--text);
+}
+
+.energie-edit-yes {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--accent);
+  color: var(--kopfsachen-white);
+  border: 0.125rem solid var(--accent);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* ── Evu-Corner (kleine Evu für Content-Frame-Screens) ─────── */
+.evu-corner {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-md);
+  z-index: 5;
+  pointer-events: none;
+  transform-origin: top right;
+  transform: translate(0, 0) scale(1);
+  transition: transform 650ms cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.evu-corner .character-avatar--lottie {
+  height: 8rem !important;
+  width: calc(8rem * 9 / 16) !important;
+}
+
+/* Fly-In: Evu wandert vom Bildschirm-Mittelpunkt in die Ecke. Start groß und mittig
+   (analog NovelScreen-Center), End = top-right (Default). transform-origin: top right
+   sorgt dafür, dass beim Auf-Skalieren die top-right-Ecke fix bleibt — daher reicht
+   ein einfaches translate Richtung Mittel-Bereich + scale. */
+.evu-corner.evu-corner--fly-in {
+  transform: translate(-40vw, 30vh) scale(4);
 }
 
 /* ── Wünsche-Auswahl ────────────────────────────────────────── */
@@ -1540,10 +1924,31 @@ body {
 
 /* ── Wenn-Dann-Plan ─────────────────────────────────────────── */
 
-.wenn-dann-step {
+.wenn-dann-step,
+.wenn-dann-section {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+}
+
+.wenn-dann-section {
+  margin-bottom: var(--space-lg);
+}
+
+.wenn-dann-section + .wenn-dann-section {
+  border-top: 0.0625rem solid var(--border);
+  padding-top: var(--space-lg);
+}
+
+.wenn-dann-save {
+  margin-top: var(--space-md);
+  position: sticky;
+  bottom: var(--space-md);
+}
+
+.wenn-dann-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .wenn-dann-title {

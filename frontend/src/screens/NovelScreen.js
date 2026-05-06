@@ -25,6 +25,37 @@ const DEMO_NODES_BY_SLUG = {
   'ein-moment-nur-fuer-dich':  KAPITEL_1_NODES,
 }
 
+// Layout-Typ je Speaker:
+//   - monologue: Text oben, große Figur unten-mittig, kein Bubble-Rahmen (Evu, Mika)
+//   - compact:   Figur klein oben-rechts, Content (Likert / Liste / Buttons) im Hauptbereich
+//   - scene:     Sprechblase oben mit Tail, Figur in Mitte, Thought-Pill-Choices (Toni, Neo, Manu, Psycholog)
+//   - narrator:  zentrierter kursiver Text, keine Figur
+//   - user:      keine Figur, kein Bubble bei Choice-only
+function getLayoutForSpeaker(speaker) {
+  switch (speaker) {
+    case 'evu':
+    case 'mika':
+      return 'monologue'
+    case 'toni':
+    case 'neo':
+    case 'manu':
+    case 'psycholog':
+      return 'scene'
+    case 'narrator':
+      return 'narrator'
+    case 'user':
+    default:
+      return 'user'
+  }
+}
+
+// Wenn Evu/Mika eine Likert-Frage stellen → compact (Figur klein oben-rechts, Skala mittig prominent)
+function getLayoutForNode(node) {
+  const base = getLayoutForSpeaker(node.speaker)
+  if (base === 'monologue' && node.likert) return 'compact'
+  return base
+}
+
 // ── Screen ───────────────────────────────────────────────────
 
 export function NovelScreen(path) {
@@ -100,6 +131,11 @@ export function NovelScreen(path) {
 
     const config = SPEAKER_CONFIG[node.speaker] || SPEAKER_CONFIG.narrator
     const speakerChanged = node.speaker !== lastSpeaker
+    const layout = getLayoutForNode(node)
+
+    // Layout-Klasse auf .novel-content setzen (steuert via CSS Position der Elemente)
+    const contentClasses = ['novel-content', `novel-layout--${layout}`]
+    contentEl.className = contentClasses.join(' ')
 
     // Character-Avatar nur neu rendern wenn der Speaker wechselt — sonst flackert er.
     if (speakerChanged) {
@@ -120,15 +156,10 @@ export function NovelScreen(path) {
       && !node.inputType
       && !node.likert
 
-    // Speaker-Label
-    if (node.speaker === 'narrator' || isEmptyUserChoice) {
-      speakerLabel.textContent = ''
-      speakerLabel.style.display = 'none'
-    } else {
-      speakerLabel.textContent = config.label
-      speakerLabel.style.display = ''
-      speakerLabel.style.color = config.color
-    }
+    // Speaker-Label generell ausgeblendet — die Wireframes zeigen kein Label
+    // (außer bei narrator, das ohnehin leer wäre).
+    speakerLabel.textContent = ''
+    speakerLabel.style.display = 'none'
 
     // Bubble-Styling je nach Speaker
     bubbleArea.className = 'novel-bubble-area'
@@ -387,8 +418,11 @@ export function NovelScreen(path) {
       return
     }
 
-    // Spezial-Trigger: Onboarding verlassen (User hat keine Zeit) → Home
+    // Spezial-Trigger: Onboarding verlassen (User hat keine Zeit) → Home.
+    // Progress zurücksetzen, sonst startet der User beim nächsten Mal
+    // direkt wieder beim Abschiedsgruß-Node statt von vorne.
     if (action === 'exit_to_home') {
+      await saveProgress({ currentChapter: null, currentNodeId: 0 })
       window.location.hash = '#/home'
       return
     }

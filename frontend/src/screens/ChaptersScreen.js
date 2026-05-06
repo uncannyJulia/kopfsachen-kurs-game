@@ -3,6 +3,8 @@
 
 import { getChapters } from '../api.js'
 import { getProgress, saveProgress } from '../store.js'
+import { t, tf } from '../data/ui-texts.js'
+import { EvuCorner } from '../components/EvuCorner.js'
 
 // Fallback — Titel decken sich mit cms/seed/data/chapters.json
 const DEMO_CHAPTERS = [
@@ -25,12 +27,21 @@ export function ChaptersScreen() {
   el.innerHTML = `
     <div class="topbar">
       <button class="btn-menu chapters-back" type="button" aria-label="Zurück">&#8592;</button>
-      <h1 class="chapters-heading">Kapitel</h1>
+      <h1 class="chapters-heading">${t('chapters.heading', 'Kapitel')}</h1>
       <div style="width:44px"></div>
     </div>
     <div class="chapters-list"></div>
     <div class="chapters-loading">Lade Kapitel …</div>
   `
+
+  // Evu klein oben-rechts (siehe chapters-evu-list.png Wireframe).
+  // Fly-In: kommt aus NovelScreen-Center → wandert in die Ecke (CSS-Transition).
+  const corner = EvuCorner()
+  corner.classList.add('evu-corner--fly-in')
+  el.appendChild(corner)
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => corner.classList.remove('evu-corner--fly-in'))
+  })
 
   const listEl = el.querySelector('.chapters-list')
   const loadingEl = el.querySelector('.chapters-loading')
@@ -82,9 +93,9 @@ export function ChaptersScreen() {
 
       const statusIcon = isCompleted ? '✓' : (lockInfo.locked ? '🔒' : '')
       const daysLeftHint = lockInfo.locked && lockInfo.daysLeft > 0
-        ? `<span class="chapter-unlock-hint">Freigeschaltet in ${lockInfo.daysLeft} ${lockInfo.daysLeft === 1 ? 'Tag' : 'Tagen'}</span>`
+        ? `<span class="chapter-unlock-hint">${tf('chapters.unlockHintDays', `Freigeschaltet in ${lockInfo.daysLeft} ${lockInfo.daysLeft === 1 ? 'Tag' : 'Tagen'}`, { n: lockInfo.daysLeft })}</span>`
         : lockInfo.locked
-          ? `<span class="chapter-unlock-hint">Erst nach Abschluss von Kapitel ${i}</span>`
+          ? `<span class="chapter-unlock-hint">${tf('chapters.unlockHintBlocked', `Erst nach Abschluss von Kapitel ${i}`, { i })}</span>`
           : ''
 
       card.innerHTML = `

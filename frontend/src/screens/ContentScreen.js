@@ -9,6 +9,7 @@
 import { getEnergieAktivitaeten, getWennDannSituations } from '../api.js'
 import { saveCourseData, getCourseData } from '../store.js'
 import { t } from '../data/ui-texts.js'
+import { EvuCorner } from '../components/EvuCorner.js'
 
 const DEMO_ENERGIE_AKTIVITAETEN = [
   { text: 'Viele Aufgaben gleichzeitig erledigen', sortOrder: 1 },
@@ -57,6 +58,19 @@ export function ContentScreen(path) {
   const bodyEl = el.querySelector('.content-body')
   const headingEl = el.querySelector('.content-heading')
 
+  // Bei Auswahl-/Listen-Screens kommt Evu klein oben-rechts dazu (Wireframe-Pattern).
+  // Mit `evu-corner--fly-in` läuft beim Mount eine Transition center → corner.
+  const screensWithEvu = new Set(['wuensche-auswahl', 'wenn-dann-plan', 'energie-reflexion'])
+  if (screensWithEvu.has(slug)) {
+    const corner = EvuCorner()
+    corner.classList.add('evu-corner--fly-in')
+    el.appendChild(corner)
+    // Trigger Transition: nach einem Frame Klasse entfernen, damit CSS animiert
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => corner.classList.remove('evu-corner--fly-in'))
+    })
+  }
+
   if (slug === 'energie-reflexion') {
     headingEl.textContent = 'Was gibt mir Energie?'
     renderEnergieReflexion(bodyEl)
@@ -90,13 +104,13 @@ async function renderWuenscheAuswahl(container) {
   const selected = new Set(saved.selected || [])
 
   container.innerHTML = `
-    <p class="wuensche-intro">Wähle alles aus, was zutrifft.</p>
+    <p class="wuensche-intro">${escape(t('wuensche.intro', 'Wähle alles aus, was zutrifft.'))}</p>
     <ul class="wuensche-list"></ul>
     <div class="wuensche-freetext">
-      <label for="wuensche-freitext-input">Etwas anderes:</label>
-      <input id="wuensche-freitext-input" type="text" class="wuensche-freetext-input" placeholder="Schreib deinen Wunsch …" value="${escape(saved.freetext || '')}">
+      <label for="wuensche-freitext-input">${escape(t('wuensche.freitext.label', 'Etwas anderes:'))}</label>
+      <input id="wuensche-freitext-input" type="text" class="wuensche-freetext-input" placeholder="${escape(t('wuensche.freitext.placeholder', 'Schreib deinen Wunsch …'))}" value="${escape(saved.freetext || '')}">
     </div>
-    <button class="btn-primary wuensche-save" type="button">Weiter</button>
+    <button class="btn-primary wuensche-save" type="button">${escape(t('wuensche.continue', 'Weiter'))}</button>
   `
 
   const listEl = container.querySelector('.wuensche-list')
@@ -345,41 +359,172 @@ async function renderEnergieReflexion(container) {
     const fresser = Object.entries(responses)
       .filter(([_, r]) => r.tendency === 'fresser')
       .sort((a, b) => (b[1].rating || 0) - (a[1].rating || 0))
+      .map(([text, r]) => ({ text, rating: r.rating }))
     const geber = Object.entries(responses)
       .filter(([_, r]) => r.tendency === 'geber')
       .sort((a, b) => (b[1].rating || 0) - (a[1].rating || 0))
+      .map(([text, r]) => ({ text, rating: r.rating }))
 
-    // UI zuerst rendern, Speichern in den Hintergrund — verhindert dass das Dashboard
-    // nicht erscheint falls IndexedDB hängt/fehlschlägt.
-    const renderRating = (r) => r.rating != null ? `<span class="energie-rating">${r.rating}/5</span>` : ''
+    // Listen-State: User darf später eigene Einträge ergänzen (siehe Wireframe energie-auswertung-1.png)
+    // editFor: null | 'fresser' | 'geber'  → welche Liste gerade bearbeitet wird
+    // editStep: 'ask' | 'input'            → Sub-Schritt im Bearbeiten-Flow
+    let editFor = null
+    let editStep = 'ask'
 
-    const emptyMsg = `<p class="energie-empty">${escape(t('energie.done.empty', '— keine —'))}</p>`
-    container.innerHTML = `
-      <div class="energie-done">
-        <h2 class="energie-done-title">${escape(t('energie.done.title', 'Deine Woche'))}</h2>
-        <div class="energie-done-group">
-          <h3 class="energie-done-subtitle">${escape(t('energie.done.fresser', 'Deine Top-Energie-Fresser'))}</h3>
-          ${fresser.length ? `<ul class="energie-done-list">${fresser.map(([txt, r]) =>
-            `<li>${escape(txt)} ${renderRating(r)}</li>`
-          ).join('')}</ul>` : emptyMsg}
+    function persist() {
+      const merged = {}
+      for (const it of fresser) merged[it.text] = { tendency: 'fresser', rating: it.rating }
+      for (const it of geber) merged[it.text] = { tendency: 'geber', rating: it.rating }
+      // Skip-Items übernehmen wir aus den Original-Responses
+      for (const [txt, r] of Object.entries(responses)) {
+        if (r.tendency === 'skip' && !(txt in merged)) merged[txt] = r
+      }
+      saveCourseData('energieReflexion', { responses: merged, completedAt: new Date().toISOString() })
+        .catch(err => console.warn('Energie-Reflexion konnte nicht gespeichert werden:', err))
+    }
+
+    function renderListItems(items) {
+      if (!items.length) {
+        return `<p class="energie-empty">${escape(t('energie.done.empty', '— keine —'))}</p>`
+      }
+      return `<ul class="energie-done-list">${items.map(it => `
+        <li>
+          <span class="energie-done-text">${escape(it.text)}</span>
+          ${it.rating != null ? `<span class="energie-rating">${it.rating}/5</span>` : ''}
+        </li>
+      `).join('')}</ul>`
+    }
+
+    function render() {
+      const editPanel = editFor ? renderEditPanel() : ''
+      container.innerHTML = `
+        <div class="energie-done">
+          <h2 class="energie-done-title">${escape(t('energie.done.title', 'Erfolg Auswertung'))}</h2>
+          <p class="energie-done-intro">${escape(t('energie.done.intro', 'Hier findest du die Übersicht über deine Energie-Fresser und -Geber der letzten Woche.'))}</p>
+
+          <div class="energie-done-group">
+            <h3 class="energie-done-subtitle">${escape(t('energie.done.fresser', 'Deine Top-Energie-Fresser'))}</h3>
+            ${renderListItems(fresser)}
+            ${editFor === 'fresser' ? editPanel : `
+              <button class="energie-edit-btn" type="button" data-target="fresser">
+                ${escape(t('energie.done.adjust', 'Liste nochmal anpassen'))}
+              </button>
+            `}
+          </div>
+
+          <div class="energie-done-group">
+            <h3 class="energie-done-subtitle">${escape(t('energie.done.geber', 'Deine Top-Energie-Geber'))}</h3>
+            ${renderListItems(geber)}
+            ${editFor === 'geber' ? editPanel : `
+              <button class="energie-edit-btn" type="button" data-target="geber">
+                ${escape(t('energie.done.adjust', 'Liste nochmal anpassen'))}
+              </button>
+            `}
+          </div>
+
+          <p class="energie-hint">${escape(t('energie.done.hint', 'Gerade vor und nach Aktivitäten, die dich viel Energie kosten, ist es hilfreich, bewusst Zeiten für Erholung einzuplanen.'))}</p>
+          <button class="btn-primary energie-continue" type="button">${escape(t('energie.done.continue', 'Weiter'))}</button>
         </div>
-        <div class="energie-done-group">
-          <h3 class="energie-done-subtitle">${escape(t('energie.done.geber', 'Deine Top-Energie-Geber'))}</h3>
-          ${geber.length ? `<ul class="energie-done-list">${geber.map(([txt, r]) =>
-            `<li>${escape(txt)} ${renderRating(r)}</li>`
-          ).join('')}</ul>` : emptyMsg}
-        </div>
-        <p class="energie-hint">${escape(t('energie.done.hint', 'Gerade vor und nach Aktivitäten, die dich viel Energie kosten, ist es hilfreich, bewusst Zeiten für Erholung einzuplanen.'))}</p>
-        <button class="btn-primary energie-continue" type="button">${escape(t('energie.done.continue', 'Weiter'))}</button>
-      </div>
-    `
-    container.querySelector('.energie-continue').addEventListener('click', () => history.back())
-    // Sicherstellen dass das Dashboard am Anfang sichtbar ist (nicht runtergescrollt)
-    container.scrollTop = 0
+      `
+      bindHandlers()
+      container.scrollTop = 0
+    }
 
-    // Speichern asynchron, Fehler nur loggen
-    saveCourseData('energieReflexion', { responses, completedAt: new Date().toISOString() })
-      .catch(err => console.warn('Energie-Reflexion konnte nicht gespeichert werden:', err))
+    function renderEditPanel() {
+      const isFresser = editFor === 'fresser'
+      const askText = isFresser
+        ? t('energie.done.askFresser', 'Blicke noch einmal auf deine letzte Woche. Fehlt hier ein wichtiger Energie-Fresser, der dich Kraft gekostet hat?')
+        : t('energie.done.askGeber',   'Blicke noch einmal auf deine letzte Woche. Fehlt hier ein wichtiger Energie-Geber, der dir Kraft gegeben hat?')
+      const inputLabel = isFresser
+        ? t('energie.done.inputFresser', 'zusätzlicher Energie-Fresser')
+        : t('energie.done.inputGeber',   'zusätzlicher Energie-Geber')
+      const ratingPrompt = isFresser
+        ? t('energie.done.ratingFresser', 'Wie viel Energie hat es gekostet?')
+        : t('energie.done.ratingGeber',   'Wie viel Energie hat es gegeben?')
+
+      if (editStep === 'ask') {
+        return `
+          <div class="energie-edit-panel">
+            <p class="energie-edit-prompt">${escape(askText)}</p>
+            <div class="energie-edit-actions">
+              <button class="energie-edit-no" type="button">${escape(t('energie.done.no', 'Nein, ist gut'))}</button>
+              <button class="energie-edit-yes" type="button">${escape(t('energie.done.yes', 'Ja, ergänzen'))}</button>
+            </div>
+          </div>
+        `
+      }
+      // input step
+      return `
+        <div class="energie-edit-panel">
+          <label class="energie-edit-input-label" for="energie-extra-input">${escape(inputLabel)}</label>
+          <input id="energie-extra-input" type="text" class="energie-edit-input" placeholder="${escape(t('energie.done.inputPlaceholder', 'z.B. lange Bildschirmzeit am Abend'))}" />
+          <p class="energie-edit-rating-prompt">${escape(ratingPrompt)}</p>
+          <div class="energie-edit-rating">
+            ${[1, 2, 3, 4, 5].map(n => `<button class="energie-edit-rating-btn" data-value="${n}" type="button">${n}</button>`).join('')}
+          </div>
+          <div class="energie-edit-actions">
+            <button class="energie-edit-cancel" type="button">${escape(t('energie.done.cancel', 'Abbrechen'))}</button>
+            <button class="energie-edit-save btn-primary" type="button" disabled>${escape(t('energie.done.save', 'Speichern'))}</button>
+          </div>
+        </div>
+      `
+    }
+
+    function bindHandlers() {
+      container.querySelector('.energie-continue').addEventListener('click', () => history.back())
+
+      container.querySelectorAll('.energie-edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          editFor = btn.dataset.target
+          editStep = 'ask'
+          render()
+        })
+      })
+
+      const noBtn  = container.querySelector('.energie-edit-no')
+      const yesBtn = container.querySelector('.energie-edit-yes')
+      if (noBtn)  noBtn.addEventListener('click',  () => { editFor = null; render() })
+      if (yesBtn) yesBtn.addEventListener('click', () => { editStep = 'input'; render() })
+
+      const cancelBtn = container.querySelector('.energie-edit-cancel')
+      if (cancelBtn) cancelBtn.addEventListener('click', () => { editFor = null; render() })
+
+      const input    = container.querySelector('.energie-edit-input')
+      const saveBtn  = container.querySelector('.energie-edit-save')
+      const ratingBtns = container.querySelectorAll('.energie-edit-rating-btn')
+      let extraRating = null
+      function refreshSaveState() {
+        const ready = !!(input?.value.trim()) && extraRating != null
+        if (saveBtn) saveBtn.disabled = !ready
+      }
+      ratingBtns.forEach(b => {
+        b.addEventListener('click', () => {
+          ratingBtns.forEach(x => x.classList.remove('energie-edit-rating-btn--selected'))
+          b.classList.add('energie-edit-rating-btn--selected')
+          extraRating = parseInt(b.dataset.value)
+          refreshSaveState()
+        })
+      })
+      input?.addEventListener('input', refreshSaveState)
+      saveBtn?.addEventListener('click', () => {
+        const text = input.value.trim()
+        if (!text || extraRating == null) return
+        const newItem = { text, rating: extraRating }
+        if (editFor === 'fresser') {
+          fresser.push(newItem)
+          fresser.sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        } else {
+          geber.push(newItem)
+          geber.sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        }
+        editFor = null
+        persist()
+        render()
+      })
+    }
+
+    render()
+    persist()
   }
 
   renderCurrent()
@@ -418,74 +563,56 @@ async function renderWennDannPlan(container) {
   const selectedSituations = new Set()  // Multi-Select
 
   container.innerHTML = `
-    <div class="wenn-dann-step step-1">
-      <h2 class="wenn-dann-title">Schritt 1: Dein Energie-Boost</h2>
-      <p class="wenn-dann-desc">Wähle eine Aktivität, die du in der nächsten Woche bewusst einbauen möchtest.</p>
-      <div class="wenn-dann-options"></div>
-      <button class="btn-primary wenn-dann-next" type="button" disabled>Weiter</button>
-    </div>
-    <div class="wenn-dann-step step-2" hidden>
-      <h2 class="wenn-dann-title">Schritt 2: Wann?</h2>
-      <p class="wenn-dann-desc">Wann wäre dein Energie-Boost besonders hilfreich? Mehrere Antworten möglich.</p>
-      <div class="wenn-dann-options"></div>
+    <section class="wenn-dann-section">
+      <h2 class="wenn-dann-title">${escape(t('wennDann.step1.title', 'Schritt 1: Dein Energie-Boost'))}</h2>
+      <p class="wenn-dann-desc">${escape(t('wennDann.step1.desc', 'Wähle eine Aktivität, die du in der nächsten Woche bewusst einbauen möchtest.'))}</p>
+      <div class="wenn-dann-options wenn-dann-boost-options"></div>
+    </section>
+    <section class="wenn-dann-section">
+      <h2 class="wenn-dann-title">${escape(t('wennDann.step2.title', 'Schritt 2: Wann?'))}</h2>
+      <p class="wenn-dann-desc">${escape(t('wennDann.step2.desc', 'Wann wäre dein Energie-Boost besonders hilfreich? Mehrere Antworten möglich.'))}</p>
+      <div class="wenn-dann-options wenn-dann-situation-options"></div>
       <div class="wenn-dann-freitext">
-        <label for="wenn-dann-frei">Oder eigene Situation:</label>
-        <input id="wenn-dann-frei" type="text" class="wenn-dann-freitext-input" placeholder="z.B. Wenn ich …">
+        <label for="wenn-dann-frei">${escape(t('wennDann.step2.freitext', 'Oder eigene Situation:'))}</label>
+        <input id="wenn-dann-frei" type="text" class="wenn-dann-freitext-input" placeholder="${escape(t('wennDann.step2.freitextPlaceholder', 'z.B. Wenn ich …'))}">
       </div>
-      <button class="btn-primary wenn-dann-next2" type="button" disabled>Weiter</button>
-    </div>
-    <div class="wenn-dann-step step-3" hidden>
-      <h2 class="wenn-dann-title">Dein Plan</h2>
+    </section>
+    <section class="wenn-dann-section wenn-dann-preview" hidden>
+      <h2 class="wenn-dann-title">${escape(t('wennDann.step3.title', 'Dein Plan'))}</h2>
       <div class="wenn-dann-sentences"></div>
-      <button class="btn-primary wenn-dann-save" type="button">Plan merken</button>
-    </div>
+    </section>
+    <button class="btn-primary wenn-dann-save" type="button" disabled>${escape(t('wennDann.step3.save', 'Plan merken'))}</button>
   `
 
-  const step1 = container.querySelector('.step-1')
-  const step2 = container.querySelector('.step-2')
-  const step3 = container.querySelector('.step-3')
-  const step1Next = step1.querySelector('.wenn-dann-next')
-  const step2Next = step2.querySelector('.wenn-dann-next2')
+  const boostOptionsEl    = container.querySelector('.wenn-dann-boost-options')
+  const situationOptionsEl = container.querySelector('.wenn-dann-situation-options')
+  const freiInput         = container.querySelector('.wenn-dann-freitext-input')
+  const previewEl         = container.querySelector('.wenn-dann-preview')
+  const sentencesEl       = container.querySelector('.wenn-dann-sentences')
+  const saveBtn           = container.querySelector('.wenn-dann-save')
 
-  // ── Step 1: Boost (Single-Select mit Highlight) ──────────────
-  const step1Options = step1.querySelector('.wenn-dann-options')
+  // Boost (Single-Select mit Highlight)
   boostOptions.forEach(opt => {
     const btn = document.createElement('button')
     btn.className = 'wenn-dann-option'
     btn.type = 'button'
     btn.textContent = opt
     btn.addEventListener('click', () => {
-      // Vorherige Auswahl entmarken
-      step1Options.querySelectorAll('.wenn-dann-option--selected').forEach(b =>
+      boostOptionsEl.querySelectorAll('.wenn-dann-option--selected').forEach(b =>
         b.classList.remove('wenn-dann-option--selected')
       )
-      // Klick auf gleiche Option = entmarken
       if (selectedBoost === opt) {
         selectedBoost = null
       } else {
         btn.classList.add('wenn-dann-option--selected')
         selectedBoost = opt
       }
-      step1Next.disabled = !selectedBoost
+      updatePreview()
     })
-    step1Options.appendChild(btn)
-  })
-  step1Next.addEventListener('click', () => {
-    if (!selectedBoost) return
-    step1.hidden = true
-    step2.hidden = false
-    updateStep2NextEnabled()
+    boostOptionsEl.appendChild(btn)
   })
 
-  // ── Step 2: Situations (Multi-Select mit Highlight + Freitext) ──
-  const step2Options = step2.querySelector('.wenn-dann-options')
-  const freiInput = step2.querySelector('.wenn-dann-freitext-input')
-
-  function updateStep2NextEnabled() {
-    const hasFrei = freiInput.value.trim().length > 0
-    step2Next.disabled = selectedSituations.size === 0 && !hasFrei
-  }
-
+  // Situations (Multi-Select mit Highlight)
   situations.forEach(opt => {
     const btn = document.createElement('button')
     btn.className = 'wenn-dann-option'
@@ -499,35 +626,42 @@ async function renderWennDannPlan(container) {
         selectedSituations.add(opt)
         btn.classList.add('wenn-dann-option--selected')
       }
-      updateStep2NextEnabled()
+      updatePreview()
     })
-    step2Options.appendChild(btn)
+    situationOptionsEl.appendChild(btn)
   })
-  freiInput.addEventListener('input', updateStep2NextEnabled)
+  freiInput.addEventListener('input', updatePreview)
 
-  step2Next.addEventListener('click', () => {
+  // Sammelt alle gewählten Situationen + Freitext zu einer Liste
+  function collectSituations() {
     const sits = Array.from(selectedSituations)
     const frei = freiInput.value.trim()
-    if (frei) {
-      sits.push(frei.startsWith('Wenn ') ? frei : `Wenn ${frei}`)
-    }
-    if (!sits.length) return
+    if (frei) sits.push(frei.startsWith('Wenn ') ? frei : `Wenn ${frei}`)
+    return sits
+  }
 
-    step2.hidden = true
-    step3.hidden = false
-    const sentencesEl = step3.querySelector('.wenn-dann-sentences')
+  // Live-Vorschau: zeigt die zusammengesetzten Sätze sobald Boost UND mind. 1 Situation gewählt
+  function updatePreview() {
+    const sits = collectSituations()
+    const ready = !!selectedBoost && sits.length > 0
+    saveBtn.disabled = !ready
+    if (!ready) {
+      previewEl.hidden = true
+      sentencesEl.innerHTML = ''
+      return
+    }
+    previewEl.hidden = false
     sentencesEl.innerHTML = sits.map(s => `
       <div class="wenn-dann-sentence">
         <span class="wenn-dann-sentence-part">${escape(s)},</span>
         <span class="wenn-dann-sentence-part">dann <strong>${escape(selectedBoost)}</strong>.</span>
       </div>
     `).join('')
+  }
 
-    step3._situations = sits  // an Save-Click weiterreichen
-  })
-
-  step3.querySelector('.wenn-dann-save').addEventListener('click', async () => {
-    const situations = step3._situations || []
+  saveBtn.addEventListener('click', async () => {
+    const situations = collectSituations()
+    if (!selectedBoost || !situations.length) return
     await saveCourseData('wennDannPlan', {
       boost: selectedBoost,
       situations,

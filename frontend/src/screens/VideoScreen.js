@@ -3,6 +3,7 @@
 // Auto-Close nach Videoende → history.back().
 
 import { getVideoContent } from '../api.js'
+import { t } from '../data/ui-texts.js'
 
 const DEMO_VIDEOS = {
   'kopfsachen-intro': {
@@ -44,7 +45,7 @@ export function VideoScreen(path) {
     </div>
     <div class="video-stage"></div>
     <div class="video-footer">
-      <button class="btn-primary video-continue" type="button" hidden>Weiter</button>
+      <button class="btn-primary video-continue" type="button" hidden>${escape(t('video.continue', 'Weiter'))}</button>
     </div>
   `
 
@@ -68,7 +69,7 @@ export function VideoScreen(path) {
     const video = loaded || DEMO_VIDEOS[slug] || null
 
     if (!video) {
-      headingEl.textContent = 'Video'
+      headingEl.textContent = t('video.heading.default', 'Video')
       stageEl.innerHTML = `<div class="video-placeholder">
         <p>Kein Video mit Slug <code>${escape(slug)}</code> gefunden.</p>
       </div>`
@@ -77,7 +78,7 @@ export function VideoScreen(path) {
       return
     }
 
-    headingEl.textContent = video.title || 'Video'
+    headingEl.textContent = video.title || t('video.heading.default', 'Video')
 
     if (video.videoSource === 'youtube') {
       stageEl.innerHTML = `<iframe class="video-iframe" src="${youtubeEmbedUrl(video.videoUrl) || ''}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`
@@ -99,9 +100,9 @@ export function VideoScreen(path) {
       stageEl.innerHTML = `
         <div class="video-placeholder">
           <div class="video-placeholder-icon">🎬</div>
-          <p class="video-placeholder-title">${escape(video.title || 'Video')}</p>
+          <p class="video-placeholder-title">${escape(video.title || t('video.heading.default', 'Video'))}</p>
           ${video.transcript ? `<p class="video-placeholder-transcript">${escape(video.transcript)}</p>` : ''}
-          <p class="video-placeholder-hint">Video wird demnächst in Strapi hinterlegt.</p>
+          <p class="video-placeholder-hint">${escape(t('video.placeholder.hint', 'Video wird demnächst in Strapi hinterlegt.'))}</p>
         </div>
       `
       continueBtn.hidden = false

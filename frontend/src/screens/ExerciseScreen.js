@@ -8,6 +8,7 @@ import { getExercise } from '../api.js'
 import { unlockExercise } from '../store.js'
 import { BoxAtmung } from '../components/BoxAtmung.js'
 import { EXERCISES_BY_SLUG } from '../data/exercises-meta.js'
+import { t } from '../data/ui-texts.js'
 
 export function ExerciseScreen(path) {
   const slug = (path?.replace('/exercise/', '') || '').split('/')[0]
@@ -17,12 +18,12 @@ export function ExerciseScreen(path) {
   el.innerHTML = `
     <div class="topbar">
       <button class="btn-menu exercise-back" type="button" aria-label="Zurück">&#8592;</button>
-      <h1 class="exercise-heading">Übung</h1>
+      <h1 class="exercise-heading">${t('exercise.heading.default', 'Übung')}</h1>
       <div style="width:44px"></div>
     </div>
     <div class="exercise-body"></div>
     <div class="exercise-footer"></div>
-    <div class="exercise-loading">Lade Übung …</div>
+    <div class="exercise-loading">${t('exercise.loading', 'Lade Übung …')}</div>
   `
 
   const bodyEl = el.querySelector('.exercise-body')
@@ -58,7 +59,7 @@ export function ExerciseScreen(path) {
         }
       : fallback
     loadingEl.style.display = 'none'
-    headingEl.textContent = exercise.title || 'Übung'
+    headingEl.textContent = exercise.title || t('exercise.heading.default', 'Übung')
 
     // Übung kennen heißt: jetzt in der Selfcare-Schachtel verfügbar
     if (exercise.slug) unlockExercise(exercise.slug)
@@ -112,11 +113,11 @@ function renderAudioExercise(container, footer, exercise) {
           <button class="audio-btn exercise-fwd-10" type="button">+10s</button>
         </div>
       </div>
-      ${exercise.guidedText ? `<details class="exercise-instructions"><summary>Anleitung</summary><div class="exercise-instructions-body">${escape(exercise.guidedText).replace(/\n/g, '<br>')}</div></details>` : ''}
+      ${exercise.guidedText ? `<details class="exercise-instructions"><summary>${escape(t('exercise.instructions.summary', 'Anleitung'))}</summary><div class="exercise-instructions-body">${escape(exercise.guidedText).replace(/\n/g, '<br>')}</div></details>` : ''}
     </div>
   `
   // Weiter-Button in den Footer pinnen, damit er immer am unteren Rand sitzt.
-  footer.innerHTML = `<button class="btn-primary exercise-done" type="button" hidden>Weiter</button>`
+  footer.innerHTML = `<button class="btn-primary exercise-done" type="button" hidden>${escape(t('exercise.continue', 'Weiter'))}</button>`
 
   const subtitleBoxEl = container.querySelector('.exercise-subtitle-box')
   const subtitleEl = container.querySelector('.exercise-subtitle')
@@ -233,7 +234,7 @@ function renderGuidedText(container, footer, exercise) {
       ${exercise.guidedText ? `<div class="exercise-text">${escape(exercise.guidedText).replace(/\n/g, '<br>')}</div>` : ''}
     </div>
   `
-  footer.innerHTML = `<button class="btn-primary exercise-close" type="button">Fertig</button>`
+  footer.innerHTML = `<button class="btn-primary exercise-close" type="button">${escape(t('exercise.done', 'Fertig'))}</button>`
   footer.querySelector('.exercise-close').addEventListener('click', () => history.back())
 }
 

@@ -2,6 +2,7 @@
 // Hilfsangebote & Krisenanlaufstellen. Früher: HelpScreen.
 
 import { getHelpResources } from '../api.js'
+import { t } from '../data/ui-texts.js'
 
 const DEMO_RESOURCES = [
   {
@@ -37,14 +38,14 @@ export function HilfsangeboteScreen() {
   el.innerHTML = `
     <div class="topbar">
       <button class="btn-menu hilfsangebote-back" type="button">&#8592;</button>
-      <h1 class="hilfsangebote-heading">Hilfsangebote</h1>
+      <h1 class="hilfsangebote-heading">${t('hilfsangebote.heading', 'Hilfsangebote')}</h1>
       <div style="width:44px"></div>
     </div>
     <div class="hilfsangebote-intro">
-      <p>Du bist nicht allein. Hier findest du Anlaufstellen, die dir weiterhelfen können.</p>
+      <p>${t('hilfsangebote.intro', 'Du bist nicht allein. Hier findest du Anlaufstellen, die dir weiterhelfen können.')}</p>
     </div>
     <div class="hilfsangebote-list"></div>
-    <div class="hilfsangebote-loading">Lade Anlaufstellen …</div>
+    <div class="hilfsangebote-loading">${t('hilfsangebote.loading', 'Lade Anlaufstellen …')}</div>
   `
 
   const listEl = el.querySelector('.hilfsangebote-list')

@@ -3,6 +3,7 @@
 
 import { getProgress } from '../store.js'
 import { EXERCISES_BY_SLUG, CHAPTER_EXERCISES } from '../data/exercises-meta.js'
+import { t } from '../data/ui-texts.js'
 
 function formatDuration(seconds) {
   if (!seconds) return ''
@@ -17,10 +18,10 @@ export function ToolboxScreen() {
   el.innerHTML = `
     <div class="topbar">
       <button class="btn-menu toolbox-back" type="button" aria-label="Zurück">&#8592;</button>
-      <h1 class="toolbox-heading">Selfcare-Schachtel</h1>
+      <h1 class="toolbox-heading">${t('toolbox.heading', 'Selfcare-Schachtel')}</h1>
       <div style="width:44px"></div>
     </div>
-    <p class="toolbox-intro">Hier findest du alle Übungen, die du im Kurs schon kennengelernt hast.</p>
+    <p class="toolbox-intro">${t('toolbox.intro', 'Hier findest du alle Übungen, die du im Kurs schon kennengelernt hast.')}</p>
     <div class="toolbox-list"></div>
   `
 
@@ -43,8 +44,8 @@ export function ToolboxScreen() {
     if (unlocked.length === 0) {
       listEl.innerHTML = `
         <div class="toolbox-empty">
-          <p>Du hast noch keine Übung freigeschaltet.</p>
-          <p>Sobald du im Kurs eine Übung machst, landet sie hier in deiner Selfcare-Schachtel — als Werkzeug für deinen Alltag.</p>
+          <p>${t('toolbox.empty.title', 'Du hast noch keine Übung freigeschaltet.')}</p>
+          <p>${t('toolbox.empty.subtitle', 'Sobald du im Kurs eine Übung machst, landet sie hier in deiner Selfcare-Schachtel — als Werkzeug für deinen Alltag.')}</p>
         </div>
       `
       return

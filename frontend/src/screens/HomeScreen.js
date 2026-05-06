@@ -5,7 +5,7 @@
 //
 // Start → /novel/onboarding (erstes Mal) oder /novel/<currentChapter> (Kurs fortsetzen)
 
-import { getProgress, getSettings } from '../store.js'
+import { getProgress, getSettings, saveProgress } from '../store.js'
 import { t } from '../data/ui-texts.js'
 
 // Slugs, die als gültige "Kurs-fortsetzen"-Ziele zählen (Onboarding zählt nicht).
@@ -64,12 +64,14 @@ export function HomeScreen() {
 
 function renderInitial(container, onboardingDone) {
   container.innerHTML = `
-    <button class="btn-primary home-btn home-start" type="button">Start</button>
-    <button class="btn-secondary home-btn home-hilfsangebote" type="button">Hilfsangebote</button>
-    <button class="btn-secondary home-btn home-kopfsachen" type="button">Kopfsachen</button>
+    <button class="btn-primary home-btn home-start" type="button">${t('home.button.start', 'Start')}</button>
+    <button class="btn-secondary home-btn home-hilfsangebote" type="button">${t('home.button.hilfsangebote', 'Hilfsangebote')}</button>
+    <button class="btn-secondary home-btn home-kopfsachen" type="button">${t('home.button.kopfsachen', 'Kopfsachen')}</button>
   `
-  container.querySelector('.home-start').addEventListener('click', () => {
-    // Onboarding ist die erste Evu-Szene
+  container.querySelector('.home-start').addEventListener('click', async () => {
+    // Onboarding ist die erste Evu-Szene. Frischer Start: alten Resume-Pointer löschen,
+    // sonst landet der User beim Abschiedsgruß einer früheren abgebrochenen Session.
+    await saveProgress({ currentChapter: null, currentNodeId: 0 })
     window.location.hash = onboardingDone ? '#/chapters' : '#/novel/onboarding'
   })
   container.querySelector('.home-hilfsangebote').addEventListener('click', () => {
@@ -86,11 +88,11 @@ function renderPostOnboarding(container, progress) {
     : '#/chapters'
 
   container.innerHTML = `
-    <button class="btn-primary home-btn home-resume" type="button">Kurs fortsetzen</button>
-    <button class="btn-secondary home-btn home-chapters" type="button">Kapitelauswahl</button>
-    <button class="btn-secondary home-btn home-toolbox" type="button">Selfcare-Schachtel</button>
-    <button class="btn-secondary home-btn home-hilfsangebote" type="button">Hilfsangebote</button>
-    <button class="btn-secondary home-btn home-kopfsachen" type="button">Kopfsachen</button>
+    <button class="btn-primary home-btn home-resume" type="button">${t('home.button.resume', 'Kurs fortsetzen')}</button>
+    <button class="btn-secondary home-btn home-chapters" type="button">${t('home.button.chapters', 'Kapitelauswahl')}</button>
+    <button class="btn-secondary home-btn home-toolbox" type="button">${t('home.button.toolbox', 'Selfcare-Schachtel')}</button>
+    <button class="btn-secondary home-btn home-hilfsangebote" type="button">${t('home.button.hilfsangebote', 'Hilfsangebote')}</button>
+    <button class="btn-secondary home-btn home-kopfsachen" type="button">${t('home.button.kopfsachen', 'Kopfsachen')}</button>
   `
   container.querySelector('.home-resume').addEventListener('click', () => {
     window.location.hash = resumeTarget

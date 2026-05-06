@@ -80,11 +80,11 @@ async function loadLottie(path) {
   return data
 }
 
-// Wechselt das Lottie-Animation-File auf einem bestehenden Wrap.
-// Verhindert sichtbares Re-Mount: das alte Animation-Instance wird erst
-// nach erfolgreichem Laden des neuen JSON destroyed.
+// Wechselt das Lottie-Animation-File auf einem Wrap.
+// Wichtig: keine Connected-Check VOR dem Fetch — der Wrap ist beim ersten
+// Aufruf aus CharacterAvatar() noch nicht im DOM. Erst nach dem await prüfen.
 async function swapLottie(wrap, path) {
-  if (!wrap.isConnected || wrap._lottiePath === path) return
+  if (wrap._lottiePath === path) return
   wrap._lottiePath = path
   let animationData
   try {
@@ -93,7 +93,8 @@ async function swapLottie(wrap, path) {
     console.warn('Lottie konnte nicht geladen werden:', err)
     return
   }
-  if (!wrap.isConnected || wrap._lottiePath !== path) return  // inzwischen anderer State angefordert
+  // Inzwischen entfernt oder anderer State angefordert?
+  if (wrap._lottiePath !== path) return
 
   // Alte Instance destroyen und Container leeren
   if (wrap._lottieAnim) {
