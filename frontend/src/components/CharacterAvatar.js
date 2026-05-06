@@ -82,10 +82,14 @@ async function loadLottie(path) {
   return data
 }
 
+// States, die NICHT loopen sollen — Geste-Animationen (zeigen, knospen, …)
+// laufen genau einmal durch und bleiben am letzten Frame stehen.
+const NON_LOOPING_STATES = new Set(['zeigt_hilfe', 'zeigt_kopfsachen'])
+
 // Wechselt das Lottie-Animation-File auf einem Wrap.
 // Wichtig: keine Connected-Check VOR dem Fetch — der Wrap ist beim ersten
 // Aufruf aus CharacterAvatar() noch nicht im DOM. Erst nach dem await prüfen.
-async function swapLottie(wrap, path) {
+async function swapLottie(wrap, path, { loop = true } = {}) {
   if (wrap._lottiePath === path) return
   wrap._lottiePath = path
   let animationData
@@ -106,7 +110,7 @@ async function swapLottie(wrap, path) {
   wrap._lottieAnim = lottie.loadAnimation({
     container: wrap,
     renderer: 'svg',
-    loop: true,
+    loop,
     autoplay: true,
     animationData,
   })
@@ -123,12 +127,13 @@ export function CharacterAvatar(speaker, { size = '45rem', state = 'idle' } = {}
     wrap.style.height = h
     wrap.style.width  = `calc(${h} * 9 / 16)`
 
-    swapLottie(wrap, animations[state] || animations.idle)
+    const initialState = animations[state] ? state : 'idle'
+    swapLottie(wrap, animations[initialState], { loop: !NON_LOOPING_STATES.has(initialState) })
 
-    // Public-API: setState('talking' | 'idle' | 'static') auf dem Wrap-Element
+    // Public-API: setState('talking' | 'idle' | 'static' | 'zeigt_hilfe' | …) auf dem Wrap-Element
     wrap.setState = (nextState) => {
-      const path = animations[nextState] || animations.idle
-      swapLottie(wrap, path)
+      const stateKey = animations[nextState] ? nextState : 'idle'
+      swapLottie(wrap, animations[stateKey], { loop: !NON_LOOPING_STATES.has(stateKey) })
     }
     return wrap
   }

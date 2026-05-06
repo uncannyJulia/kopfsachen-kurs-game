@@ -116,9 +116,36 @@ export const ONBOARDING_NODES = [
 
   // ── Kursstruktur vorstellen ───────────────────────────
   { nodeId: 90, speaker: 'evu', text: 'Der Kurs ist in 8 Kapitel unterteilt. Immer eine Woche nach Abschluss eines Kapitels wird das nächste freigeschaltet.', emotion: 'neutral', nextNodeId: 91 },
-  { nodeId: 91, speaker: 'narrator', text: '📘  Die 8 Kapitel:\n1. Ein Moment nur für dich\n2. Wie geht es dir? Danke gut.\n3. Unter Druck\n4. Früh merken, wenn\'s zu viel wird\n5. Gut zu dir sein\n6. Was will ich eigentlich?\n7. Was trägt dich?\n8. Dein Weg', emotion: null, nextNodeId: 92 },
+  { nodeId: 91, speaker: 'evu', emotion: 'happy', nextNodeId: 92,
+    list: {
+      icon: '📘',
+      title: 'Die 8 Kapitel',
+      style: 'bubbles',
+      items: [
+        'Ein Moment nur für dich',
+        'Wie geht es dir? Danke gut.',
+        'Unter Druck',
+        "Früh merken, wenn's zu viel wird",
+        'Gut zu dir sein',
+        'Was will ich eigentlich?',
+        'Was trägt dich?',
+        'Dein Weg',
+      ],
+    } },
   { nodeId: 92, speaker: 'evu', text: 'Jedes Kapitel besteht aus 5 Schritten, jeweils ca. 5 bis 20 Minuten:', emotion: 'happy', nextNodeId: 93 },
-  { nodeId: 93, speaker: 'narrator', text: '1. Ankommen  (5-10 min)\n2. Eine Geschichte erleben  (5-10 min)\n3. Einordnen und informieren  (5 min)\n4. Üben und selbst aktiv werden  (10-20 min)\n5. In deinen Alltag bringen  (5 min)', emotion: null, nextNodeId: 94 },
+  { nodeId: 93, speaker: 'evu', emotion: 'happy', nextNodeId: 94,
+    list: {
+      icon: '⏱️',
+      title: 'Die 5 Schritte je Kapitel',
+      ordered: true,
+      items: [
+        'Ankommen  (5–10 min)',
+        'Eine Geschichte erleben  (5–10 min)',
+        'Einordnen und informieren  (5 min)',
+        'Üben und selbst aktiv werden  (10–20 min)',
+        'In deinen Alltag bringen  (5 min)',
+      ],
+    } },
   { nodeId: 94, speaker: 'evu', text: 'Ein Kapitel dauert also ca. 45 Minuten.', emotion: 'neutral', nextNodeId: 95 },
   { nodeId: 95, speaker: 'evu', text: 'Jedes Kapitel beginnt mit einer kurzen Einleitung von mir. Dann begleitest du Toni durch eine fiktive Geschichte.', emotion: 'happy', nextNodeId: 96 },
   { nodeId: 96, speaker: 'evu', text: 'Im Trainings-Teil geht es dann ganz um dich. Zum Abschluss gibt\'s einen Impuls für deinen Alltag.', emotion: 'happy', nextNodeId: 97 },

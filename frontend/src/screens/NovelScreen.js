@@ -49,10 +49,11 @@ function getLayoutForSpeaker(speaker) {
   }
 }
 
-// Wenn Evu/Mika eine Likert-Frage stellen → compact (Figur klein oben-rechts, Skala mittig prominent)
+// Wenn Evu/Mika eine Likert-Frage stellen ODER eine Liste präsentieren →
+// compact (Figur klein oben-rechts, Inhalt mittig prominent).
 function getLayoutForNode(node) {
   const base = getLayoutForSpeaker(node.speaker)
-  if (base === 'monologue' && node.likert) return 'compact'
+  if (base === 'monologue' && (node.likert || node.list)) return 'compact'
   return base
 }
 
@@ -79,6 +80,7 @@ export function NovelScreen(path) {
       <div class="novel-bubble-area">
         <div class="speech-bubble novel-bubble"></div>
       </div>
+      <div class="novel-list" hidden></div>
       <div class="novel-likert" style="display:none"></div>
       <div class="novel-choices"></div>
       <div class="novel-input" style="display:none">
@@ -104,6 +106,7 @@ export function NovelScreen(path) {
   const characterEl  = el.querySelector('.novel-character')
   const choicesEl    = el.querySelector('.novel-choices')
   const likertEl     = el.querySelector('.novel-likert')
+  const listEl       = el.querySelector('.novel-list')
   const continueBtn  = el.querySelector('.novel-continue')
   const loadingEl    = el.querySelector('.novel-loading')
   const contentEl    = el.querySelector('.novel-content')
@@ -243,6 +246,47 @@ export function NovelScreen(path) {
     likertEl.style.display = 'none'
     likertEl.innerHTML = ''
     nameInputEl.style.display = 'none'
+    listEl.hidden = true
+    listEl.innerHTML = ''
+
+    // Liste statt Speech-Bubble (z.B. Kapitel-Übersicht). Bubble + Typewriter aus.
+    if (node.list) {
+      // Bubble komplett aus dem Bild — sonst sieht man eine "geisterhafte" Restblase
+      bubbleArea.style.display = 'none'
+      bubble.classList.remove('novel-bubble--enter')
+      bubble.textContent = ''
+      clearInterval(typeTimer); typeTimer = null
+
+      const { icon, title, items, ordered, style } = node.list
+      listEl.hidden = false
+
+      if (style === 'bubbles') {
+        // 8-Kapitel-Variante: jedes Item als kleine Bubble/Chip mit Nummer + Titel
+        listEl.classList.add('novel-list--bubbles')
+        listEl.innerHTML = `
+          ${title ? `<div class="novel-list-title">${icon ? `<span class="novel-list-icon">${escapeHtml(icon)}</span>` : ''}${escapeHtml(title)}</div>` : ''}
+          <div class="novel-list-bubbles">
+            ${(items || []).map((it, i) => `
+              <div class="novel-list-bubble" style="animation-delay:${i * 60}ms">
+                <span class="novel-list-bubble-num">${i + 1}</span>
+                <span class="novel-list-bubble-text">${escapeHtml(it)}</span>
+              </div>
+            `).join('')}
+          </div>
+        `
+      } else {
+        listEl.classList.remove('novel-list--bubbles')
+        const tag = ordered ? 'ol' : 'ul'
+        listEl.innerHTML = `
+          ${title ? `<div class="novel-list-title">${icon ? `<span class="novel-list-icon">${escapeHtml(icon)}</span>` : ''}${escapeHtml(title)}</div>` : ''}
+          <${tag} class="novel-list-items${ordered ? ' novel-list-items--ordered' : ''}">
+            ${(items || []).map(it => `<li>${escapeHtml(it)}</li>`).join('')}
+          </${tag}>
+        `
+      }
+    } else {
+      listEl.classList.remove('novel-list--bubbles')
+    }
 
     // Text input (e.g. name entry)
     if (node.inputType === 'text') {
@@ -594,4 +638,10 @@ export function NovelScreen(path) {
   init()
 
   return el
+}
+
+function escapeHtml(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;')
 }
