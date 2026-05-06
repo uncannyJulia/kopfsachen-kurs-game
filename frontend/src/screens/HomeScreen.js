@@ -6,6 +6,7 @@
 // Start → /novel/onboarding (erstes Mal) oder /novel/<currentChapter> (Kurs fortsetzen)
 
 import { getProgress, getSettings } from '../store.js'
+import { t } from '../data/ui-texts.js'
 
 // Slugs, die als gültige "Kurs-fortsetzen"-Ziele zählen (Onboarding zählt nicht).
 const COURSE_SLUGS = new Set([
@@ -26,8 +27,8 @@ export function HomeScreen() {
   el.innerHTML = `
     <div class="home-content">
       <div class="home-hero">
-        <h1 class="home-title">Kopf frei!</h1>
-        <p class="home-tagline">Dein Kurs für mentale Stärke</p>
+        <h1 class="home-title">${t('home.title', 'Kopf frei!')}</h1>
+        <p class="home-tagline">${t('home.tagline', 'Dein Kurs für mentale Stärke')}</p>
       </div>
       <div class="home-actions home-actions--loading">
         <div class="home-loading">Lade …</div>
