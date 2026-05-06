@@ -152,13 +152,13 @@ async function renderEnergieReflexion(container) {
 
   const responses = {}  // { text: { tendency: 'fresser'|'geber'|'skip', rating?: 1-5 } }
   let idx = 0
-  let pendingTendency = null   // null → swipe-Phase; 'fresser'|'geber' → rating-Phase
+  let selectedRating = null
   const SWIPE_THRESHOLD = 100  // Pixel die geswiped werden müssen
 
   container.innerHTML = `
     <div class="energie-intro">
       <p>Denke an deine letzte Woche.</p>
-      <p>Wische die Karte <strong>nach links</strong>, wenn dich das Energie gekostet hat — <strong>nach rechts</strong>, wenn es dir Energie gegeben hat.</p>
+      <p>Wähle die Stärke (1–5), dann wische die Karte <strong>nach links</strong>, wenn es Energie gekostet hat — <strong>nach rechts</strong>, wenn es Energie gegeben hat.</p>
     </div>
     <div class="energie-stage">
       <div class="energie-tray energie-tray--left" aria-label="Energie-Fresser">
@@ -177,8 +177,8 @@ async function renderEnergieReflexion(container) {
         <div class="energie-tray-dots"></div>
       </div>
     </div>
-    <div class="energie-rating-area" hidden>
-      <p class="energie-rating-prompt"></p>
+    <div class="energie-rating-area">
+      <p class="energie-rating-prompt">Wie stark?</p>
       <div class="energie-scale">
         ${[1, 2, 3, 4, 5].map(n => `<button class="energie-scale-btn" data-value="${n}" type="button">${n}</button>`).join('')}
       </div>
@@ -189,16 +189,21 @@ async function renderEnergieReflexion(container) {
     <div class="energie-progress"></div>
   `
 
-  const cardWrap   = container.querySelector('.energie-card-wrap')
   const cardEl     = container.querySelector('.energie-card')
   const cardTextEl = container.querySelector('.energie-card-text')
   const cardBadge  = container.querySelector('.energie-card-badge')
   const trayLeftDots  = container.querySelector('.energie-tray--left  .energie-tray-dots')
   const trayRightDots = container.querySelector('.energie-tray--right .energie-tray-dots')
   const ratingArea = container.querySelector('.energie-rating-area')
-  const ratingPrompt = container.querySelector('.energie-rating-prompt')
   const skipBtn    = container.querySelector('.energie-skip-btn')
   const progressEl = container.querySelector('.energie-progress')
+
+  function clearRatingSelection() {
+    selectedRating = null
+    ratingArea.querySelectorAll('.energie-scale-btn--selected').forEach(b =>
+      b.classList.remove('energie-scale-btn--selected')
+    )
+  }
 
   function renderCurrent() {
     progressEl.textContent = `${Math.min(idx + 1, items.length)} / ${items.length}`
@@ -214,9 +219,8 @@ async function renderEnergieReflexion(container) {
     cardEl.style.transition = ''
     cardEl.style.transform = ''
     cardEl.style.opacity = ''
-    pendingTendency = null
-    ratingArea.hidden = true
     skipBtn.hidden = false
+    clearRatingSelection()
 
     // Drift-Animation für jede neue Bubble neu starten
     cardEl.style.animation = 'none'
@@ -226,18 +230,37 @@ async function renderEnergieReflexion(container) {
     enableSwipe()
   }
 
+  // Rating: Click toggelt Auswahl. Klick auf gleiche Zahl entfernt Markierung,
+  // Klick auf andere Zahl wechselt die Auswahl.
+  ratingArea.querySelectorAll('.energie-scale-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const value = parseInt(btn.dataset.value)
+      if (selectedRating === value) {
+        clearRatingSelection()
+      } else {
+        clearRatingSelection()
+        btn.classList.add('energie-scale-btn--selected')
+        selectedRating = value
+      }
+    })
+  })
+
   // ── Swipe-Logik ──────────────────────────────────────────
   let dragging = false
   let startX = 0, currentX = 0
+  let swipeEnabled = false
 
   function enableSwipe() {
+    if (swipeEnabled) return
+    swipeEnabled = true
     cardEl.addEventListener('pointerdown', onPointerDown, { passive: true })
   }
   function disableSwipe() {
+    if (!swipeEnabled) return
+    swipeEnabled = false
     cardEl.removeEventListener('pointerdown', onPointerDown)
   }
   function onPointerDown(e) {
-    if (pendingTendency) return
     dragging = true
     startX = e.clientX
     currentX = 0
@@ -271,7 +294,7 @@ async function renderEnergieReflexion(container) {
 
     if (Math.abs(currentX) >= SWIPE_THRESHOLD) {
       const tendency = currentX < 0 ? 'fresser' : 'geber'
-      flyOutAndRate(tendency)
+      commitAndAdvance(tendency)
     } else {
       // Nicht weit genug → zurück
       cardEl.style.transition = 'transform var(--transition)'
@@ -281,40 +304,25 @@ async function renderEnergieReflexion(container) {
     }
   }
 
-  function flyOutAndRate(tendency) {
-    pendingTendency = tendency
+  function commitAndAdvance(tendency) {
     disableSwipe()
     cardEl.style.transition = 'transform 280ms ease, opacity 280ms ease'
     const offset = tendency === 'fresser' ? -window.innerWidth : window.innerWidth
     cardEl.style.transform = `translateX(${offset}px) rotate(${tendency === 'fresser' ? -25 : 25}deg)`
     cardEl.style.opacity = '0.4'
 
-    // Rating-Bereich einblenden
-    setTimeout(() => {
-      ratingPrompt.textContent = tendency === 'fresser'
-        ? `Wie viel Energie hat dich das gekostet?`
-        : `Wie viel Energie hat dir das gegeben?`
-      ratingArea.hidden = false
-      skipBtn.hidden = true
-    }, 100)
-  }
+    const current = items[idx]
+    responses[current.text] = { tendency, rating: selectedRating }
+    addDot(tendency)
 
-  // Rating-Click
-  ratingArea.querySelectorAll('.energie-scale-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (!pendingTendency) return
-      const rating = parseInt(btn.dataset.value)
-      const current = items[idx]
-      responses[current.text] = { tendency: pendingTendency, rating }
-      addDot(pendingTendency)
+    setTimeout(() => {
       idx++
       renderCurrent()
-    })
-  })
+    }, 280)
+  }
 
   // Skip-Button
   skipBtn.addEventListener('click', () => {
-    if (pendingTendency) return
     responses[items[idx].text] = { tendency: 'skip' }
     cardEl.style.transition = 'transform 240ms ease, opacity 240ms ease'
     cardEl.style.transform = `translateY(${window.innerHeight}px)`
@@ -332,7 +340,7 @@ async function renderEnergieReflexion(container) {
     target.appendChild(dot)
   }
 
-  async function renderDone() {
+  function renderDone() {
     const fresser = Object.entries(responses)
       .filter(([_, r]) => r.tendency === 'fresser')
       .sort((a, b) => (b[1].rating || 0) - (a[1].rating || 0))
@@ -340,7 +348,9 @@ async function renderEnergieReflexion(container) {
       .filter(([_, r]) => r.tendency === 'geber')
       .sort((a, b) => (b[1].rating || 0) - (a[1].rating || 0))
 
-    await saveCourseData('energieReflexion', { responses, completedAt: new Date().toISOString() })
+    // UI zuerst rendern, Speichern in den Hintergrund — verhindert dass das Dashboard
+    // nicht erscheint falls IndexedDB hängt/fehlschlägt.
+    const renderRating = (r) => r.rating != null ? `<span class="energie-rating">${r.rating}/5</span>` : ''
 
     container.innerHTML = `
       <div class="energie-done">
@@ -348,13 +358,13 @@ async function renderEnergieReflexion(container) {
         <div class="energie-done-group">
           <h3 class="energie-done-subtitle">Deine Top-Energie-Fresser</h3>
           ${fresser.length ? `<ul class="energie-done-list">${fresser.map(([t, r]) =>
-            `<li>${escape(t)} <span class="energie-rating">${r.rating}/5</span></li>`
+            `<li>${escape(t)} ${renderRating(r)}</li>`
           ).join('')}</ul>` : '<p class="energie-empty">— keine —</p>'}
         </div>
         <div class="energie-done-group">
           <h3 class="energie-done-subtitle">Deine Top-Energie-Geber</h3>
           ${geber.length ? `<ul class="energie-done-list">${geber.map(([t, r]) =>
-            `<li>${escape(t)} <span class="energie-rating">${r.rating}/5</span></li>`
+            `<li>${escape(t)} ${renderRating(r)}</li>`
           ).join('')}</ul>` : '<p class="energie-empty">— keine —</p>'}
         </div>
         <p class="energie-hint">Gerade vor und nach Aktivitäten, die dich viel Energie kosten, ist es hilfreich, bewusst Zeiten für Erholung einzuplanen.</p>
@@ -362,6 +372,12 @@ async function renderEnergieReflexion(container) {
       </div>
     `
     container.querySelector('.energie-continue').addEventListener('click', () => history.back())
+    // Sicherstellen dass das Dashboard am Anfang sichtbar ist (nicht runtergescrollt)
+    container.scrollTop = 0
+
+    // Speichern asynchron, Fehler nur loggen
+    saveCourseData('energieReflexion', { responses, completedAt: new Date().toISOString() })
+      .catch(err => console.warn('Energie-Reflexion konnte nicht gespeichert werden:', err))
   }
 
   renderCurrent()
@@ -397,27 +413,28 @@ async function renderWennDannPlan(container) {
     .map(s => s.text)
 
   let selectedBoost = null
-  let selectedSituation = null
-  let freiText = ''
+  const selectedSituations = new Set()  // Multi-Select
 
   container.innerHTML = `
     <div class="wenn-dann-step step-1">
       <h2 class="wenn-dann-title">Schritt 1: Dein Energie-Boost</h2>
       <p class="wenn-dann-desc">Wähle eine Aktivität, die du in der nächsten Woche bewusst einbauen möchtest.</p>
       <div class="wenn-dann-options"></div>
+      <button class="btn-primary wenn-dann-next" type="button" disabled>Weiter</button>
     </div>
     <div class="wenn-dann-step step-2" hidden>
       <h2 class="wenn-dann-title">Schritt 2: Wann?</h2>
-      <p class="wenn-dann-desc">Wann wäre dein Energie-Boost besonders hilfreich?</p>
+      <p class="wenn-dann-desc">Wann wäre dein Energie-Boost besonders hilfreich? Mehrere Antworten möglich.</p>
       <div class="wenn-dann-options"></div>
       <div class="wenn-dann-freitext">
-        <label>Oder eigene Situation:</label>
-        <input type="text" class="wenn-dann-freitext-input" placeholder="z.B. Wenn ich …">
+        <label for="wenn-dann-frei">Oder eigene Situation:</label>
+        <input id="wenn-dann-frei" type="text" class="wenn-dann-freitext-input" placeholder="z.B. Wenn ich …">
       </div>
+      <button class="btn-primary wenn-dann-next2" type="button" disabled>Weiter</button>
     </div>
     <div class="wenn-dann-step step-3" hidden>
       <h2 class="wenn-dann-title">Dein Plan</h2>
-      <div class="wenn-dann-sentence"></div>
+      <div class="wenn-dann-sentences"></div>
       <button class="btn-primary wenn-dann-save" type="button">Plan merken</button>
     </div>
   `
@@ -425,54 +442,93 @@ async function renderWennDannPlan(container) {
   const step1 = container.querySelector('.step-1')
   const step2 = container.querySelector('.step-2')
   const step3 = container.querySelector('.step-3')
+  const step1Next = step1.querySelector('.wenn-dann-next')
+  const step2Next = step2.querySelector('.wenn-dann-next2')
 
-  // Step 1: Boost wählen
+  // ── Step 1: Boost (Single-Select mit Highlight) ──────────────
   const step1Options = step1.querySelector('.wenn-dann-options')
   boostOptions.forEach(opt => {
     const btn = document.createElement('button')
-    btn.className = 'wenn-dann-option btn-secondary'
+    btn.className = 'wenn-dann-option'
+    btn.type = 'button'
     btn.textContent = opt
     btn.addEventListener('click', () => {
-      selectedBoost = opt
-      step1.hidden = true
-      step2.hidden = false
+      // Vorherige Auswahl entmarken
+      step1Options.querySelectorAll('.wenn-dann-option--selected').forEach(b =>
+        b.classList.remove('wenn-dann-option--selected')
+      )
+      // Klick auf gleiche Option = entmarken
+      if (selectedBoost === opt) {
+        selectedBoost = null
+      } else {
+        btn.classList.add('wenn-dann-option--selected')
+        selectedBoost = opt
+      }
+      step1Next.disabled = !selectedBoost
     })
     step1Options.appendChild(btn)
   })
+  step1Next.addEventListener('click', () => {
+    if (!selectedBoost) return
+    step1.hidden = true
+    step2.hidden = false
+    updateStep2NextEnabled()
+  })
 
-  // Step 2: Situation wählen
+  // ── Step 2: Situations (Multi-Select mit Highlight + Freitext) ──
   const step2Options = step2.querySelector('.wenn-dann-options')
+  const freiInput = step2.querySelector('.wenn-dann-freitext-input')
+
+  function updateStep2NextEnabled() {
+    const hasFrei = freiInput.value.trim().length > 0
+    step2Next.disabled = selectedSituations.size === 0 && !hasFrei
+  }
+
   situations.forEach(opt => {
     const btn = document.createElement('button')
-    btn.className = 'wenn-dann-option btn-secondary'
+    btn.className = 'wenn-dann-option'
+    btn.type = 'button'
     btn.textContent = opt
     btn.addEventListener('click', () => {
-      selectedSituation = opt
-      advanceToStep3()
+      if (selectedSituations.has(opt)) {
+        selectedSituations.delete(opt)
+        btn.classList.remove('wenn-dann-option--selected')
+      } else {
+        selectedSituations.add(opt)
+        btn.classList.add('wenn-dann-option--selected')
+      }
+      updateStep2NextEnabled()
     })
     step2Options.appendChild(btn)
   })
-  const freiInput = step2.querySelector('.wenn-dann-freitext-input')
-  freiInput.addEventListener('change', () => {
-    const v = freiInput.value.trim()
-    if (!v) return
-    selectedSituation = v.startsWith('Wenn ') ? v : `Wenn ${v}`
-    advanceToStep3()
-  })
+  freiInput.addEventListener('input', updateStep2NextEnabled)
 
-  function advanceToStep3() {
+  step2Next.addEventListener('click', () => {
+    const sits = Array.from(selectedSituations)
+    const frei = freiInput.value.trim()
+    if (frei) {
+      sits.push(frei.startsWith('Wenn ') ? frei : `Wenn ${frei}`)
+    }
+    if (!sits.length) return
+
     step2.hidden = true
     step3.hidden = false
-    step3.querySelector('.wenn-dann-sentence').innerHTML = `
-      <span class="wenn-dann-sentence-part">${escape(selectedSituation)},</span>
-      <span class="wenn-dann-sentence-part">dann <strong>${escape(selectedBoost)}</strong>.</span>
-    `
-  }
+    const sentencesEl = step3.querySelector('.wenn-dann-sentences')
+    sentencesEl.innerHTML = sits.map(s => `
+      <div class="wenn-dann-sentence">
+        <span class="wenn-dann-sentence-part">${escape(s)},</span>
+        <span class="wenn-dann-sentence-part">dann <strong>${escape(selectedBoost)}</strong>.</span>
+      </div>
+    `).join('')
+
+    step3._situations = sits  // an Save-Click weiterreichen
+  })
 
   step3.querySelector('.wenn-dann-save').addEventListener('click', async () => {
+    const situations = step3._situations || []
     await saveCourseData('wennDannPlan', {
-      situation: selectedSituation,
       boost: selectedBoost,
+      situations,
       createdAt: new Date().toISOString(),
     })
     history.back()

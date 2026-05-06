@@ -1369,6 +1369,17 @@ body {
 
 .energie-scale-btn:active { border-color: var(--accent); background: var(--accent-light); }
 
+.energie-scale-btn--selected {
+  background: var(--accent);
+  color: var(--kopfsachen-white);
+  border-color: var(--accent);
+}
+
+.energie-scale-btn--selected:active {
+  background: var(--accent);
+  color: var(--kopfsachen-white);
+}
+
 .energie-bottom {
   display: flex;
   justify-content: center;
@@ -1554,6 +1565,41 @@ body {
 .wenn-dann-option {
   text-align: left;
   font-weight: 500;
+  padding: var(--space-md);
+  background: var(--surface);
+  border: 0.125rem solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.wenn-dann-option:active {
+  border-color: var(--accent);
+}
+
+.wenn-dann-option--selected {
+  background: var(--accent);
+  color: var(--kopfsachen-white);
+  border-color: var(--accent);
+}
+
+.wenn-dann-option--selected:active {
+  background: var(--accent);
+  color: var(--kopfsachen-white);
+}
+
+.wenn-dann-next,
+.wenn-dann-next2 {
+  margin-top: var(--space-md);
+}
+
+.wenn-dann-sentences {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
 }
 
 .wenn-dann-freitext {
@@ -2028,6 +2074,8 @@ body {
 
 .exercise-screen {
   background: var(--bg);
+  /* Verhindert Screen-Scroll — stattdessen scrollt nur der Body, Footer bleibt fix unten. */
+  overflow: hidden;
 }
 
 .exercise-heading {
@@ -2037,10 +2085,26 @@ body {
   text-align: center;
 }
 
-.exercise-content {
+.exercise-body {
   flex: 1;
   padding: var(--space-md) var(--space-lg);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-height: 0;
+}
+
+.exercise-footer {
+  flex-shrink: 0;
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
+}
+
+.exercise-footer .btn-primary {
+  width: 100%;
+}
+
+.exercise-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);

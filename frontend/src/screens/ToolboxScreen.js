@@ -65,7 +65,8 @@ export function ToolboxScreen() {
         </span>
       `
       card.addEventListener('click', () => {
-        window.location.hash = `#/exercise/${slug}`
+        const route = ex.targetRoute || 'exercise'
+        window.location.hash = `#/${route}/${slug}`
       })
       listEl.appendChild(card)
     })

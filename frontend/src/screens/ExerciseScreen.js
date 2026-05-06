@@ -21,10 +21,12 @@ export function ExerciseScreen(path) {
       <div style="width:44px"></div>
     </div>
     <div class="exercise-body"></div>
+    <div class="exercise-footer"></div>
     <div class="exercise-loading">Lade Übung …</div>
   `
 
   const bodyEl = el.querySelector('.exercise-body')
+  const footerEl = el.querySelector('.exercise-footer')
   const loadingEl = el.querySelector('.exercise-loading')
   const headingEl = el.querySelector('.exercise-heading')
 
@@ -43,7 +45,18 @@ export function ExerciseScreen(path) {
       console.warn('Strapi nicht erreichbar, nutze Demo-Daten:', e.message)
     }
 
-    const exercise = loaded || EXERCISES_BY_SLUG[slug] || EXERCISES_BY_SLUG['box-atmung']
+    const fallback = EXERCISES_BY_SLUG[slug] || EXERCISES_BY_SLUG['box-atmung']
+    // Strapi-Daten haben Vorrang, aber subtitles + audioUrl + icon kommen
+    // aus dem lokalen Fallback wenn Strapi sie nicht liefert.
+    const exercise = loaded
+      ? {
+          ...fallback,
+          ...loaded,
+          subtitles: (loaded.subtitles && loaded.subtitles.length) ? loaded.subtitles : fallback.subtitles,
+          audioUrl:  loaded.audioUrl || fallback.audioUrl,
+          icon:      loaded.icon     || fallback.icon,
+        }
+      : fallback
     loadingEl.style.display = 'none'
     headingEl.textContent = exercise.title || 'Übung'
 
@@ -51,11 +64,11 @@ export function ExerciseScreen(path) {
     if (exercise.slug) unlockExercise(exercise.slug)
 
     if (exercise.category === 'box_atmung') {
-      renderBoxAtmung(bodyEl, exercise)
+      renderBoxAtmung(bodyEl, footerEl, exercise)
     } else if (exercise.type === 'audio' || exercise.category === 'innerer_ort') {
-      renderAudioExercise(bodyEl, exercise)
+      renderAudioExercise(bodyEl, footerEl, exercise)
     } else {
-      renderGuidedText(bodyEl, exercise)
+      renderGuidedText(bodyEl, footerEl, exercise)
     }
   }
 
@@ -64,28 +77,27 @@ export function ExerciseScreen(path) {
 }
 
 // ── Box-Atmung ──────────────────────────────────────────────
-function renderBoxAtmung(container, exercise) {
+function renderBoxAtmung(container, footer, exercise) {
   container.classList.add('exercise-body--boxatmung')
   container.innerHTML = `
-    <div class="exercise-intro">
-      <h2 class="exercise-title">${escape(exercise.title)}</h2>
-      <p class="exercise-desc">${escape(exercise.description || '')}</p>
-    </div>
+    <p class="exercise-desc">${escape(exercise.description || '')}</p>
   `
   const anim = BoxAtmung({
     onDone: () => history.back(),
   })
   container.appendChild(anim)
+  // Box-Atmung hat eigenen Done-Button in der Animation — kein Footer-Button nötig.
+  footer.innerHTML = ''
 }
 
 // ── Audio-Übung (Übungskarte) ───────────────────────────────
-function renderAudioExercise(container, exercise) {
+function renderAudioExercise(container, footer, exercise) {
   container.classList.add('exercise-body--audio')
+  // Title liegt schon in der Topbar — kein zweites H2 hier.
   container.innerHTML = `
     <div class="exercise-card">
-      <h2 class="exercise-title">${escape(exercise.title)}</h2>
       <p class="exercise-desc">${escape(exercise.description || '')}</p>
-      <div class="exercise-subtitle-box">
+      <div class="exercise-subtitle-box" hidden>
         <p class="exercise-subtitle"></p>
       </div>
       <div class="audio-player">
@@ -101,24 +113,29 @@ function renderAudioExercise(container, exercise) {
         </div>
       </div>
       ${exercise.guidedText ? `<details class="exercise-instructions"><summary>Anleitung</summary><div class="exercise-instructions-body">${escape(exercise.guidedText).replace(/\n/g, '<br>')}</div></details>` : ''}
-      <button class="btn-primary exercise-done" type="button" hidden>Weiter</button>
     </div>
   `
+  // Weiter-Button in den Footer pinnen, damit er immer am unteren Rand sitzt.
+  footer.innerHTML = `<button class="btn-primary exercise-done" type="button" hidden>Weiter</button>`
 
+  const subtitleBoxEl = container.querySelector('.exercise-subtitle-box')
   const subtitleEl = container.querySelector('.exercise-subtitle')
   const seekEl     = container.querySelector('.audio-seek')
   const currentTimeEl = container.querySelector('.audio-current')
   const durationEl    = container.querySelector('.audio-duration')
   const playBtn    = container.querySelector('.exercise-play')
-  const doneBtn    = container.querySelector('.exercise-done')
+  const doneBtn    = footer.querySelector('.exercise-done')
 
   let audio = null
 
   const subtitles = exercise.subtitles || []
   const hasAudio = !!exercise.audioUrl
+  // Subtitle-Box nur einblenden wenn es Subtitles gibt — sonst leerer Kasten.
+  if (subtitles.length === 0 && subtitleBoxEl) subtitleBoxEl.hidden = true
 
   function updateSubtitle(time) {
     if (!subtitles.length) return
+    if (subtitleBoxEl) subtitleBoxEl.hidden = false
     let current = subtitles[0]?.text || ''
     for (const s of subtitles) if (time >= s.time) current = s.text
     subtitleEl.textContent = current
@@ -208,17 +225,16 @@ function renderAudioExercise(container, exercise) {
 }
 
 // ── Guided-Text-Übung (Fallback) ────────────────────────────
-function renderGuidedText(container, exercise) {
+function renderGuidedText(container, footer, exercise) {
   container.classList.add('exercise-body--text')
   container.innerHTML = `
     <div class="exercise-card">
-      <h2 class="exercise-title">${escape(exercise.title)}</h2>
       <p class="exercise-desc">${escape(exercise.description || '')}</p>
       ${exercise.guidedText ? `<div class="exercise-text">${escape(exercise.guidedText).replace(/\n/g, '<br>')}</div>` : ''}
-      <button class="btn-primary exercise-close" type="button">Fertig</button>
     </div>
   `
-  container.querySelector('.exercise-close').addEventListener('click', () => history.back())
+  footer.innerHTML = `<button class="btn-primary exercise-close" type="button">Fertig</button>`
+  footer.querySelector('.exercise-close').addEventListener('click', () => history.back())
 }
 
 function escape(s) {

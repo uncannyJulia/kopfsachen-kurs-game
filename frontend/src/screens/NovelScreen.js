@@ -113,8 +113,15 @@ export function NovelScreen(path) {
       }
     }
 
+    // User-Choice-Nodes ohne Text: weder Bubble noch "Du"-Label zeigen,
+    // sonst sieht's aus wie eine leere Sprechblase.
+    const isEmptyUserChoice = node.speaker === 'user'
+      && !(node.text && node.text.trim())
+      && !node.inputType
+      && !node.likert
+
     // Speaker-Label
-    if (node.speaker === 'narrator') {
+    if (node.speaker === 'narrator' || isEmptyUserChoice) {
       speakerLabel.textContent = ''
       speakerLabel.style.display = 'none'
     } else {
@@ -126,6 +133,7 @@ export function NovelScreen(path) {
     // Bubble-Styling je nach Speaker
     bubbleArea.className = 'novel-bubble-area'
     bubbleArea.classList.add(`novel-bubble--${node.speaker}`)
+    bubbleArea.style.display = isEmptyUserChoice ? 'none' : ''
 
     // Bubble-Border-Farbe
     bubble.style.borderColor = config.color

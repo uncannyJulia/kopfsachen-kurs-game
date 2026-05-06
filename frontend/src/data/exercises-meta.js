@@ -7,7 +7,12 @@
 // wenn ein User das Kapitel abgeschlossen hat ohne dass beim Öffnen
 // der einzelnen Übungen explizit ge-unlockt wurde.
 export const CHAPTER_EXERCISES = {
-  'ein-moment-nur-fuer-dich': ['box-atmung', 'innerer-sicherer-ort-vorstellung'],
+  'ein-moment-nur-fuer-dich': [
+    'box-atmung',
+    'innerer-sicherer-ort-vorstellung',
+    'energie-reflexion',
+    'wenn-dann-plan',
+  ],
 }
 
 export const EXERCISES_BY_SLUG = {
@@ -19,6 +24,7 @@ export const EXERCISES_BY_SLUG = {
     duration: 240,
     description: 'Zu viel los im Kopf? Angespannt? Gestresst? Diese Atemtechnik hilft dir, wieder runterzukommen.',
     icon: '🌬️',
+    targetRoute: 'exercise',
   },
   'innerer-sicherer-ort-vorstellung': {
     slug: 'innerer-sicherer-ort-vorstellung',
@@ -30,6 +36,7 @@ export const EXERCISES_BY_SLUG = {
     subtitle: 'Audio-Anleitung, ca. 10 Minuten.',
     audioUrl: null,
     icon: '🏝️',
+    targetRoute: 'exercise',
     subtitles: [
       { time: 0,   text: 'Finde eine bequeme Position.' },
       { time: 15,  text: 'Atme tief ein und aus.' },
@@ -40,5 +47,21 @@ export const EXERCISES_BY_SLUG = {
       { time: 360, text: 'Bleib so lange du willst. Genieß die Ruhe.' },
       { time: 480, text: 'Komm langsam zurück. Bewege Hände und Füße.' },
     ],
+  },
+  // Reflexions-/Plan-Übungen — landen in der Selfcare-Schachtel zum Wiederholen.
+  // targetRoute: 'content' weil sie via ContentScreen gerendert werden.
+  'energie-reflexion': {
+    slug: 'energie-reflexion',
+    title: 'Energie-Fresser & -Geber',
+    description: 'Sortiere Aktivitäten der letzten Woche nach Energie-Bilanz.',
+    icon: '⚖️',
+    targetRoute: 'content',
+  },
+  'wenn-dann-plan': {
+    slug: 'wenn-dann-plan',
+    title: 'Wenn-Dann-Plan',
+    description: 'Plane konkrete Energie-Boost-Momente für die nächste Woche.',
+    icon: '📝',
+    targetRoute: 'content',
   },
 }
