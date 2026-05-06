@@ -90,9 +90,15 @@ export const ONBOARDING_NODES = [
   { nodeId: 65, speaker: 'evu', text: 'Und wenn du dich unglücklich fühlst, weißt du dann auch, warum?', emotion: 'thinking', nextNodeId: null,
     likert: { questionId: 'ese_verstehen_prae', questionText: 'Weißt du, warum du dich unglücklich fühlst?', emojis: SMILEY, labels: LIKERT, nextNodeId: 66 } },
   { nodeId: 66, speaker: 'evu', text: 'Weißt du, wie man jemanden aufmuntert, wenn er oder sie sich unglücklich fühlt?', emotion: 'neutral', nextNodeId: null,
-    likert: { questionId: 'ese_andere_prae', questionText: 'Weißt du, wie man jemanden aufmuntert?', emojis: SMILEY, labels: LIKERT, nextNodeId: 70 } },
+    likert: { questionId: 'ese_andere_prae', questionText: 'Weißt du, wie man jemanden aufmuntert?', emojis: SMILEY, labels: LIKERT, nextNodeId: 67 } },
 
-  // ── Frage 12: Anlaufstellen + Hilfe-Verweis ───────────
+  // ── Frage 12+13: Zukunftsängste ───────────────────────
+  { nodeId: 67, speaker: 'evu', text: 'Sorgst du dich um mögliche Fehlschläge, die auf dich zukommen könnten?', emotion: 'thinking', nextNodeId: null,
+    likert: { questionId: 'zukunftsaengste_1_prae', questionText: 'Sorgst du dich um mögliche Fehlschläge?', emojis: SMILEY, labels: LIKERT, nextNodeId: 68 } },
+  { nodeId: 68, speaker: 'evu', text: 'Glaubst du, du kannst zukünftige Herausforderungen lösen, wenn sie aufkommen?', emotion: 'neutral', nextNodeId: null,
+    likert: { questionId: 'zukunftsaengste_2_prae', questionText: 'Glaubst du, du kannst zukünftige Herausforderungen lösen?', emojis: SMILEY, labels: LIKERT, nextNodeId: 70 } },
+
+  // ── Frage 14: Anlaufstellen + Hilfe-Verweis ───────────
   { nodeId: 70, speaker: 'evu', text: 'Fast geschafft. Eine letzte Frage:', emotion: 'happy', nextNodeId: 71 },
   { nodeId: 71, speaker: 'evu', text: 'Kennst du Anlaufstellen, an die man sich mit psychischen Problemen wenden kann, wie z.B. Beratungsstellen, Krisen-Hotline oder Hilfe-Chat?', emotion: 'neutral', nextNodeId: null,
     likert: { questionId: 'mhl_anlaufstellen_prae', questionText: 'Kennst du Anlaufstellen für psychische Probleme?', emojis: SMILEY, labels: LIKERT, nextNodeId: 72 } },
@@ -105,18 +111,12 @@ export const ONBOARDING_NODES = [
 
   // ── Wünsche abfragen ──────────────────────────────────
   { nodeId: 80, speaker: 'evu', text: 'In diesem Kurs geht es um mentale Gesundheit und darum, was dir hilft, wenn es mal schwierig wird.', emotion: 'happy', nextNodeId: 81 },
-  { nodeId: 81, speaker: 'evu', text: 'Was wünschst du dir am meisten von diesem Kurs?', emotion: 'neutral', nextNodeId: null, choices: [
-    { text: 'Besser verstehen, was in mir vorgeht',       nextNodeId: 82 },
-    { text: 'Wissen, was mir hilft, wenn\'s schwer ist',  nextNodeId: 82 },
-    { text: 'Mit schwierigen Gefühlen umgehen lernen',    nextNodeId: 82 },
-    { text: 'Ich bin einfach neugierig',                  nextNodeId: 82 },
-    { text: 'Ich weiß es noch nicht genau',               nextNodeId: 82 },
-  ]},
-  { nodeId: 82, speaker: 'evu', text: 'Nimm diesen Wunsch mit in den Kurs. Am Ende schauen wir, was sich verändert hat.', emotion: 'happy', nextNodeId: 90 },
+  { nodeId: 81, speaker: 'evu', text: 'Was wünschst du dir von diesem Kurs? Du kannst mehrere Antworten auswählen.', emotion: 'neutral', nextNodeId: 82, triggerAction: 'open_content', triggerPayload: 'wuensche-auswahl' },
+  { nodeId: 82, speaker: 'evu', text: 'Nimm diese Wünsche und Ziele mit in den Kurs. Am Ende schauen wir gemeinsam, was sich verändert hat.', emotion: 'happy', nextNodeId: 90 },
 
   // ── Kursstruktur vorstellen ───────────────────────────
   { nodeId: 90, speaker: 'evu', text: 'Der Kurs ist in 8 Kapitel unterteilt. Immer eine Woche nach Abschluss eines Kapitels wird das nächste freigeschaltet.', emotion: 'neutral', nextNodeId: 91 },
-  { nodeId: 91, speaker: 'narrator', text: '📘  Die 8 Kapitel:\n1. Ein Moment nur für dich\n2. Wie geht es dir? Danke gut.\n3. Unter Druck\n4. Früh merken, wenn\'s zu viel wird\n5. Deine größte Unterstützung: du selbst!\n6. Was will ich eigentlich?\n7. Was trägt dich?\n8. Dein Weg', emotion: null, nextNodeId: 92 },
+  { nodeId: 91, speaker: 'narrator', text: '📘  Die 8 Kapitel:\n1. Ein Moment nur für dich\n2. Wie geht es dir? Danke gut.\n3. Unter Druck\n4. Früh merken, wenn\'s zu viel wird\n5. Gut zu dir sein\n6. Was will ich eigentlich?\n7. Was trägt dich?\n8. Dein Weg', emotion: null, nextNodeId: 92 },
   { nodeId: 92, speaker: 'evu', text: 'Jedes Kapitel besteht aus 5 Schritten, jeweils ca. 5 bis 20 Minuten:', emotion: 'happy', nextNodeId: 93 },
   { nodeId: 93, speaker: 'narrator', text: '1. Ankommen  (5-10 min)\n2. Eine Geschichte erleben  (5-10 min)\n3. Einordnen und informieren  (5 min)\n4. Üben und selbst aktiv werden  (10-20 min)\n5. In deinen Alltag bringen  (5 min)', emotion: null, nextNodeId: 94 },
   { nodeId: 94, speaker: 'evu', text: 'Ein Kapitel dauert also ca. 45 Minuten.', emotion: 'neutral', nextNodeId: 95 },

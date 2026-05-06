@@ -7,6 +7,18 @@
 
 import { getProgress, getSettings } from '../store.js'
 
+// Slugs, die als gültige "Kurs-fortsetzen"-Ziele zählen (Onboarding zählt nicht).
+const COURSE_SLUGS = new Set([
+  'ein-moment-nur-fuer-dich',
+  'wie-geht-es-dir-danke-gut',
+  'unter-druck',
+  'frueh-merken-wenns-zu-viel-wird',
+  'gut-zu-dir-sein',
+  'was-will-ich-eigentlich',
+  'was-traegt-dich',
+  'dein-weg',
+])
+
 export function HomeScreen() {
   const el = document.createElement('div')
   el.className = 'screen home-screen'
@@ -30,7 +42,10 @@ export function HomeScreen() {
     const progress  = await getProgress()
 
     const onboardingDone = !!settings.onboardingDone
-    const hasStarted     = progress.completedChapters.length > 0 || (onboardingDone && progress.currentNodeId > 0)
+    const hasResumableChapter = progress.currentChapter
+      && COURSE_SLUGS.has(progress.currentChapter)
+      && progress.currentNodeId > 0
+    const hasStarted = progress.completedChapters.length > 0 || hasResumableChapter
 
     actionsEl.classList.remove('home-actions--loading')
     actionsEl.innerHTML = ''

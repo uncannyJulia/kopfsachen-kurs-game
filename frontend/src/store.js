@@ -4,7 +4,10 @@
 // API ist async/await, einfach zu benutzen.
 
 const DB_NAME    = 'kopfsachen'
-const DB_VERSION = 1
+// Bei jedem Bump werden bestehende Daten ALLER User komplett geplättet —
+// nutze das, wenn das Datenmodell breaking inkompatibel zum vorherigen Stand ist.
+//   Version 1 → 2 (2026-05-04): Reset wegen Konzept-v2-Umbau (Slugs/Nodes geändert)
+const DB_VERSION = 2
 
 let _db = null
 
@@ -16,23 +19,16 @@ function openDB() {
 
     req.onupgradeneeded = (e) => {
       const db = e.target.result
-      // Spielstand
-      if (!db.objectStoreNames.contains('progress')) {
-        db.createObjectStore('progress', { keyPath: 'id' })
-      }
-      // Cave-Konfiguration
-      if (!db.objectStoreNames.contains('cave')) {
-        db.createObjectStore('cave', { keyPath: 'id' })
-      }
-      // Fragebögen
-      if (!db.objectStoreNames.contains('questionnaire')) {
-        const qs = db.createObjectStore('questionnaire', { keyPath: 'id', autoIncrement: true })
-        qs.createIndex('type', 'type')
-      }
-      // Einstellungen
-      if (!db.objectStoreNames.contains('settings')) {
-        db.createObjectStore('settings', { keyPath: 'id' })
-      }
+      // Bestehende Stores droppen, damit alte Daten nicht zurückbleiben
+      Array.from(db.objectStoreNames).forEach(name => db.deleteObjectStore(name))
+
+      db.createObjectStore('progress', { keyPath: 'id' })
+      db.createObjectStore('cave', { keyPath: 'id' })
+
+      const qs = db.createObjectStore('questionnaire', { keyPath: 'id', autoIncrement: true })
+      qs.createIndex('type', 'type')
+
+      db.createObjectStore('settings', { keyPath: 'id' })
     }
 
     req.onsuccess  = (e) => { _db = e.target.result; resolve(_db) }
@@ -64,6 +60,7 @@ const DEFAULT_PROGRESS = {
   currentNodeId: 0,
   completedChapters: [],
   chapterCompletions: {},  // { [slug]: ISO-Timestamp } — für Zeitgate
+  unlockedExercises: [],   // Slugs aller Übungen die der User schon gesehen hat → Selfcare-Schachtel
   lastActive: null,
 }
 
@@ -77,11 +74,36 @@ export async function saveProgress(patch) {
   await idbPut('progress', { ...current, ...patch, lastActive: new Date().toISOString() })
 }
 
+// Lazy-loaded um Zirkular-Imports zu vermeiden (data/exercises-meta.js wird
+// vom Frontend-Code importiert, nicht über Bundler-Kette).
+let _CHAPTER_EXERCISES = null
+async function getChapterExercises() {
+  if (_CHAPTER_EXERCISES) return _CHAPTER_EXERCISES
+  const m = await import('./data/exercises-meta.js')
+  _CHAPTER_EXERCISES = m.CHAPTER_EXERCISES || {}
+  return _CHAPTER_EXERCISES
+}
+
 export async function completeChapter(slug) {
   const p = await getProgress()
   const completed = [...new Set([...p.completedChapters, slug])]
   const completions = { ...(p.chapterCompletions || {}), [slug]: new Date().toISOString() }
-  await saveProgress({ completedChapters: completed, chapterCompletions: completions })
+  // Übungen des Kapitels in Selfcare-Schachtel freischalten
+  const chapterEx = await getChapterExercises()
+  const newlyUnlocked = chapterEx[slug] || []
+  const unlocked = [...new Set([...(p.unlockedExercises || []), ...newlyUnlocked])]
+  await saveProgress({
+    completedChapters: completed,
+    chapterCompletions: completions,
+    unlockedExercises: unlocked,
+  })
+}
+
+export async function unlockExercise(slug) {
+  const p = await getProgress()
+  const current = p.unlockedExercises || []
+  if (current.includes(slug)) return
+  await saveProgress({ unlockedExercises: [...current, slug] })
 }
 
 // ── Cave-Konfiguration ────────────────────────────────────────
@@ -89,6 +111,9 @@ export async function completeChapter(slug) {
 const DEFAULT_CAVE = {
   id: 'main',
   backgroundKey: null,
+  // Platzierte Sticker mit Position: [{ id, key, x, y }]  — x/y in % (0-100)
+  stickers: [],
+  // Legacy: nur Slugs ohne Position. Beim Lesen migrieren wir, falls noch vorhanden.
   stickerKeys: [],
   soundKey: null,
 }

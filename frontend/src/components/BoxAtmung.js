@@ -1,6 +1,7 @@
 // components/BoxAtmung.js
 // Box-Atmungs-Animation: 4 Sek einatmen / 4 Sek halten / 4 Sek ausatmen / 4 Sek halten.
-// 4 Durchgänge. Kein Audio.
+// 4 Durchgänge. Keine Skip-Möglichkeit — User soll die Übung wirklich machen.
+// Nach Abschluss erscheint ein "Weiter"-Button, der onDone aufruft.
 //
 // Usage: el.appendChild(BoxAtmung({ onDone: () => { ... } }))
 
@@ -26,14 +27,14 @@ export function BoxAtmung({ onDone } = {}) {
       </div>
     </div>
     <div class="boxatmung-controls">
-      <button class="btn-secondary boxatmung-skip" type="button">Überspringen</button>
+      <button class="btn-primary boxatmung-done" type="button" hidden>Weiter</button>
     </div>
   `
 
   const roundEl  = root.querySelector('.boxatmung-round-num')
   const dotEl    = root.querySelector('.boxatmung-dot')
   const labelEl  = root.querySelector('.boxatmung-label')
-  const skipBtn  = root.querySelector('.boxatmung-skip')
+  const doneBtn  = root.querySelector('.boxatmung-done')
 
   let phaseIdx   = 0
   let roundNum   = 1
@@ -68,14 +69,17 @@ export function BoxAtmung({ onDone } = {}) {
   function finish() {
     finished = true
     clearTimeout(timeoutId)
-    labelEl.textContent = 'Fertig.'
+    labelEl.textContent = 'Schön. Du hast es geschafft.'
     dotEl.style.animation = 'none'
-    if (typeof onDone === 'function') onDone()
+    dotEl.style.opacity = '0'
+    doneBtn.hidden = false
   }
 
-  skipBtn.addEventListener('click', finish)
+  doneBtn.addEventListener('click', () => {
+    if (typeof onDone === 'function') onDone()
+  })
 
-  // Cleanup when element is removed
+  // Cleanup when element is removed (z.B. Navigation während laufender Übung)
   const observer = new MutationObserver(() => {
     if (!root.isConnected) {
       clearTimeout(timeoutId)

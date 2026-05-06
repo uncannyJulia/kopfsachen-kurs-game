@@ -11,18 +11,33 @@ const STRAPI_TOKEN = env.VITE_STRAPI_TOKEN || ''
 // Einfacher In-Memory Cache pro Session
 const _cache = new Map()
 
+const FETCH_TIMEOUT_MS = 4000
+
 async function fetchAPI(path, populate = '*') {
   const sep = path.includes('?') ? '&' : '?'
   const url = `${STRAPI_URL}/api${path}${sep}populate=${populate}`
 
   if (_cache.has(url)) return _cache.get(url)
 
-  const res = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(STRAPI_TOKEN ? { Authorization: `Bearer ${STRAPI_TOKEN}` } : {}),
-    },
-  })
+  // Timeout via AbortController, damit hängende Strapi-Calls nicht ewig blockieren.
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
+
+  let res
+  try {
+    res = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(STRAPI_TOKEN ? { Authorization: `Bearer ${STRAPI_TOKEN}` } : {}),
+      },
+      signal: controller.signal,
+    })
+  } catch (e) {
+    clearTimeout(timer)
+    if (e.name === 'AbortError') throw new Error(`Strapi-Timeout (${FETCH_TIMEOUT_MS}ms): ${path}`)
+    throw e
+  }
+  clearTimeout(timer)
 
   if (!res.ok) throw new Error(`Strapi ${res.status}: ${path}`)
 

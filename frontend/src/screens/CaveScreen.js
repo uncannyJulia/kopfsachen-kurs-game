@@ -37,9 +37,9 @@ const DEMO_ASSETS = {
 }
 
 const TABS = [
-  { key: 'background', label: 'Hintergründe' },
-  { key: 'sticker',    label: 'Elemente' },
-  { key: 'sound',      label: 'Athmo' },
+  { key: 'background', label: 'Orte' },
+  { key: 'sticker',    label: 'Sticker' },
+  { key: 'sound',      label: 'Atmo' },
 ]
 
 export function CaveScreen() {
@@ -74,20 +74,33 @@ export function CaveScreen() {
 
   let assets = DEMO_ASSETS
   let selectedBg = null
-  let selectedStickers = []
+  let placedStickers = []   // [{ id, key, x, y }]
   let selectedSound = null
   let activeTab = 'background'
   let unlocked = { background: true, sticker: false, sound: false }
+  let nextStickerId = 1
 
   async function init() {
     const saved = await getCave()
     selectedBg = saved.backgroundKey
-    selectedStickers = saved.stickerKeys || []
     selectedSound = saved.soundKey
 
+    // Migration: alte stickerKeys → neue placedStickers mit Default-Position
+    if (Array.isArray(saved.stickers) && saved.stickers.length) {
+      placedStickers = saved.stickers.map(s => ({ ...s }))
+    } else if (Array.isArray(saved.stickerKeys) && saved.stickerKeys.length) {
+      placedStickers = saved.stickerKeys.map((key, i) => ({
+        id: ++nextStickerId,
+        key,
+        x: 25 + (i * 15) % 50,
+        y: 30 + (i * 20) % 40,
+      }))
+    }
+    nextStickerId = Math.max(nextStickerId, ...placedStickers.map(s => s.id || 0)) + 1
+
     // Freischalt-Status aus Spielstand rekonstruieren
-    if (selectedBg)                    unlocked.sticker = true
-    if (selectedStickers.length > 0)   unlocked.sound = true
+    if (selectedBg)                  unlocked.sticker = true
+    if (placedStickers.length > 0)   unlocked.sound = true
 
     try {
       const strapi = await getCaveAssets()
@@ -127,7 +140,6 @@ export function CaveScreen() {
 
       const isSelected =
         (activeTab === 'background' && selectedBg === item.key) ||
-        (activeTab === 'sticker'    && selectedStickers.includes(item.key)) ||
         (activeTab === 'sound'      && selectedSound === item.key)
       if (isSelected) btn.classList.add('cave-item--selected')
 
@@ -152,22 +164,21 @@ export function CaveScreen() {
         activeTab = 'sticker'
         renderTabs()
         renderPanel()
-        flashHint('Super. Jetzt kannst du Elemente platzieren.')
+        flashHint('Super. Jetzt kannst du Sticker platzieren.')
       } else {
         renderPanel()
       }
     } else if (activeTab === 'sticker') {
-      if (selectedStickers.includes(item.key)) {
-        selectedStickers = selectedStickers.filter(k => k !== item.key)
-      } else {
-        selectedStickers = [...selectedStickers, item.key]
-      }
-      if (!unlocked.sound && selectedStickers.length > 0) {
+      // Neuen Sticker zentral hinzufügen — User kann ihn dann verschieben.
+      placedStickers = [
+        ...placedStickers,
+        { id: nextStickerId++, key: item.key, x: 50, y: 50 },
+      ]
+      if (!unlocked.sound && placedStickers.length > 0) {
         unlocked.sound = true
         renderTabs()
-        flashHint('Du kannst jetzt auch eine Athmo wählen.')
+        flashHint('Du kannst jetzt auch eine Atmo wählen. Tippe einen Sticker zum Entfernen, ziehe ihn zum Verschieben.')
       }
-      renderPanel()
     } else if (activeTab === 'sound') {
       selectedSound = selectedSound === item.key ? null : item.key
       renderPanel()
@@ -180,23 +191,74 @@ export function CaveScreen() {
     canvasEl.style.background = bg ? (bg.color || 'var(--accent-light)') : 'var(--accent-light)'
     canvasEl.innerHTML = ''
 
-    selectedStickers.forEach((key, i) => {
-      const s = (assets.sticker || []).find(st => st.key === key)
+    placedStickers.forEach(p => {
+      const s = (assets.sticker || []).find(st => st.key === p.key)
       if (!s) return
-      const span = document.createElement('span')
-      span.className = 'cave-canvas-sticker'
-      span.textContent = s.emoji || '·'
-      span.style.left = `${10 + (i * 17) % 75}%`
-      span.style.top  = `${20 + (i * 31) % 60}%`
-      canvasEl.appendChild(span)
+      const node = document.createElement('span')
+      node.className = 'cave-canvas-sticker'
+      node.textContent = s.emoji || '·'
+      node.style.left = `${p.x}%`
+      node.style.top  = `${p.y}%`
+      node.dataset.stickerId = String(p.id)
+      attachStickerInteractions(node, p)
+      canvasEl.appendChild(node)
     })
 
-    if (!selectedBg && !selectedStickers.length) {
+    if (!selectedBg && !placedStickers.length) {
       const hint = document.createElement('span')
       hint.className = 'cave-canvas-hint'
       hint.textContent = 'Wähle einen Hintergrund, um zu starten.'
       canvasEl.appendChild(hint)
     }
+  }
+
+  // Drag (verschieben) + Tap (entfernen) für Sticker auf dem Canvas
+  function attachStickerInteractions(node, sticker) {
+    let startX = 0, startY = 0
+    let origX = 0, origY = 0
+    let dragging = false
+    let moved = false
+
+    node.addEventListener('pointerdown', (e) => {
+      e.preventDefault()
+      dragging = true
+      moved = false
+      startX = e.clientX
+      startY = e.clientY
+      origX = sticker.x
+      origY = sticker.y
+      node.setPointerCapture(e.pointerId)
+      node.classList.add('cave-canvas-sticker--dragging')
+    })
+
+    node.addEventListener('pointermove', (e) => {
+      if (!dragging) return
+      const dx = e.clientX - startX
+      const dy = e.clientY - startY
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true
+      const rect = canvasEl.getBoundingClientRect()
+      // Pixel → Prozent
+      const newX = origX + (dx / rect.width)  * 100
+      const newY = origY + (dy / rect.height) * 100
+      sticker.x = Math.max(2, Math.min(98, newX))
+      sticker.y = Math.max(2, Math.min(98, newY))
+      node.style.left = `${sticker.x}%`
+      node.style.top  = `${sticker.y}%`
+    })
+
+    function endDrag() {
+      if (!dragging) return
+      dragging = false
+      node.classList.remove('cave-canvas-sticker--dragging')
+      // Wenn nicht bewegt → als Tap interpretieren = Sticker entfernen
+      if (!moved) {
+        placedStickers = placedStickers.filter(p => p.id !== sticker.id)
+        renderCanvas()
+      }
+    }
+
+    node.addEventListener('pointerup', endDrag)
+    node.addEventListener('pointercancel', endDrag)
   }
 
   function flashHint(text) {
@@ -208,7 +270,12 @@ export function CaveScreen() {
   }
 
   el.querySelector('.cave-save').addEventListener('click', async () => {
-    await saveCave({ backgroundKey: selectedBg, stickerKeys: selectedStickers, soundKey: selectedSound })
+    await saveCave({
+      backgroundKey: selectedBg,
+      stickers: placedStickers,
+      stickerKeys: placedStickers.map(s => s.key),  // legacy compat falls jemand stickerKeys liest
+      soundKey: selectedSound,
+    })
     history.back()
   })
 

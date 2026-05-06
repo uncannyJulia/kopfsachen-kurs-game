@@ -25,10 +25,10 @@ Weitere Kapitel bringen weitere NPCs. Alte Charaktere **Noen** und **Furi** sind
 ### 8 Kapitel (fest, mit Titeln)
 
 1. **Ein Moment nur für dich** — Ankommen und durchatmen *(einziges ausgespieltes Kapitel)*
-2. **Wie geht es dir? Danke gut.** — Mit dir selbst in Verbindung kommen
+2. **Wie geht es dir? Danke gut.** — Gefühle wahrnehmen und verstehen
 3. **Unter Druck** — Mit Stress umgehen
 4. **Früh merken, wenn's zu viel wird** — Deine Warnsignale verstehen
-5. **Deine größte Unterstützung: du selbst!** — Selbstmitgefühl statt Selbstkritik
+5. **Gut zu dir sein** — Selbstmitgefühl statt Selbstkritik
 6. **Was will ich eigentlich?** — Orientierung und Richtung finden
 7. **Was trägt dich?** — Ressourcen stärken
 8. **Dein Weg** — Recap und langfristig am Ball bleiben
@@ -47,7 +47,7 @@ Kapitel 2–8 sind **1 Woche nach Abschluss** des Vorkapitels freigeschaltet (Ze
 
 ### Onboarding (einmalig vor Kapitel 1)
 
-Start → Evu Willkommen → Hilfebedürftigkeits-Abfrage → Kopfsachen-Vorstellung + Video → Zeitabfrage (45 min) → **Prä-Fragebogen 12 Fragen** (inkl. Fallbeispiel "Mika" für Stigma) → Hilfe-Seite zeigen → Wünsche abfragen → Kursstruktur-Vorstellung → Kapitelauswahl.
+Start → Evu Willkommen → Hilfebedürftigkeits-Abfrage → Kopfsachen-Vorstellung + Video → Zeitabfrage (45 min) → **Prä-Fragebogen 14 Fragen** (inkl. Fallbeispiel "Mika" für Stigma + Zukunftsängste-Items) → Hilfe-Seite zeigen → Wünsche abfragen (Multi-Select + Freitext via ContentScreen `/content/wuensche-auswahl`) → Kursstruktur-Vorstellung → Kapitelauswahl.
 
 ### Zertifizierungsvorgabe
 
@@ -164,7 +164,7 @@ Aktuelle Screens und ihre Routes:
 - **Content Frame / Content Screen** — Figur klein oben rechts, Hauptfläche für Info-Blöcke/Grafiken die sich aufbauen. Für Kursstruktur-Erklärung, Notizbuch, Wenn-Dann-Plan.
 - **Video Screen** — Controls-Overlay, Auto-Close bei Video-Ende. Für Psycholog*in-Talking-Head in "Informieren".
 - **Übungskarte** — Intro + Audio + Anleitung + Info-Tabs + Abschlussabfrage (Smiley 1-5). Für geführte Übungen.
-- **Cave / Innerer sicherer Ort** — Gestaltungs-Screen mit 3 Tabs (Hintergründe/Elemente/Athmo) und Sticker-Mechanik.
+- **Cave / Innerer sicherer Ort** — Gestaltungs-Screen mit 3 Tabs (Orte/Elemente/Atmo) und Sticker-Mechanik.
 
 ### Globales UI
 

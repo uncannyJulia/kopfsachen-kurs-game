@@ -2,15 +2,15 @@
 // Kapitelauswahl: 8 Kapitel mit Zeitgate (Kapitel 2-8 erst 1 Woche nach Vorkapitel-Abschluss).
 
 import { getChapters } from '../api.js'
-import { getProgress } from '../store.js'
+import { getProgress, saveProgress } from '../store.js'
 
 // Fallback — Titel decken sich mit cms/seed/data/chapters.json
 const DEMO_CHAPTERS = [
   { slug: 'ein-moment-nur-fuer-dich',                title: 'Ein Moment nur für dich',                subtitle: 'Ankommen und durchatmen',             order: 1, unlockAfterDays: 0 },
-  { slug: 'wie-geht-es-dir-danke-gut',               title: 'Wie geht es dir? Danke gut.',            subtitle: 'Mit dir selbst in Verbindung kommen', order: 2, unlockAfterDays: 7 },
+  { slug: 'wie-geht-es-dir-danke-gut',               title: 'Wie geht es dir? Danke gut.',            subtitle: 'Gefühle wahrnehmen und verstehen',    order: 2, unlockAfterDays: 7 },
   { slug: 'unter-druck',                             title: 'Unter Druck',                            subtitle: 'Mit Stress umgehen',                  order: 3, unlockAfterDays: 7 },
   { slug: 'frueh-merken-wenns-zu-viel-wird',         title: "Früh merken, wenn's zu viel wird",       subtitle: 'Deine Warnsignale verstehen',         order: 4, unlockAfterDays: 7 },
-  { slug: 'deine-groesste-unterstuetzung-du-selbst', title: 'Deine größte Unterstützung: du selbst!', subtitle: 'Selbstmitgefühl statt Selbstkritik',  order: 5, unlockAfterDays: 7 },
+  { slug: 'gut-zu-dir-sein',                         title: 'Gut zu dir sein',                        subtitle: 'Selbstmitgefühl statt Selbstkritik',  order: 5, unlockAfterDays: 7 },
   { slug: 'was-will-ich-eigentlich',                 title: 'Was will ich eigentlich?',               subtitle: 'Orientierung und Richtung finden',    order: 6, unlockAfterDays: 7 },
   { slug: 'was-traegt-dich',                         title: 'Was trägt dich?',                        subtitle: 'Ressourcen stärken',                  order: 7, unlockAfterDays: 7 },
   { slug: 'dein-weg',                                title: 'Dein Weg',                               subtitle: 'Recap und langfristig am Ball bleiben', order: 8, unlockAfterDays: 7 },
@@ -40,15 +40,24 @@ export function ChaptersScreen() {
   })
 
   async function init() {
-    let chapters = null
+    // Demo-Daten sind die kanonische 8-Kapitel-Liste. Strapi-Daten werden
+    // nur eingemerged (Title/Subtitle/Description), aber niemals bestimmt
+    // wie viele Kapitel angezeigt werden — sonst hat man bei unvollständigem
+    // CMS-Stand plötzlich nur 3 statt 8 Kapitel.
+    const bySlug = new Map(DEMO_CHAPTERS.map(c => [c.slug, { ...c }]))
     try {
-      chapters = await getChapters()
+      const strapi = await getChapters()
+      if (Array.isArray(strapi)) {
+        strapi.forEach(s => {
+          if (s?.slug && bySlug.has(s.slug)) {
+            bySlug.set(s.slug, { ...bySlug.get(s.slug), ...s })
+          }
+        })
+      }
     } catch (e) {
       console.warn('Strapi nicht erreichbar, nutze Demo-Daten:', e.message)
     }
-    chapters = (chapters && chapters.length ? chapters : DEMO_CHAPTERS)
-      .slice()
-      .sort((a, b) => (a.order || 0) - (b.order || 0))
+    const chapters = Array.from(bySlug.values()).sort((a, b) => (a.order || 0) - (b.order || 0))
 
     const progress = await getProgress()
     const completed = progress.completedChapters || []
@@ -89,7 +98,10 @@ export function ChaptersScreen() {
       `
 
       if (!card.disabled) {
-        card.addEventListener('click', () => {
+        card.addEventListener('click', async () => {
+          // Explizite Auswahl aus Kapitelübersicht → Kapitel von vorn starten,
+          // alten Resume-Pointer für dieses Kapitel löschen.
+          await saveProgress({ currentChapter: ch.slug, currentNodeId: 0 })
           window.location.hash = `#/novel/${ch.slug}`
         })
       }

@@ -29,10 +29,22 @@ export function KopfsachenScreen() {
         <span class="kopfsachen-submenu-hint">Häufig gestellte Fragen</span>
       </a>
     </nav>
+    <div class="kopfsachen-reset">
+      <button type="button" class="kopfsachen-reset-btn">Spielstand zurücksetzen</button>
+      <p class="kopfsachen-reset-hint">Setzt deinen Fortschritt komplett zurück. Du startest dann wieder vom Onboarding.</p>
+    </div>
   `
 
   el.querySelector('.kopfsachen-back').addEventListener('click', () => {
     history.back()
+  })
+
+  el.querySelector('.kopfsachen-reset-btn').addEventListener('click', async () => {
+    if (!confirm('Wirklich zurücksetzen? Dein gesamter Fortschritt geht verloren.')) return
+    try {
+      indexedDB.deleteDatabase('kopfsachen')
+    } catch (e) { /* noop */ }
+    setTimeout(() => { window.location.hash = '#/'; window.location.reload() }, 100)
   })
 
   return el

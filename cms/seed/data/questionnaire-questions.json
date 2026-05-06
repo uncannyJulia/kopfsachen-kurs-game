@@ -103,8 +103,26 @@
     "scaleLabels": ["stimmt gar nicht", "stimmt eher nicht", "teils/teils", "stimmt eher", "stimmt voll"]
   },
   {
-    "questionId": "mhl_anlaufstellen_prae",
+    "questionId": "zukunftsaengste_1_prae",
     "order": 12,
+    "questionnaire": "prae",
+    "category": "emotionale_selbstwirksamkeit",
+    "questionText": "Sorgst du dich um mögliche Fehlschläge, die auf dich zukommen könnten?",
+    "responseType": "likert_5",
+    "scaleLabels": ["stimmt gar nicht", "stimmt eher nicht", "teils/teils", "stimmt eher", "stimmt voll"]
+  },
+  {
+    "questionId": "zukunftsaengste_2_prae",
+    "order": 13,
+    "questionnaire": "prae",
+    "category": "emotionale_selbstwirksamkeit",
+    "questionText": "Glaubst du, du kannst zukünftige Herausforderungen lösen, wenn sie aufkommen?",
+    "responseType": "likert_5",
+    "scaleLabels": ["stimmt gar nicht", "stimmt eher nicht", "teils/teils", "stimmt eher", "stimmt voll"]
+  },
+  {
+    "questionId": "mhl_anlaufstellen_prae",
+    "order": 14,
     "questionnaire": "prae",
     "category": "mental_health_literacy",
     "questionText": "Kennst du Anlaufstellen, an die man sich mit psychischen Problemen wenden kann, wie z.B. Beratungsstellen, Krisen-Hotline oder Hilfe-Chat?",
