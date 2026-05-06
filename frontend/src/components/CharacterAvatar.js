@@ -1,44 +1,17 @@
 // components/CharacterAvatar.js
-// Platzhalter-SVG-Illustrationen je Speaker, bis echtes Character-Art da ist.
-// Stilstuf: einfache, freundliche Vektoren in den Speaker-Farben.
+// Avatare je Speaker.
+//   - Evu / Mika: Lottie-Animation (echtes Character-Art aus assets/Evu/evu_statisch.json)
+//   - alle anderen: SVG-Platzhalter bis echte Assets vorliegen.
+
+import lottie from 'lottie-web'
+
+// Welche Speaker nutzen die Lottie-Animation?
+const LOTTIE_SPEAKERS = {
+  evu:  '/lottie/evu_statisch.json',
+  mika: '/lottie/evu_statisch.json',  // gleicher Stil im Konzept
+}
 
 const SVG_BY_SPEAKER = {
-  // Evu: weicher, "haariger" Blob (analog Mika)
-  evu: `
-    <svg viewBox="0 0 100 100" aria-hidden="true">
-      <ellipse cx="50" cy="55" rx="36" ry="40" fill="#fde68a"/>
-      <g stroke="#92400e" stroke-width="1.5" stroke-linecap="round" fill="none">
-        <path d="M 18 80 L 16 96"/>
-        <path d="M 28 86 L 26 98"/>
-        <path d="M 38 89 L 38 98"/>
-        <path d="M 50 90 L 50 99"/>
-        <path d="M 62 89 L 62 98"/>
-        <path d="M 72 86 L 74 98"/>
-        <path d="M 82 80 L 84 96"/>
-      </g>
-      <circle cx="40" cy="50" r="2.5" fill="#1f2937"/>
-      <circle cx="60" cy="50" r="2.5" fill="#1f2937"/>
-      <path d="M 40 64 Q 50 70 60 64" stroke="#1f2937" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-    </svg>
-  `,
-  // Mika: gleiche Optik wie Evu (gleicher Illustratoren-Stil im Konzept)
-  mika: `
-    <svg viewBox="0 0 100 100" aria-hidden="true">
-      <ellipse cx="50" cy="55" rx="36" ry="40" fill="#fde68a"/>
-      <g stroke="#92400e" stroke-width="1.5" stroke-linecap="round" fill="none">
-        <path d="M 18 80 L 16 96"/>
-        <path d="M 28 86 L 26 98"/>
-        <path d="M 38 89 L 38 98"/>
-        <path d="M 50 90 L 50 99"/>
-        <path d="M 62 89 L 62 98"/>
-        <path d="M 72 86 L 74 98"/>
-        <path d="M 82 80 L 84 96"/>
-      </g>
-      <circle cx="40" cy="50" r="2.5" fill="#1f2937"/>
-      <circle cx="60" cy="50" r="2.5" fill="#1f2937"/>
-      <path d="M 40 64 Q 50 70 60 64" stroke="#1f2937" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-    </svg>
-  `,
   // Toni: schwarze Silhouette mit Katzenohren
   toni: `
     <svg viewBox="0 0 100 100" aria-hidden="true">
@@ -87,7 +60,42 @@ const SVG_BY_SPEAKER = {
   narrator: '',
 }
 
+// Cache der bereits geladenen Lottie-JSONs, damit jede Anzeige sofort startet
+const _lottieCache = new Map()
+
+async function loadLottie(path) {
+  if (_lottieCache.has(path)) return _lottieCache.get(path)
+  const data = await fetch(path).then(r => r.json())
+  _lottieCache.set(path, data)
+  return data
+}
+
+function mountLottie(wrap, path) {
+  loadLottie(path).then(animationData => {
+    if (!wrap.isConnected) return
+    lottie.loadAnimation({
+      container: wrap,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      animationData,
+    })
+  }).catch(err => {
+    console.warn('Lottie konnte nicht geladen werden:', err)
+  })
+}
+
 export function CharacterAvatar(speaker, { size = '4rem' } = {}) {
+  const lottiePath = LOTTIE_SPEAKERS[speaker]
+  if (lottiePath) {
+    const wrap = document.createElement('div')
+    wrap.className = `character-avatar character-avatar--${speaker} character-avatar--lottie`
+    wrap.style.width = size
+    wrap.style.height = size
+    mountLottie(wrap, lottiePath)
+    return wrap
+  }
+
   const svg = SVG_BY_SPEAKER[speaker]
   if (!svg) return null
   const wrap = document.createElement('div')
@@ -99,5 +107,6 @@ export function CharacterAvatar(speaker, { size = '4rem' } = {}) {
 }
 
 export function hasAvatar(speaker) {
+  if (LOTTIE_SPEAKERS[speaker]) return true
   return !!(SVG_BY_SPEAKER[speaker] && SVG_BY_SPEAKER[speaker].trim())
 }
