@@ -287,10 +287,24 @@ export function NovelScreen(path) {
 
   let typeTimer = null
 
+  // Aktuelle Avatar-Instance (mit setState-API für talking/idle)
+  function activeAvatar() {
+    return characterEl.firstElementChild
+  }
+  function setAvatarState(state) {
+    const av = activeAvatar()
+    if (av && typeof av.setState === 'function') av.setState(state)
+  }
+
   function typeText(target, text) {
     clearInterval(typeTimer)
     target.textContent = ''
-    if (!text) { target.textContent = ''; return }
+    if (!text) {
+      target.textContent = ''
+      setAvatarState('idle')
+      return
+    }
+    setAvatarState('talking')
     let i = 0
     typeTimer = setInterval(() => {
       if (i < text.length) {
@@ -299,6 +313,7 @@ export function NovelScreen(path) {
       } else {
         clearInterval(typeTimer)
         typeTimer = null
+        setAvatarState('idle')
       }
     }, 25)
 
@@ -308,6 +323,7 @@ export function NovelScreen(path) {
         clearInterval(typeTimer)
         typeTimer = null
         target.textContent = text
+        setAvatarState('idle')
       }
     }
   }

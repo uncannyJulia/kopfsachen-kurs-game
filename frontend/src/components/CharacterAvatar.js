@@ -5,10 +5,20 @@
 
 import lottie from 'lottie-web'
 
-// Welche Speaker nutzen die Lottie-Animation?
-const LOTTIE_SPEAKERS = {
-  evu:  '/lottie/evu_statisch.json',
-  mika: '/lottie/evu_statisch.json',  // gleicher Stil im Konzept
+// Welche Speaker nutzen Lottie-Animationen + welche State-Animations gibt's?
+// Default-State ist immer 'idle'.
+const LOTTIE_ANIMATIONS = {
+  evu: {
+    idle:    '/lottie/evu_idle.json',
+    talking: '/lottie/evu_talking.json',
+    static:  '/lottie/evu_statisch.json',
+  },
+  // Mika nutzt das gleiche Char-Art wie Evu (Konzept) — vorerst nur statisch
+  mika: {
+    idle:    '/lottie/evu_statisch.json',
+    talking: '/lottie/evu_statisch.json',
+    static:  '/lottie/evu_statisch.json',
+  },
 }
 
 const SVG_BY_SPEAKER = {
@@ -70,24 +80,38 @@ async function loadLottie(path) {
   return data
 }
 
-function mountLottie(wrap, path) {
-  loadLottie(path).then(animationData => {
-    if (!wrap.isConnected) return
-    lottie.loadAnimation({
-      container: wrap,
-      renderer: 'svg',
-      loop: true,
-      autoplay: true,
-      animationData,
-    })
-  }).catch(err => {
+// Wechselt das Lottie-Animation-File auf einem bestehenden Wrap.
+// Verhindert sichtbares Re-Mount: das alte Animation-Instance wird erst
+// nach erfolgreichem Laden des neuen JSON destroyed.
+async function swapLottie(wrap, path) {
+  if (!wrap.isConnected || wrap._lottiePath === path) return
+  wrap._lottiePath = path
+  let animationData
+  try {
+    animationData = await loadLottie(path)
+  } catch (err) {
     console.warn('Lottie konnte nicht geladen werden:', err)
+    return
+  }
+  if (!wrap.isConnected || wrap._lottiePath !== path) return  // inzwischen anderer State angefordert
+
+  // Alte Instance destroyen und Container leeren
+  if (wrap._lottieAnim) {
+    try { wrap._lottieAnim.destroy() } catch {}
+  }
+  wrap.innerHTML = ''
+  wrap._lottieAnim = lottie.loadAnimation({
+    container: wrap,
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    animationData,
   })
 }
 
-export function CharacterAvatar(speaker, { size = '45rem' } = {}) {
-  const lottiePath = LOTTIE_SPEAKERS[speaker]
-  if (lottiePath) {
+export function CharacterAvatar(speaker, { size = '45rem', state = 'idle' } = {}) {
+  const animations = LOTTIE_ANIMATIONS[speaker]
+  if (animations) {
     const wrap = document.createElement('div')
     wrap.className = `character-avatar character-avatar--${speaker} character-avatar--lottie`
     // Lottie-Datei ist Portrait (1080×1920 ≈ 9:16). Höhe als Anker, Breite via aspect-ratio.
@@ -95,7 +119,14 @@ export function CharacterAvatar(speaker, { size = '45rem' } = {}) {
     const h = `min(${size}, 55vh)`
     wrap.style.height = h
     wrap.style.width  = `calc(${h} * 9 / 16)`
-    mountLottie(wrap, lottiePath)
+
+    swapLottie(wrap, animations[state] || animations.idle)
+
+    // Public-API: setState('talking' | 'idle' | 'static') auf dem Wrap-Element
+    wrap.setState = (nextState) => {
+      const path = animations[nextState] || animations.idle
+      swapLottie(wrap, path)
+    }
     return wrap
   }
 
@@ -107,10 +138,12 @@ export function CharacterAvatar(speaker, { size = '45rem' } = {}) {
   wrap.style.width = cap
   wrap.style.height = cap
   wrap.innerHTML = svg
+  // No-op setState für Konsistenz
+  wrap.setState = () => {}
   return wrap
 }
 
 export function hasAvatar(speaker) {
-  if (LOTTIE_SPEAKERS[speaker]) return true
+  if (LOTTIE_ANIMATIONS[speaker]) return true
   return !!(SVG_BY_SPEAKER[speaker] && SVG_BY_SPEAKER[speaker].trim())
 }
