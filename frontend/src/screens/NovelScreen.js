@@ -116,6 +116,7 @@ export function NovelScreen(path) {
   let likertAnswers = [] // Collect all inline Likert answers
   let username = null    // Loaded from settings or entered by user
   let lastSpeaker = null // Cached, damit Avatar nicht bei jedem Klick neu lädt
+  let lastLayout  = null // Für FLIP-Transition Avatar zwischen monologue/scene/compact
 
   // ── Node rendern ─────────────────────────────────────────
 
@@ -132,6 +133,15 @@ export function NovelScreen(path) {
     const config = SPEAKER_CONFIG[node.speaker] || SPEAKER_CONFIG.narrator
     const speakerChanged = node.speaker !== lastSpeaker
     const layout = getLayoutForNode(node)
+    const layoutChanged = layout !== lastLayout
+
+    // FLIP-Vorbereitung: Wenn dieselbe Figur über einen Layout-Wechsel hinweg bleibt
+    // (z.B. Evu monologue → compact), Position/Größe VOR dem Klassen-Swap merken.
+    let flipFromRect = null
+    if (!speakerChanged && layoutChanged && lastLayout !== null) {
+      const av = activeAvatar()
+      if (av) flipFromRect = av.getBoundingClientRect()
+    }
 
     // Layout-Klasse auf .novel-content setzen (steuert via CSS Position der Elemente)
     const contentClasses = ['novel-content', `novel-layout--${layout}`]
@@ -147,6 +157,43 @@ export function NovelScreen(path) {
       } else {
         characterEl.style.display = 'none'
       }
+    }
+
+    // FLIP-Play: jetzt liegt der Avatar bereits an der NEUEN Position. Inverse-Transform
+    // anwenden, dann per RAF auf identity zurückanimieren → wirkt wie ein sanfter Flug.
+    if (flipFromRect) {
+      const av = activeAvatar()
+      if (av) {
+        const toRect = av.getBoundingClientRect()
+        const dx = flipFromRect.left   - toRect.left
+        const dy = flipFromRect.top    - toRect.top
+        const sx = toRect.width  ? flipFromRect.width  / toRect.width  : 1
+        const sy = toRect.height ? flipFromRect.height / toRect.height : 1
+        av.style.transformOrigin = 'top left'
+        av.style.transition = 'none'
+        av.style.transform = `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`
+        // Force reflow → dann mit Transition zurück auf 0
+        void av.offsetWidth
+        av.style.transition = 'transform 900ms cubic-bezier(0.34, 1.05, 0.5, 1)'
+        av.style.transform  = ''
+        const cleanup = () => {
+          av.style.transition = ''
+          av.style.transform = ''
+          av.style.transformOrigin = ''
+        }
+        av.addEventListener('transitionend', cleanup, { once: true })
+        // Safety: falls transitionend nicht feuert (z.B. Lottie-internal repaint)
+        setTimeout(cleanup, 1100)
+      }
+    }
+    lastLayout = layout
+
+    // Optional: Node-spezifischer Avatar-State (z.B. evu zeigt_hilfe / zeigt_kopfsachen).
+    // Lock setzen, bevor typeText() die Talking/Idle-Übergänge versucht.
+    lockedAvatarState = node.avatarState || null
+    if (lockedAvatarState) {
+      const av = activeAvatar()
+      if (av && typeof av.setState === 'function') av.setState(lockedAvatarState)
     }
 
     // User-Choice-Nodes ohne Text: weder Bubble noch "Du"-Label zeigen,
@@ -330,7 +377,11 @@ export function NovelScreen(path) {
   function activeAvatar() {
     return characterEl.firstElementChild
   }
+  // Wenn ein Node `avatarState` setzt (z.B. 'zeigt_hilfe'), pinnen wir diesen State
+  // und blocken talking/idle vom Typewriter — sonst flickert die Geste.
+  let lockedAvatarState = null
   function setAvatarState(state) {
+    if (lockedAvatarState && (state === 'talking' || state === 'idle')) return
     const av = activeAvatar()
     if (av && typeof av.setState === 'function') av.setState(state)
   }

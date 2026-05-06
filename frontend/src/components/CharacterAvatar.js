@@ -9,9 +9,11 @@ import lottie from 'lottie-web'
 // Default-State ist immer 'idle'.
 const LOTTIE_ANIMATIONS = {
   evu: {
-    idle:    '/lottie/evu_idle.json',
-    talking: '/lottie/evu_talking.json',
-    static:  '/lottie/evu_statisch.json',
+    idle:            '/lottie/evu_idle.json',
+    talking:         '/lottie/evu_talking.json',
+    static:          '/lottie/evu_statisch.json',
+    zeigt_hilfe:     '/lottie/evu_zeigt_hilfe.json',
+    zeigt_kopfsachen:'/lottie/evu_zeigt_kopfsachen.json',
   },
   // Mika nutzt das gleiche Char-Art wie Evu (Konzept) — vorerst nur statisch
   mika: {

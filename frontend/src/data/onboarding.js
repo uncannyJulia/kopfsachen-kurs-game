@@ -20,7 +20,7 @@ export const ONBOARDING_NODES = [
   // ── Hilfebedürftigkeits-Abfrage ───────────────────────
   { nodeId: 10, speaker: 'evu', text: 'Dieses Angebot ersetzt keine Therapie.', emotion: 'neutral', nextNodeId: 11 },
   { nodeId: 11, speaker: 'evu', text: 'Wenn du dich gerade in einer akuten Krise befindest und dich stark überfordert fühlst, hol dir bitte menschliche Unterstützung.', emotion: 'worried', nextNodeId: 12 },
-  { nodeId: 12, speaker: 'evu', text: "Unter 'Hilfsangebote' findest du professionelle Hilfe.", emotion: 'neutral', nextNodeId: null, choices: [
+  { nodeId: 12, speaker: 'evu', text: "Unter 'Hilfsangebote' findest du professionelle Hilfe.", emotion: 'neutral', avatarState: 'zeigt_hilfe', nextNodeId: null, choices: [
     { text: 'Hilfsangebote anschauen', nextNodeId: 13 },
     { text: 'Ich möchte starten',      nextNodeId: 20 },
   ]},
@@ -31,7 +31,7 @@ export const ONBOARDING_NODES = [
   { nodeId: 20, speaker: 'evu', text: 'Das Ganze hier kommt von Kopfsachen e.V.', emotion: 'neutral', nextNodeId: 21 },
   { nodeId: 21, speaker: 'evu', text: 'In einem kurzen Video erfährst du, wer hinter Kopfsachen steckt und worum es geht.', emotion: 'happy', nextNodeId: 22 },
   { nodeId: 22, speaker: 'narrator', text: '🎬  Video: Wer ist Kopfsachen? (ca. 2 Min)', emotion: null, nextNodeId: 23 },
-  { nodeId: 23, speaker: 'evu', text: 'Bei Fragen zur App findest du immer hier Hilfe von Kopfsachen — über das K-Logo oben.', emotion: 'happy', nextNodeId: 30 },
+  { nodeId: 23, speaker: 'evu', text: 'Bei Fragen zur App findest du immer hier Hilfe von Kopfsachen — über das K-Logo oben.', emotion: 'happy', avatarState: 'zeigt_kopfsachen', nextNodeId: 30 },
 
   // ── Zeit-Abfrage ──────────────────────────────────────
   { nodeId: 30, speaker: 'evu', text: 'Bevor du beginnst: Hast du gerade ca. 45 Minuten Zeit und bist an einem ruhigen Ort, an dem du ungestört bist?', emotion: 'neutral', nextNodeId: null, choices: [
@@ -104,7 +104,7 @@ export const ONBOARDING_NODES = [
     likert: { questionId: 'mhl_anlaufstellen_prae', questionText: 'Kennst du Anlaufstellen für psychische Probleme?', emojis: SMILEY, labels: LIKERT, nextNodeId: 72 } },
   { nodeId: 72, speaker: 'evu', text: 'Danke fürs Beantworten!', emotion: 'happy', nextNodeId: 73 },
   { nodeId: 73, speaker: 'evu', text: 'Wenn sich etwas für dich gerade zu schwer anfühlt, musst du da nicht alleine durch. Manche Themen brauchen Unterstützung von anderen.', emotion: 'worried', nextNodeId: 74 },
-  { nodeId: 74, speaker: 'evu', text: 'Um einen Überblick über Hilfsangebote zu bekommen, schaue dir einmal die Hilfsangebote-Seite an.', emotion: 'neutral', nextNodeId: null, choices: [
+  { nodeId: 74, speaker: 'evu', text: 'Um einen Überblick über Hilfsangebote zu bekommen, schaue dir einmal die Hilfsangebote-Seite an.', emotion: 'neutral', avatarState: 'zeigt_hilfe', nextNodeId: null, choices: [
     { text: 'Hilfsangebote öffnen', nextNodeId: 75 },
   ]},
   { nodeId: 75, speaker: 'evu', text: 'Danach geht es hier weiter.', emotion: 'happy', nextNodeId: 80, triggerAction: 'open_hilfsangebote' },
