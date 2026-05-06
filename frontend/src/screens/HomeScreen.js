@@ -26,7 +26,7 @@ export function HomeScreen() {
   el.innerHTML = `
     <div class="home-content">
       <div class="home-hero">
-        <h1 class="home-title">Kopfsachen</h1>
+        <h1 class="home-title">Kopf frei!</h1>
         <p class="home-tagline">Dein Kurs für mentale Stärke</p>
       </div>
       <div class="home-actions home-actions--loading">

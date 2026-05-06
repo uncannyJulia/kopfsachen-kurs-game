@@ -85,13 +85,16 @@ function mountLottie(wrap, path) {
   })
 }
 
-export function CharacterAvatar(speaker, { size = '4rem' } = {}) {
+export function CharacterAvatar(speaker, { size = '45rem' } = {}) {
   const lottiePath = LOTTIE_SPEAKERS[speaker]
   if (lottiePath) {
     const wrap = document.createElement('div')
     wrap.className = `character-avatar character-avatar--${speaker} character-avatar--lottie`
-    wrap.style.width = size
-    wrap.style.height = size
+    // Lottie-Datei ist Portrait (1080×1920 ≈ 9:16). Höhe als Anker, Breite via aspect-ratio.
+    // Cap an Viewport, damit Bubble + Buttons noch sichtbar bleiben.
+    const h = `min(${size}, 55vh)`
+    wrap.style.height = h
+    wrap.style.width  = `calc(${h} * 9 / 16)`
     mountLottie(wrap, lottiePath)
     return wrap
   }
@@ -100,8 +103,9 @@ export function CharacterAvatar(speaker, { size = '4rem' } = {}) {
   if (!svg) return null
   const wrap = document.createElement('div')
   wrap.className = `character-avatar character-avatar--${speaker}`
-  wrap.style.width = size
-  wrap.style.height = size
+  const cap = `min(${size}, 55vh)`
+  wrap.style.width = cap
+  wrap.style.height = cap
   wrap.innerHTML = svg
   return wrap
 }

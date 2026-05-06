@@ -84,6 +84,7 @@ export function NovelScreen(path) {
   let currentNode = null
   let likertAnswers = [] // Collect all inline Likert answers
   let username = null    // Loaded from settings or entered by user
+  let lastSpeaker = null // Cached, damit Avatar nicht bei jedem Klick neu lädt
 
   // ── Node rendern ─────────────────────────────────────────
 
@@ -98,15 +99,18 @@ export function NovelScreen(path) {
     }
 
     const config = SPEAKER_CONFIG[node.speaker] || SPEAKER_CONFIG.narrator
+    const speakerChanged = node.speaker !== lastSpeaker
 
-    // Character-Avatar (Platzhalter-SVG je Speaker)
-    characterEl.innerHTML = ''
-    if (hasAvatar(node.speaker)) {
-      const av = CharacterAvatar(node.speaker)
-      if (av) characterEl.appendChild(av)
-      characterEl.style.display = ''
-    } else {
-      characterEl.style.display = 'none'
+    // Character-Avatar nur neu rendern wenn der Speaker wechselt — sonst flackert er.
+    if (speakerChanged) {
+      characterEl.innerHTML = ''
+      if (hasAvatar(node.speaker)) {
+        const av = CharacterAvatar(node.speaker)
+        if (av) characterEl.appendChild(av)
+        characterEl.style.display = ''
+      } else {
+        characterEl.style.display = 'none'
+      }
     }
 
     // Speaker-Label
@@ -132,10 +136,15 @@ export function NovelScreen(path) {
       ? (node.text || '').replace(/\[Username\]/g, username)
       : (node.text || '')
 
-    // Slide-In-Animation der Bubble bei jedem Node-Wechsel
-    bubble.classList.remove('novel-bubble--enter')
-    void bubble.offsetWidth
-    bubble.classList.add('novel-bubble--enter')
+    // Slide-In-Animation der Bubble nur bei Speaker-Wechsel — sonst nur Typewriter
+    if (speakerChanged) {
+      bubble.classList.remove('novel-bubble--enter')
+      void bubble.offsetWidth
+      bubble.classList.add('novel-bubble--enter')
+    }
+
+    // Speaker erst NACH allen speakerChanged-Vergleichen aktualisieren
+    lastSpeaker = node.speaker
 
     // Text mit Typewriter-Effekt
     typeText(bubble, displayText)
@@ -212,6 +221,18 @@ export function NovelScreen(path) {
     likertEl.classList.remove('novel-likert--enter')
     void likertEl.offsetWidth
     likertEl.classList.add('novel-likert--enter')
+
+    // Aussage / Frage prominent über der Skala anzeigen
+    // (Wenn die questionText sich vom Bubble-Text unterscheidet, sonst weglassen
+    //  — z.B. "Was denkst du über folgende Aussage?" in der Bubble + die Aussage hier.)
+    const bubbleText = (currentNode?.text || '').trim()
+    const qText = (likert.questionText || '').trim()
+    if (qText && qText !== bubbleText) {
+      const statement = document.createElement('p')
+      statement.className = 'likert-statement'
+      statement.textContent = qText
+      likertEl.appendChild(statement)
+    }
 
     const scale = document.createElement('div')
     scale.className = 'likert'

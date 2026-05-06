@@ -36,15 +36,38 @@
 
 /* ── CSS Custom Properties ─────────────────────────────────── */
 :root {
-  /* Farben – Platzhalter bis Illustratorin liefert */
-  --accent:        #7C3AED;
-  --accent-light:  #EDE9FE;
-  --accent-dark:   #4C1D95;
-  --bg:            #FAFAF9;
-  --surface:       #FFFFFF;
-  --text:          #1C1917;
-  --text-muted:    #78716C;
-  --border:        #E7E5E4;
+  /* ── Kopfsachen CI-Farben ────────────────────────────── */
+  --kopfsachen-dark-1:       #292222;
+  --kopfsachen-dark-2:       #4D4949;
+  --kopfsachen-white:        #FFFFFF;
+  --kopfsachen-success:      #00D08E;
+  --kopfsachen-success-soft: #CCF6E8;
+  --kopfsachen-warning:      #FF7D47;
+  --kopfsachen-warning-soft: #FFD8C8;
+  --kopfsachen-info:         #4181F6;
+  --kopfsachen-info-soft:    #DDE7FA;
+  --kopfsachen-danger:       #FF475A;
+  --kopfsachen-danger-soft:  #FFDADE;
+
+  /* ── Semantische Tokens (zeigen auf CI) ──────────────── */
+  /* Primary Accent: Info-Blau aus der CI — verwendet für Rahmen, Buttons, Highlights */
+  --accent:        var(--kopfsachen-info);
+  --accent-light:  var(--kopfsachen-info-soft);
+  --accent-dark:   var(--kopfsachen-dark-1);
+
+  --bg:            var(--kopfsachen-white);
+  --surface:       var(--kopfsachen-white);
+  --text:          var(--kopfsachen-dark-1);
+  --text-muted:    var(--kopfsachen-dark-2);
+  --border:        var(--kopfsachen-info-soft);
+
+  /* Status-Farben (für Hinweise, Hilfsangebote etc.) */
+  --color-success:      var(--kopfsachen-success);
+  --color-success-soft: var(--kopfsachen-success-soft);
+  --color-warning:      var(--kopfsachen-warning);
+  --color-warning-soft: var(--kopfsachen-warning-soft);
+  --color-danger:       var(--kopfsachen-danger);
+  --color-danger-soft:  var(--kopfsachen-danger-soft);
 
   /* Spacing – rem-basiert, skaliert mit Root-Font-Size */
   --space-xs:  0.25rem;
@@ -370,6 +393,8 @@ body {
   z-index: 1;
   display: flex;
   flex-direction: column;
+  /* Alle Children am unteren Rand — funktioniert auch wenn der Avatar (User-Speaker) ausgeblendet ist */
+  justify-content: flex-end;
   height: 100%;
   padding: var(--space-lg);
   padding-bottom: var(--space-xl);
@@ -380,8 +405,6 @@ body {
   justify-content: center;
   align-items: flex-end;
   margin-bottom: var(--space-sm);
-  /* Schiebt sich + alles darunter (Label, Bubble, Buttons) ans untere Ende */
-  margin-top: auto;
   flex-shrink: 0;
 }
 
@@ -440,13 +463,16 @@ body {
   to   { transform: translateY(0);   opacity: 1; }
 }
 
-/* Narrator-Stil: kein Rand, kursiv. Höhe behalten für Layout-Stabilität. */
+/* Narrator-Stil: kein Rand, kursiv. Höhe wächst mit Inhalt (für längere Story-Vignetten wie Mika). */
 .novel-bubble--narrator .novel-bubble {
   border-color: transparent;
   background: transparent;
   color: var(--text-muted);
   font-style: italic;
   padding: var(--space-md) 0;
+  height: auto;
+  max-height: 18rem;
+  overflow-y: auto;
 }
 
 .novel-bubble--narrator .novel-bubble::before,
@@ -506,6 +532,19 @@ body {
 
 .novel-likert--enter {
   animation: likertSlideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Aussage über der Likert-Skala (z.B. "Mika ist selbst schuld …") */
+.likert-statement {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--accent-light);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-sm);
+  text-align: center;
+  line-height: 1.4;
 }
 
 @keyframes likertSlideUp {
@@ -591,8 +630,8 @@ body {
   position: fixed;
   bottom: var(--space-md);
   right: var(--space-md);
-  background: #1C1917;
-  color: #fff;
+  background: var(--kopfsachen-dark-1);
+  color: var(--kopfsachen-white);
   font-size: 0.6875rem;
   padding: 0.25em 0.625em;
   border-radius: var(--radius-pill);
@@ -1557,6 +1596,9 @@ body {
 
 .video-screen {
   background: #000;
+  /* Verhindert dass der ganze Screen scrollt — stattdessen scrollt nur die Stage,
+     damit der Weiter-Button im Footer immer am unteren Rand sichtbar bleibt. */
+  overflow: hidden;
 }
 
 .video-topbar {
@@ -1585,6 +1627,7 @@ body {
   background: #000;
   min-height: 0;
   padding: var(--space-md);
+  overflow-y: auto;
 }
 
 .video-iframe,

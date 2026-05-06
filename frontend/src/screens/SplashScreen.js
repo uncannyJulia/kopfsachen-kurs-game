@@ -10,7 +10,7 @@ export function SplashScreen() {
   el.innerHTML = `
     <div class="splash-content">
       <div class="splash-logo">
-        <span class="splash-title">Kopfsachen</span>
+        <span class="splash-title">Kopf frei!</span>
         <span class="splash-subtitle">Dein Kurs für mentale Stärke</span>
       </div>
     </div>

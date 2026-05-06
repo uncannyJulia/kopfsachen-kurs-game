@@ -13,8 +13,8 @@ export const ONBOARDING_NODES = [
   { nodeId: 1,  speaker: 'evu', text: 'Hallo!', emotion: 'happy', nextNodeId: 2 },
   { nodeId: 2,  speaker: 'evu', text: 'Ich bin Evu. Ich begleite dich durch die App.', emotion: 'happy', nextNodeId: 3 },
   { nodeId: 3,  speaker: 'evu', text: 'Ich wachse mit deinem Fortschritt im Kurs.', emotion: 'neutral', nextNodeId: 4 },
-  { nodeId: 4,  speaker: 'evu', text: 'Wie heißt du?', emotion: 'neutral', nextNodeId: 5 },
-  { nodeId: 5,  speaker: 'user', text: '', inputType: 'text', inputPlaceholder: 'Dein Name …', nextNodeId: 6, choices: [] },
+  // Evu fragt UND Input-Feld erscheint direkt unter ihrer Frage — keine separate "leere User-Bubble"
+  { nodeId: 4,  speaker: 'evu', text: 'Wie heißt du?', emotion: 'neutral', nextNodeId: 6, inputType: 'text', inputPlaceholder: 'Dein Name …' },
   { nodeId: 6,  speaker: 'evu', text: 'Hi [Username]. Schön, dass du da bist.', emotion: 'happy', nextNodeId: 10 },
 
   // ── Hilfebedürftigkeits-Abfrage ───────────────────────
