@@ -37,6 +37,7 @@ const ENTITIES = [
   { key: 'energie-aktivitaeten',    file: 'energie-aktivitaeten.json',    endpoint: 'energie-aktivitaeten',    uniqueField: 'text' },
   { key: 'wenn-dann-situations',    file: 'wenn-dann-situations.json',    endpoint: 'wenn-dann-situations',    uniqueField: 'text' },
   { key: 'exercises',               file: 'exercises.json',               endpoint: 'exercises',               uniqueField: 'slug' },
+  { key: 'ui-text-blocks',          file: 'ui-text-blocks.json',          endpoint: 'ui-text-blocks',          uniqueField: 'key' },
 ]
 
 // ── HTTP ────────────────────────────────────────────────────

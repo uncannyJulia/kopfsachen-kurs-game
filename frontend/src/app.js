@@ -14,6 +14,11 @@ import { ToolboxScreen }       from './screens/ToolboxScreen.js'
 import { HilfsangeboteScreen } from './screens/HilfsangeboteScreen.js'
 import { KopfsachenScreen }    from './screens/KopfsachenScreen.js'
 import { QuestionnaireScreen } from './screens/QuestionnaireScreen.js'
+import { ensureUiTextsLoaded } from './data/ui-texts.js'
+
+// UI-Texte aus Strapi vorladen — fire and forget. Screens ohne Strapi-Daten
+// fallen automatisch auf hartcodierte Fallbacks zurück.
+ensureUiTextsLoaded()
 
 const app    = document.getElementById('app')
 const router = new Router(app)

@@ -8,6 +8,7 @@
 
 import { getEnergieAktivitaeten, getWennDannSituations } from '../api.js'
 import { saveCourseData, getCourseData } from '../store.js'
+import { t } from '../data/ui-texts.js'
 
 const DEMO_ENERGIE_AKTIVITAETEN = [
   { text: 'Viele Aufgaben gleichzeitig erledigen', sortOrder: 1 },
@@ -157,8 +158,8 @@ async function renderEnergieReflexion(container) {
 
   container.innerHTML = `
     <div class="energie-intro">
-      <p>Denke an deine letzte Woche.</p>
-      <p>Wähle die Stärke (1–5), dann wische die Karte <strong>nach links</strong>, wenn es Energie gekostet hat — <strong>nach rechts</strong>, wenn es Energie gegeben hat.</p>
+      <p>${escape(t('energie.intro.1', 'Denke an deine letzte Woche.'))}</p>
+      <p>${t('energie.intro.2', 'Wähle die Stärke (1–5), dann wische die Karte <strong>nach links</strong>, wenn es Energie gekostet hat — <strong>nach rechts</strong>, wenn es Energie gegeben hat.')}</p>
     </div>
     <div class="energie-stage">
       <div class="energie-tray energie-tray--left" aria-label="Energie-Fresser">
@@ -167,7 +168,7 @@ async function renderEnergieReflexion(container) {
       </div>
       <div class="energie-card-wrap">
         <div class="energie-card" role="button" aria-label="Karte zum Wischen">
-          <div class="energie-card-label">Situation</div>
+          <div class="energie-card-label">${escape(t('energie.card.label', 'Situation'))}</div>
           <div class="energie-card-text"></div>
           <div class="energie-card-badge"></div>
         </div>
@@ -178,13 +179,13 @@ async function renderEnergieReflexion(container) {
       </div>
     </div>
     <div class="energie-rating-area">
-      <p class="energie-rating-prompt">Wie stark?</p>
+      <p class="energie-rating-prompt">${escape(t('energie.rating.prompt', 'Wie stark?'))}</p>
       <div class="energie-scale">
         ${[1, 2, 3, 4, 5].map(n => `<button class="energie-scale-btn" data-value="${n}" type="button">${n}</button>`).join('')}
       </div>
     </div>
     <div class="energie-bottom">
-      <button class="energie-skip-btn" type="button">ist nicht passiert</button>
+      <button class="energie-skip-btn" type="button">${escape(t('energie.skip.button', 'ist nicht passiert'))}</button>
     </div>
     <div class="energie-progress"></div>
   `
@@ -352,23 +353,24 @@ async function renderEnergieReflexion(container) {
     // nicht erscheint falls IndexedDB hängt/fehlschlägt.
     const renderRating = (r) => r.rating != null ? `<span class="energie-rating">${r.rating}/5</span>` : ''
 
+    const emptyMsg = `<p class="energie-empty">${escape(t('energie.done.empty', '— keine —'))}</p>`
     container.innerHTML = `
       <div class="energie-done">
-        <h2 class="energie-done-title">Deine Woche</h2>
+        <h2 class="energie-done-title">${escape(t('energie.done.title', 'Deine Woche'))}</h2>
         <div class="energie-done-group">
-          <h3 class="energie-done-subtitle">Deine Top-Energie-Fresser</h3>
-          ${fresser.length ? `<ul class="energie-done-list">${fresser.map(([t, r]) =>
-            `<li>${escape(t)} ${renderRating(r)}</li>`
-          ).join('')}</ul>` : '<p class="energie-empty">— keine —</p>'}
+          <h3 class="energie-done-subtitle">${escape(t('energie.done.fresser', 'Deine Top-Energie-Fresser'))}</h3>
+          ${fresser.length ? `<ul class="energie-done-list">${fresser.map(([txt, r]) =>
+            `<li>${escape(txt)} ${renderRating(r)}</li>`
+          ).join('')}</ul>` : emptyMsg}
         </div>
         <div class="energie-done-group">
-          <h3 class="energie-done-subtitle">Deine Top-Energie-Geber</h3>
-          ${geber.length ? `<ul class="energie-done-list">${geber.map(([t, r]) =>
-            `<li>${escape(t)} ${renderRating(r)}</li>`
-          ).join('')}</ul>` : '<p class="energie-empty">— keine —</p>'}
+          <h3 class="energie-done-subtitle">${escape(t('energie.done.geber', 'Deine Top-Energie-Geber'))}</h3>
+          ${geber.length ? `<ul class="energie-done-list">${geber.map(([txt, r]) =>
+            `<li>${escape(txt)} ${renderRating(r)}</li>`
+          ).join('')}</ul>` : emptyMsg}
         </div>
-        <p class="energie-hint">Gerade vor und nach Aktivitäten, die dich viel Energie kosten, ist es hilfreich, bewusst Zeiten für Erholung einzuplanen.</p>
-        <button class="btn-primary energie-continue" type="button">Weiter</button>
+        <p class="energie-hint">${escape(t('energie.done.hint', 'Gerade vor und nach Aktivitäten, die dich viel Energie kosten, ist es hilfreich, bewusst Zeiten für Erholung einzuplanen.'))}</p>
+        <button class="btn-primary energie-continue" type="button">${escape(t('energie.done.continue', 'Weiter'))}</button>
       </div>
     `
     container.querySelector('.energie-continue').addEventListener('click', () => history.back())

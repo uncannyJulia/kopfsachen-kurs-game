@@ -83,3 +83,6 @@ export const getEnergieAktivitaeten = () =>
 
 export const getWennDannSituations = () =>
   fetchAPI('/wenn-dann-situations?sort=sortOrder:asc&filters[isActive][$eq]=true')
+
+export const getUiTextBlocks = () =>
+  fetchAPI('/ui-text-blocks?filters[isActive][$eq]=true&pagination[pageSize]=500')

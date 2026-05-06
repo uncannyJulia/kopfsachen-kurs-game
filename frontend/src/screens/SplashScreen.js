@@ -2,6 +2,7 @@
 // Kurze Logo-Anzeige, dann Weiterleitung je nach Spielstand.
 
 import { getProgress, getSettings } from '../store.js'
+import { t } from '../data/ui-texts.js'
 
 export function SplashScreen() {
   const el = document.createElement('div')
@@ -10,8 +11,8 @@ export function SplashScreen() {
   el.innerHTML = `
     <div class="splash-content">
       <div class="splash-logo">
-        <span class="splash-title">Kopf frei!</span>
-        <span class="splash-subtitle">Dein Kurs für mentale Stärke</span>
+        <span class="splash-title">${t('splash.title', 'Kopf frei!')}</span>
+        <span class="splash-subtitle">${t('splash.subtitle', 'Dein Kurs für mentale Stärke')}</span>
       </div>
     </div>
   `
