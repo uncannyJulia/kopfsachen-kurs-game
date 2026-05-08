@@ -654,6 +654,11 @@ export function NovelScreen(path) {
     loadingEl.style.display = 'none'
     contentEl.style.display = ''
 
+    // Story-Bilder im Hintergrund vorladen — sobald init fertig ist, holt der Browser
+    // parallel alle Comic-Panels rein. Beim Klick durch die Story sind sie dann im Cache.
+    const uniqueImages = [...new Set(nodes.map(n => n.image).filter(Boolean))]
+    uniqueImages.forEach(src => { const img = new Image(); img.src = src })
+
     // Unbekannter Slug oder leeres Node-Set → ab zur Kapitelauswahl, statt "Szene beendet"
     if (!nodes.length) {
       console.warn(`Keine Dialog-Nodes für slug "${slug}" gefunden — leite weiter`)

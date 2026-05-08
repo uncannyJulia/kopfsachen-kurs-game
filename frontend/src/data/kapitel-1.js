@@ -21,51 +21,51 @@ export const KAPITEL_1_NODES = [
   // ══════════════════════════════════════════════════════
   // (Frühere narrator-Platzhalter wie "Toni schaut aufs Handy" wurden entfernt —
   //  die Comic-Bilder zeigen die Aktion bereits visuell.)
-  { nodeId: 11, speaker: 'toni', text: 'Ich warte jetzt schon 10 Minuten auf Neo.', emotion: 'worried', image: '/story/01_Toni_ich_warte.png', nextNodeId: 12 },
-  { nodeId: 12, speaker: 'user', text: '', image: '/story/01_Toni_ich_warte.png', nextNodeId: null, choices: [
+  { nodeId: 11, speaker: 'toni', text: 'Ich warte jetzt schon 10 Minuten auf Neo.', emotion: 'worried', image: '/story/01_Toni_ich_warte.webp', nextNodeId: 12 },
+  { nodeId: 12, speaker: 'user', text: '', image: '/story/01_Toni_ich_warte.webp', nextNodeId: null, choices: [
     { text: 'Hat Neo vielleicht etwas geschrieben?', nextNodeId: 14 },
   ]},
-  { nodeId: 14, speaker: 'toni', text: 'Keine Nachricht von Neo.', emotion: 'sad', image: '/story/02_Toni_keine_nachricht.png', nextNodeId: 15 },
-  { nodeId: 15, speaker: 'toni', text: 'Wir wollten doch zusammen zu diesem Sportkurs.', emotion: 'sad', image: '/story/03_Toni_wir_wollten_doch.png', nextNodeId: 16 },
-  { nodeId: 16, speaker: 'toni', text: 'Soll ich da alleine hingehen?', emotion: 'worried', image: '/story/04_Toni_soll_ich_da.png', nextNodeId: null, choices: [
+  { nodeId: 14, speaker: 'toni', text: 'Keine Nachricht von Neo.', emotion: 'sad', image: '/story/02_Toni_keine_nachricht.webp', nextNodeId: 15 },
+  { nodeId: 15, speaker: 'toni', text: 'Wir wollten doch zusammen zu diesem Sportkurs.', emotion: 'sad', image: '/story/03_Toni_wir_wollten_doch.webp', nextNodeId: 16 },
+  { nodeId: 16, speaker: 'toni', text: 'Soll ich da alleine hingehen?', emotion: 'worried', image: '/story/04_Toni_soll_ich_da.webp', nextNodeId: null, choices: [
     { text: 'Lieber nicht.',        nextNodeId: 17 },
     { text: 'Ja komm, das passt schon.', nextNodeId: 18 },
   ]},
-  { nodeId: 17, speaker: 'toni', text: 'Ich war da auch noch nie und ich kenne da niemanden.', emotion: 'worried', image: '/story/05_Toni_ich_war_da.png', nextNodeId: 20 },
-  { nodeId: 18, speaker: 'toni', text: 'Ich war da aber noch nie und ich kenne da niemanden.', emotion: 'worried', image: '/story/05_Toni_ich_war_da.png', nextNodeId: 20 },
-  { nodeId: 20, speaker: 'toni', text: 'Ich habe echt keine Lust, das jetzt alleine zu machen. Das ist mir zu stressig.', emotion: 'sad', image: '/story/06_Toni_ich_habe_echt_das_ist_mir_zu_wieso_meldet_sich.png', nextNodeId: 21 },
-  { nodeId: 21, speaker: 'toni', text: 'Wieso meldet sich Neo nicht?!', emotion: 'sad', image: '/story/06_Toni_ich_habe_echt_das_ist_mir_zu_wieso_meldet_sich.png', nextNodeId: null, choices: [
+  { nodeId: 17, speaker: 'toni', text: 'Ich war da auch noch nie und ich kenne da niemanden.', emotion: 'worried', image: '/story/05_Toni_ich_war_da.webp', nextNodeId: 20 },
+  { nodeId: 18, speaker: 'toni', text: 'Ich war da aber noch nie und ich kenne da niemanden.', emotion: 'worried', image: '/story/05_Toni_ich_war_da.webp', nextNodeId: 20 },
+  { nodeId: 20, speaker: 'toni', text: 'Ich habe echt keine Lust, das jetzt alleine zu machen. Das ist mir zu stressig.', emotion: 'sad', image: '/story/06_Toni_ich_habe_echt_das_ist_mir_zu_wieso_meldet_sich.webp', nextNodeId: 21 },
+  { nodeId: 21, speaker: 'toni', text: 'Wieso meldet sich Neo nicht?!', emotion: 'sad', image: '/story/06_Toni_ich_habe_echt_das_ist_mir_zu_wieso_meldet_sich.webp', nextNodeId: null, choices: [
     { text: 'Okay, erstmal kurz entspannen.', nextNodeId: 25 },
     { text: 'Komm schon. Reiß dich zusammen!', nextNodeId: 22 },
   ]},
-  { nodeId: 22, speaker: 'toni', text: 'Ich merke richtig Druck in der Brust.', emotion: 'worried', image: '/story/07_Toni_ich_merke_richtig.png', nextNodeId: null, choices: [
+  { nodeId: 22, speaker: 'toni', text: 'Ich merke richtig Druck in der Brust.', emotion: 'worried', image: '/story/07_Toni_ich_merke_richtig.webp', nextNodeId: null, choices: [
     { text: 'Vielleicht helfen ein paar tiefe Atemzüge.',     nextNodeId: 25 },
     { text: 'Das ist alles Neos Schuld.',                     nextNodeId: 23 },
   ]},
-  { nodeId: 23, speaker: 'toni', text: 'Ich glaub, ich sollte mal kurz entspannt durchatmen.', emotion: 'thinking', image: '/story/08_Toni_ich_glaube_ich_sollte.png', nextNodeId: 25 },
+  { nodeId: 23, speaker: 'toni', text: 'Ich glaub, ich sollte mal kurz entspannt durchatmen.', emotion: 'thinking', image: '/story/08_Toni_ich_glaube_ich_sollte.webp', nextNodeId: 25 },
 
   // ── Box-Atmung ────────────────────────────────────────
   { nodeId: 25, speaker: 'evu', text: 'Probier mal eine kurze Box-Atmung. Ich zeig dir gleich, wie das geht.', emotion: 'neutral', nextNodeId: 26, triggerAction: 'open_exercise', triggerPayload: 'box-atmung' },
-  { nodeId: 26, speaker: 'toni', text: 'Okay, jetzt fühl ich mich ein bisschen klarer.', emotion: 'calm', image: '/story/09_Toni_ok_jetzt_fuehl.png', nextNodeId: 27 },
+  { nodeId: 26, speaker: 'toni', text: 'Okay, jetzt fühl ich mich ein bisschen klarer.', emotion: 'calm', image: '/story/09_Toni_ok_jetzt_fuehl.webp', nextNodeId: 27 },
   { nodeId: 27, speaker: 'user', text: '', nextNodeId: null, choices: [
     { text: 'Weiter warten',            nextNodeId: 28 },
     { text: 'Alleine zum Kurs gehen',   nextNodeId: 29 },
   ]},
-  { nodeId: 28, speaker: 'toni', text: 'Ich glaube, Neo wird nicht mehr kommen — und der Kurs hat jetzt sowieso schon angefangen.', emotion: 'sad', image: '/story/10_Toni_der_kurs_hat_jetzt.png', nextNodeId: 30 },
-  { nodeId: 29, speaker: 'toni', text: 'Mist, der Kurs hat jetzt schon angefangen.', emotion: 'sad', image: '/story/10_Toni_der_kurs_hat_jetzt.png', nextNodeId: 30 },
-  { nodeId: 30, speaker: 'toni', text: 'Manu wohnt doch gleich hier um die Ecke.', emotion: 'thinking', image: '/story/11_Toni_manu_wohnt_doch.png', nextNodeId: null, choices: [
+  { nodeId: 28, speaker: 'toni', text: 'Ich glaube, Neo wird nicht mehr kommen — und der Kurs hat jetzt sowieso schon angefangen.', emotion: 'sad', image: '/story/10_Toni_der_kurs_hat_jetzt.webp', nextNodeId: 30 },
+  { nodeId: 29, speaker: 'toni', text: 'Mist, der Kurs hat jetzt schon angefangen.', emotion: 'sad', image: '/story/10_Toni_der_kurs_hat_jetzt.webp', nextNodeId: 30 },
+  { nodeId: 30, speaker: 'toni', text: 'Manu wohnt doch gleich hier um die Ecke.', emotion: 'thinking', image: '/story/11_Toni_manu_wohnt_doch.webp', nextNodeId: null, choices: [
     { text: 'Zu Manu gehen', nextNodeId: 35 },
   ]},
 
   // ── Bei Manu ──────────────────────────────────────────
-  { nodeId: 35, speaker: 'manu', text: 'Sehr ärgerlich und merkwürdig. Neo ist doch eigentlich zuverlässig.', emotion: 'worried', image: '/story/12_Manu_sehr_aergerlich.png', nextNodeId: null, choices: [
+  { nodeId: 35, speaker: 'manu', text: 'Sehr ärgerlich und merkwürdig. Neo ist doch eigentlich zuverlässig.', emotion: 'worried', image: '/story/12_Manu_sehr_aergerlich.webp', nextNodeId: null, choices: [
     { text: 'Ich verstehe es auch nicht.', nextNodeId: 36 },
     { text: 'Richtig nervig.',             nextNodeId: 36 },
   ]},
-  { nodeId: 36, speaker: 'toni', text: 'Neo hat sich einfach nicht gemeldet. Ich wollte nicht alleine gehen und schließlich war es auch zu spät.', emotion: 'sad', image: '/story/13_Toni_neo_hat_sich_einfach.png', nextNodeId: 37 },
-  { nodeId: 37, speaker: 'manu', text: 'Das hört sich stressig an.', emotion: 'calm', image: '/story/14_Manu_das_hoert_sich.png', nextNodeId: 38 },
-  { nodeId: 38, speaker: 'toni', text: 'Ich hab dann irgendwann tief durchgeatmet. Das hat mich etwas entspannt. Dann fiel mir ein, dass du hier in der Nähe wohnst.', emotion: 'calm', image: '/story/15_Toni_ich_hab_dann_irgendwann.png', nextNodeId: 39 },
-  { nodeId: 39, speaker: 'manu', text: 'Ja, ruhiges und tiefes Atmen kann bei stressigen Situationen richtig hilfreich sein, um etwas runterzukommen.', emotion: 'happy', image: '/story/16_Manu_ja_ruhiges_und_tiefes.png', nextNodeId: 40 },
+  { nodeId: 36, speaker: 'toni', text: 'Neo hat sich einfach nicht gemeldet. Ich wollte nicht alleine gehen und schließlich war es auch zu spät.', emotion: 'sad', image: '/story/13_Toni_neo_hat_sich_einfach.webp', nextNodeId: 37 },
+  { nodeId: 37, speaker: 'manu', text: 'Das hört sich stressig an.', emotion: 'calm', image: '/story/14_Manu_das_hoert_sich.webp', nextNodeId: 38 },
+  { nodeId: 38, speaker: 'toni', text: 'Ich hab dann irgendwann tief durchgeatmet. Das hat mich etwas entspannt. Dann fiel mir ein, dass du hier in der Nähe wohnst.', emotion: 'calm', image: '/story/15_Toni_ich_hab_dann_irgendwann.webp', nextNodeId: 39 },
+  { nodeId: 39, speaker: 'manu', text: 'Ja, ruhiges und tiefes Atmen kann bei stressigen Situationen richtig hilfreich sein, um etwas runterzukommen.', emotion: 'happy', image: '/story/16_Manu_ja_ruhiges_und_tiefes.webp', nextNodeId: 40 },
   { nodeId: 40, speaker: 'toni', text: 'Mich ärgert, dass Neo gerade heute nicht gekommen ist. Ich hatte schon einen super vollen Tag.', emotion: 'sad', nextNodeId: 41 },
   { nodeId: 41, speaker: 'toni', text: 'Ich war arbeiten und musste lernen. Dann hatte ich noch einen Streit am Telefon mit meinem Vater.', emotion: 'sad', nextNodeId: 42 },
   { nodeId: 42, speaker: 'toni', text: 'Ich hatte eigentlich keine Energie mehr für den neuen Kurs.', emotion: 'sad', nextNodeId: 43 },

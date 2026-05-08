@@ -41,8 +41,12 @@ export function HomeScreen() {
   async function init() {
     let settings = {}, progress = { completedChapters: [], currentChapter: null, currentNodeId: 0 }
     try {
-      settings  = await getSettings()
-      progress  = await getProgress()
+      // Race mit 1s-Timeout — schützt vor hängender IndexedDB (z.B. Vite-HMR-Zombie-Connection)
+      const result = await Promise.race([
+        Promise.all([getSettings(), getProgress()]),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('storage-timeout')), 1000)),
+      ])
+      ;[settings, progress] = result
     } catch (err) {
       console.warn('Home: Spielstand konnte nicht geladen werden, zeige Initial-Menü:', err)
     }
@@ -76,7 +80,11 @@ function renderInitial(container, onboardingDone) {
   container.querySelector('.home-start').addEventListener('click', async () => {
     // Onboarding ist die erste Evu-Szene. Frischer Start: alten Resume-Pointer löschen,
     // sonst landet der User beim Abschiedsgruß einer früheren abgebrochenen Session.
-    await saveProgress({ currentChapter: null, currentNodeId: 0 })
+    try {
+      await saveProgress({ currentChapter: null, currentNodeId: 0 })
+    } catch (err) {
+      console.warn('Start: saveProgress fehlgeschlagen, navigiere trotzdem:', err)
+    }
     window.location.hash = onboardingDone ? '#/chapters' : '#/novel/onboarding'
   })
   container.querySelector('.home-hilfsangebote').addEventListener('click', () => {

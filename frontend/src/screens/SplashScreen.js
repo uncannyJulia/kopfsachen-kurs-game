@@ -17,21 +17,27 @@ export function SplashScreen() {
     </div>
   `
 
+  // Hard-Fallback: nach 2s in jedem Fall weiter zu /home — schützt vor hängender
+  // IndexedDB (z.B. Vite HMR-Reload mit zombier DB-Connection).
+  let forwarded = false
+  const goHome = () => {
+    if (forwarded) return
+    forwarded = true
+    window.location.hash = '#/home'
+  }
+  setTimeout(goHome, 2000)
+
   setTimeout(async () => {
     try {
-      const settings = await getSettings()
-      const progress = await getProgress()
-
-      if (!settings.onboardingDone) {
-        window.location.hash = '#/home'
-      } else if (progress.completedChapters.length > 0 || progress.currentNodeId > 0) {
-        window.location.hash = '#/home'
-      } else {
-        window.location.hash = '#/home'
-      }
+      // Nur kurz auf Storage warten, sonst direkt forward
+      await Promise.race([
+        Promise.all([getSettings(), getProgress()]),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('storage-timeout')), 800)),
+      ])
     } catch {
-      window.location.hash = '#/home'
+      // egal — Spielstand wird im Home selbst nochmal geladen
     }
+    goHome()
   }, 1500)
 
   return el
