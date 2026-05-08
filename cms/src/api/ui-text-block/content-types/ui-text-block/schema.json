@@ -1,0 +1,52 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ui_text_blocks",
+  "info": {
+    "singularName": "ui-text-block",
+    "pluralName": "ui-text-blocks",
+    "displayName": "UI-Text-Block",
+    "description": "Frei editierbare UI-Texte je Screen — fuer Buttons, Headings, Hints, Intros etc."
+  },
+  "options": { "draftAndPublish": true },
+  "attributes": {
+    "key": {
+      "type": "uid",
+      "required": true,
+      "description": "Eindeutige ID, vom Frontend referenziert. Format z.B. 'energie.intro.line1' oder 'home.button.start'"
+    },
+    "screen": {
+      "type": "enumeration",
+      "enum": [
+        "home",
+        "splash",
+        "chapters",
+        "novel",
+        "exercise",
+        "video",
+        "content_energie",
+        "content_wenn_dann",
+        "content_wuensche",
+        "cave",
+        "toolbox",
+        "hilfsangebote",
+        "kopfsachen",
+        "questionnaire",
+        "common"
+      ],
+      "required": true,
+      "description": "Auf welchem Screen erscheint der Text? Filter im Admin nutzbar."
+    },
+    "label": {
+      "type": "string",
+      "description": "Admin-Label, beschreibt wo dieser Text erscheint. Nur fuer Editor*innen sichtbar."
+    },
+    "text": {
+      "type": "richtext",
+      "required": true
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

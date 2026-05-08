@@ -1,0 +1,77 @@
+[
+  { "key": "home.title",                  "screen": "home",            "label": "Großer Hero-Titel auf dem Home-Screen", "text": "Kopf frei!" },
+  { "key": "home.tagline",                "screen": "home",            "label": "Untertitel unter dem App-Namen",        "text": "Dein Kurs für mentale Stärke" },
+  { "key": "home.button.start",           "screen": "home",            "label": "Initial-Start-Button (vor Onboarding)",  "text": "Start" },
+  { "key": "home.button.resume",          "screen": "home",            "label": "Kurs-fortsetzen-Button (nach Start)",    "text": "Kurs fortsetzen" },
+  { "key": "home.button.chapters",        "screen": "home",            "label": "Kapitelauswahl-Button (post-onboarding)", "text": "Kapitelauswahl" },
+  { "key": "home.button.toolbox",         "screen": "home",            "label": "Selfcare-Schachtel-Button",              "text": "Selfcare-Schachtel" },
+  { "key": "home.button.hilfsangebote",   "screen": "home",            "label": "Hilfsangebote-Button",                   "text": "Hilfsangebote" },
+  { "key": "home.button.kopfsachen",      "screen": "home",            "label": "Kopfsachen-Verein-Button",               "text": "Kopfsachen" },
+
+  { "key": "splash.title",                "screen": "splash",          "label": "Großer Titel auf dem Splash",            "text": "Kopf frei!" },
+  { "key": "splash.subtitle",             "screen": "splash",          "label": "Untertitel auf dem Splash",              "text": "Dein Kurs für mentale Stärke" },
+
+  { "key": "chapters.heading",            "screen": "chapters",        "label": "Heading der Kapitelübersicht",           "text": "Kapitel" },
+  { "key": "chapters.unlockHint",         "screen": "chapters",        "label": "Hinweis bei verschlossenen Kapiteln (n=Tage)", "text": "Freigeschaltet in {n} {n,plural,one{Tag}other{Tagen}}" },
+  { "key": "chapters.unlockHintBlocked",  "screen": "chapters",        "label": "Hinweis wenn Vorkapitel nicht abgeschlossen (i=Index)", "text": "Erst nach Abschluss von Kapitel {i}" },
+
+  { "key": "energie.intro.1",             "screen": "content_energie", "label": "Erste Zeile der Energie-Reflexion-Intro", "text": "Denke an deine letzte Woche." },
+  { "key": "energie.intro.2",             "screen": "content_energie", "label": "Zweite Zeile (Anweisung zum Wischen)",    "text": "Wähle die Stärke (1–5), dann wische die Karte nach links wenn es Energie gekostet hat — nach rechts wenn es Energie gegeben hat." },
+  { "key": "energie.card.label",          "screen": "content_energie", "label": "Label oberhalb der Situation auf der Karte", "text": "Situation" },
+  { "key": "energie.rating.prompt",       "screen": "content_energie", "label": "Frage über der 1-5-Skala",               "text": "Wie stark?" },
+  { "key": "energie.skip.button",         "screen": "content_energie", "label": "Skip-Button unten",                      "text": "ist nicht passiert" },
+  { "key": "energie.done.title",          "screen": "content_energie", "label": "Heading der Auswertung",                 "text": "Deine Woche" },
+  { "key": "energie.done.fresser",        "screen": "content_energie", "label": "Heading Fresser-Liste",                  "text": "Deine Top-Energie-Fresser" },
+  { "key": "energie.done.geber",          "screen": "content_energie", "label": "Heading Geber-Liste",                    "text": "Deine Top-Energie-Geber" },
+  { "key": "energie.done.empty",          "screen": "content_energie", "label": "Hinweis wenn Liste leer",                "text": "— keine —" },
+  { "key": "energie.done.hint",           "screen": "content_energie", "label": "Abschluss-Hinweis unter Listen",         "text": "Gerade vor und nach Aktivitäten, die dich viel Energie kosten, ist es hilfreich, bewusst Zeiten für Erholung einzuplanen." },
+  { "key": "energie.done.continue",       "screen": "content_energie", "label": "Weiter-Button auf der Auswertung",       "text": "Weiter" },
+
+  { "key": "wennDann.step1.title",        "screen": "content_wenn_dann", "label": "Heading Schritt 1",                    "text": "Schritt 1: Dein Energie-Boost" },
+  { "key": "wennDann.step1.desc",         "screen": "content_wenn_dann", "label": "Beschreibung Schritt 1",               "text": "Wähle eine Aktivität, die du in der nächsten Woche bewusst einbauen möchtest." },
+  { "key": "wennDann.step2.title",        "screen": "content_wenn_dann", "label": "Heading Schritt 2",                    "text": "Schritt 2: Wann?" },
+  { "key": "wennDann.step2.desc",         "screen": "content_wenn_dann", "label": "Beschreibung Schritt 2",               "text": "Wann wäre dein Energie-Boost besonders hilfreich? Mehrere Antworten möglich." },
+  { "key": "wennDann.step2.freitext",     "screen": "content_wenn_dann", "label": "Label des Freitext-Inputs",            "text": "Oder eigene Situation:" },
+  { "key": "wennDann.step2.freitextPlaceholder", "screen": "content_wenn_dann", "label": "Placeholder im Freitext-Input", "text": "z.B. Wenn ich …" },
+  { "key": "wennDann.step3.title",        "screen": "content_wenn_dann", "label": "Heading Schritt 3 (Endübersicht)",     "text": "Dein Plan" },
+  { "key": "wennDann.step3.save",         "screen": "content_wenn_dann", "label": "Save-Button auf Endübersicht",         "text": "Plan merken" },
+  { "key": "wennDann.next",               "screen": "content_wenn_dann", "label": "Weiter-Button (zwischen den Schritten)", "text": "Weiter" },
+
+  { "key": "wuensche.intro",              "screen": "content_wuensche", "label": "Intro-Text der Wünsche-Auswahl",        "text": "Wähle alles aus, was zutrifft." },
+  { "key": "wuensche.freitext.label",     "screen": "content_wuensche", "label": "Label für Freitext-Feld",               "text": "Etwas anderes:" },
+  { "key": "wuensche.freitext.placeholder", "screen": "content_wuensche", "label": "Placeholder Freitext",                "text": "Schreib deinen Wunsch …" },
+  { "key": "wuensche.continue",           "screen": "content_wuensche", "label": "Weiter-Button",                         "text": "Weiter" },
+
+  { "key": "hilfsangebote.heading",       "screen": "hilfsangebote",   "label": "Heading der Hilfsangebote-Seite",        "text": "Hilfsangebote" },
+  { "key": "hilfsangebote.intro",         "screen": "hilfsangebote",   "label": "Intro-Text oben auf der Seite",          "text": "Du bist nicht allein. Hier findest du Anlaufstellen, die dir weiterhelfen können." },
+  { "key": "hilfsangebote.loading",       "screen": "hilfsangebote",   "label": "Loading-Hinweis",                        "text": "Lade Anlaufstellen …" },
+
+  { "key": "kopfsachen.heading",          "screen": "kopfsachen",      "label": "Heading des Kopfsachen-Verein-Screens",  "text": "Kopfsachen" },
+  { "key": "kopfsachen.intro",            "screen": "kopfsachen",      "label": "Intro-Text",                             "text": "Dieses Angebot wird von Kopfsachen e.V. entwickelt." },
+  { "key": "kopfsachen.kontakt.label",    "screen": "kopfsachen",      "label": "Submenu-Eintrag Kontakt",                "text": "Kontakt" },
+  { "key": "kopfsachen.kontakt.hint",     "screen": "kopfsachen",      "label": "Hint zu Kontakt",                        "text": "Frag Kopfsachen etwas" },
+  { "key": "kopfsachen.credits.label",    "screen": "kopfsachen",      "label": "Submenu-Eintrag Credits",                "text": "Credits" },
+  { "key": "kopfsachen.credits.hint",     "screen": "kopfsachen",      "label": "Hint zu Credits",                        "text": "Wer hat mitgewirkt" },
+  { "key": "kopfsachen.faq.label",        "screen": "kopfsachen",      "label": "Submenu-Eintrag FAQ",                    "text": "FAQ" },
+  { "key": "kopfsachen.faq.hint",         "screen": "kopfsachen",      "label": "Hint zu FAQ",                            "text": "Häufig gestellte Fragen" },
+  { "key": "kopfsachen.reset.button",     "screen": "kopfsachen",      "label": "Spielstand-Reset-Button",                "text": "Spielstand zurücksetzen" },
+  { "key": "kopfsachen.reset.hint",       "screen": "kopfsachen",      "label": "Erklärung zum Reset",                    "text": "Setzt deinen Fortschritt komplett zurück. Du startest dann wieder vom Onboarding." },
+  { "key": "kopfsachen.reset.confirm",    "screen": "kopfsachen",      "label": "Bestätigungstext im Confirm-Dialog",     "text": "Wirklich zurücksetzen? Dein gesamter Fortschritt geht verloren." },
+
+  { "key": "toolbox.heading",             "screen": "toolbox",         "label": "Heading der Selfcare-Schachtel",         "text": "Selfcare-Schachtel" },
+  { "key": "toolbox.intro",               "screen": "toolbox",         "label": "Intro-Text",                             "text": "Hier findest du alle Übungen, die du im Kurs schon kennengelernt hast." },
+  { "key": "toolbox.empty.title",         "screen": "toolbox",         "label": "Empty-State Hauptzeile",                 "text": "Du hast noch keine Übung freigeschaltet." },
+  { "key": "toolbox.empty.subtitle",      "screen": "toolbox",         "label": "Empty-State Erklärung",                  "text": "Sobald du im Kurs eine Übung machst, landet sie hier in deiner Selfcare-Schachtel — als Werkzeug für deinen Alltag." },
+
+  { "key": "exercise.heading.default",    "screen": "exercise",        "label": "Default-Heading wenn kein Title geladen", "text": "Übung" },
+  { "key": "exercise.loading",            "screen": "exercise",        "label": "Loading-Hinweis",                        "text": "Lade Übung …" },
+  { "key": "exercise.continue",           "screen": "exercise",        "label": "Weiter-Button im Footer",                "text": "Weiter" },
+  { "key": "exercise.done",               "screen": "exercise",        "label": "Fertig-Button (Guided-Text)",            "text": "Fertig" },
+  { "key": "exercise.instructions.summary", "screen": "exercise",      "label": "Anleitung-Toggle-Label",                 "text": "Anleitung" },
+
+  { "key": "video.heading.default",       "screen": "video",           "label": "Default-Heading",                        "text": "Video" },
+  { "key": "video.continue",              "screen": "video",           "label": "Weiter-Button im Footer",                "text": "Weiter" },
+  { "key": "video.placeholder.hint",      "screen": "video",           "label": "Hinweis im Platzhalter-Modus",           "text": "Video wird demnächst in Strapi hinterlegt." },
+
+  { "key": "common.back",                 "screen": "common",          "label": "Zurück-Button (verschiedene Screens)",   "text": "Zurück" }
+]
