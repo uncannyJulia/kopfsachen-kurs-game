@@ -39,14 +39,19 @@ export function HomeScreen() {
   const actionsEl = el.querySelector('.home-actions')
 
   async function init() {
-    const settings  = await getSettings()
-    const progress  = await getProgress()
+    let settings = {}, progress = { completedChapters: [], currentChapter: null, currentNodeId: 0 }
+    try {
+      settings  = await getSettings()
+      progress  = await getProgress()
+    } catch (err) {
+      console.warn('Home: Spielstand konnte nicht geladen werden, zeige Initial-Menü:', err)
+    }
 
     const onboardingDone = !!settings.onboardingDone
     const hasResumableChapter = progress.currentChapter
       && COURSE_SLUGS.has(progress.currentChapter)
       && progress.currentNodeId > 0
-    const hasStarted = progress.completedChapters.length > 0 || hasResumableChapter
+    const hasStarted = (progress.completedChapters || []).length > 0 || hasResumableChapter
 
     actionsEl.classList.remove('home-actions--loading')
     actionsEl.innerHTML = ''

@@ -14,6 +14,7 @@ const LOTTIE_ANIMATIONS = {
     static:          '/lottie/evu_statisch.json',
     zeigt_hilfe:     '/lottie/evu_zeigt_hilfe.json',
     zeigt_kopfsachen:'/lottie/evu_zeigt_kopfsachen.json',
+    fliegt_hoch:     '/lottie/evu_fliegt_hoch.json',
   },
   // Mika nutzt das gleiche Char-Art wie Evu (Konzept) — vorerst nur statisch
   mika: {
@@ -84,7 +85,7 @@ async function loadLottie(path) {
 
 // States, die NICHT loopen sollen — Geste-Animationen (zeigen, knospen, …)
 // laufen genau einmal durch und bleiben am letzten Frame stehen.
-const NON_LOOPING_STATES = new Set(['zeigt_hilfe', 'zeigt_kopfsachen'])
+const NON_LOOPING_STATES = new Set(['zeigt_hilfe', 'zeigt_kopfsachen', 'fliegt_hoch'])
 
 // Wechselt das Lottie-Animation-File auf einem Wrap.
 // Wichtig: keine Connected-Check VOR dem Fetch — der Wrap ist beim ersten

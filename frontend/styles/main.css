@@ -416,19 +416,20 @@ body {
    - user:      keine Figur, Bubble nur wenn echter Text
    ════════════════════════════════════════════════════════════════ */
 
-/* ── Layout: Monologue (Evu / Mika) ────────────────────────── */
+/* ── Layout: Monologue (Evu / Mika) ──────────────────────────
+   Bubble OBEN (Text/Frage), Figur unter dem Text, Weiter-Button immer unten. */
 .novel-layout--monologue {
   justify-content: flex-start;
 }
 
 .novel-layout--monologue .novel-bubble-area {
   order: 1;
+  flex-shrink: 0;
   margin-top: var(--space-md);
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
 }
 
 .novel-layout--monologue .novel-bubble {
-  /* Kein Bubble-Rahmen — nur Text wie im Wireframe */
   border: none;
   background: transparent;
   color: var(--text);
@@ -447,61 +448,77 @@ body {
   display: none;
 }
 
+/* Character als zentrierter Backdrop — außerhalb des Flex-Flows, damit ein
+   wachsender Bubble-Text die Figur nicht nach unten verschiebt. */
 .novel-layout--monologue .novel-character {
-  order: 50;
-  flex: 1;
-  min-height: 0;
+  position: absolute;
+  inset: 0;
+  display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 0;
+  pointer-events: none;
+  margin: 0;
 }
 
+/* Action-Elemente (Likert/Choices/Input/Continue) immer am unteren Rand. */
 .novel-layout--monologue .novel-likert,
 .novel-layout--monologue .novel-choices,
 .novel-layout--monologue .novel-input {
   order: 80;
-  margin-top: var(--space-md);
+  flex-shrink: 0;
+  margin-top: auto;
 }
 
 .novel-layout--monologue .novel-continue {
   order: 99;
+  flex-shrink: 0;
+  margin-top: auto;
 }
 
-/* ── Layout: Scene (Toni / Neo / Manu / Psycholog) ─────────── */
+/* ── Layout: Scene (Toni / Neo / Manu / Psycholog) ──────────
+   Gedanken/Bubble OBEN, Figur (oder Comic-Image-Backdrop) in der Mitte,
+   Choices als Thought-Pills + Weiter-Button immer unten. */
 .novel-layout--scene {
   justify-content: flex-start;
 }
 
 .novel-layout--scene .novel-bubble-area {
   order: 1;
+  flex-shrink: 0;
   margin-top: var(--space-sm);
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
 }
 
 .novel-layout--scene .novel-bubble {
-  /* Bubble mit Rahmen + Tail nach unten zur Figur */
   height: auto;
-  min-height: 4rem;
-  max-height: 9rem;
+  min-height: 3rem;
+  max-height: 11rem;
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.96);
 }
 
 .novel-layout--scene .novel-character {
-  order: 50;
-  flex: 1;
-  min-height: 0;
+  position: absolute;
+  inset: 0;
+  display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 0;
+  pointer-events: none;
+  margin: 0;
 }
 
-/* Thought-Pill-Choices unten (für Toni-Style) */
+/* Thought-Pill-Choices unten (für Toni-Style) — am Screen-Boden fixiert */
 .novel-layout--scene .novel-choices {
   order: 80;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
   align-items: center;
   padding-top: var(--space-lg); /* Platz für die Bubble-Pünktchen */
-  margin-top: var(--space-sm);
+  margin-top: auto;
 }
 
 .novel-layout--scene .novel-choices .novel-choice,
@@ -547,11 +564,14 @@ body {
 .novel-layout--scene .novel-likert,
 .novel-layout--scene .novel-input {
   order: 80;
-  margin-top: var(--space-md);
+  flex-shrink: 0;
+  margin-top: auto;
 }
 
 .novel-layout--scene .novel-continue {
   order: 99;
+  flex-shrink: 0;
+  margin-top: auto;
 }
 
 /* ── Layout: Compact (Evu klein oben-rechts, Content prominent) ──
@@ -751,6 +771,46 @@ body {
   display: block;
   filter: drop-shadow(0 0.125rem 0.5rem rgba(0,0,0,0.08));
   animation: characterFadeIn 0.3s ease;
+}
+
+/* Comic-Story-Bild als Backdrop: liegt hinter Bubble + Buttons.
+   Wird in .novel-bg gerendert (außerhalb von .novel-content), damit es immer
+   sichtbar bleibt — auch wenn der Speaker zu narrator/user wechselt. */
+.novel-bg-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+  animation: characterFadeIn 0.35s ease;
+  z-index: 0;
+}
+
+/* Bubble + Buttons auf jeden Fall klickbar — über Backdrop-Layer ziehen */
+.novel-content > .novel-bubble-area,
+.novel-content > .novel-likert,
+.novel-content > .novel-choices,
+.novel-content > .novel-input,
+.novel-content > .novel-continue,
+.novel-content > .novel-list {
+  position: relative;
+  z-index: 2;
+}
+
+/* Falls ein Comic-Bild als Avatar-Ersatz gerendert wird (.novel-character > img) */
+.character-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  animation: characterFadeIn 0.35s ease;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .character-avatar svg {

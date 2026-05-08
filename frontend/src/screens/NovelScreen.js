@@ -107,6 +107,7 @@ export function NovelScreen(path) {
   const choicesEl    = el.querySelector('.novel-choices')
   const likertEl     = el.querySelector('.novel-likert')
   const listEl       = el.querySelector('.novel-list')
+  const bgEl         = el.querySelector('.novel-bg')
   const continueBtn  = el.querySelector('.novel-continue')
   const loadingEl    = el.querySelector('.novel-loading')
   const contentEl    = el.querySelector('.novel-content')
@@ -120,6 +121,8 @@ export function NovelScreen(path) {
   let username = null    // Loaded from settings or entered by user
   let lastSpeaker = null // Cached, damit Avatar nicht bei jedem Klick neu lädt
   let lastLayout  = null // Für FLIP-Transition Avatar zwischen monologue/scene/compact
+  let lastImage   = null // Aktuell gerendertes Backdrop-Bild
+  let storyImageActive = null // Story-Comic bleibt über mehrere Nodes erhalten
 
   // ── Node rendern ─────────────────────────────────────────
 
@@ -150,23 +153,55 @@ export function NovelScreen(path) {
     const contentClasses = ['novel-content', `novel-layout--${layout}`]
     contentEl.className = contentClasses.join(' ')
 
-    // Character-Avatar nur neu rendern wenn der Speaker wechselt — sonst flackert er.
-    if (speakerChanged) {
+    // Story-Comic-Bild bleibt über mehrere Nodes hinweg sichtbar (auch bei narrator/user/Choices).
+    // Wechsel: explizites neues node.image oder Speaker = Evu/Mika (Kursleitung übernimmt → Story-Pause).
+    if (node.image) {
+      storyImageActive = node.image
+    } else if (node.speaker === 'evu' || node.speaker === 'mika') {
+      storyImageActive = null
+    }
+
+    // Backdrop-Render: nur bei tatsächlichem Wechsel neu einhängen
+    if (storyImageActive !== lastImage) {
+      bgEl.innerHTML = ''
+      if (storyImageActive) {
+        const img = document.createElement('img')
+        img.src = storyImageActive
+        img.className = 'novel-bg-image'
+        img.alt = ''
+        img.draggable = false
+        bgEl.appendChild(img)
+      }
+      lastImage = storyImageActive
+    }
+
+    // Character-Avatar (Lottie/SVG) nur wenn KEIN Story-Bild aktiv. Sonst dominiert das Comic-Image.
+    if (speakerChanged || (!!storyImageActive !== characterEl._suppressed)) {
       characterEl.innerHTML = ''
-      if (hasAvatar(node.speaker)) {
+      if (storyImageActive) {
+        characterEl.style.display = 'none'
+        characterEl._suppressed = true
+      } else if (hasAvatar(node.speaker)) {
         const av = CharacterAvatar(node.speaker)
         if (av) characterEl.appendChild(av)
         characterEl.style.display = ''
+        characterEl._suppressed = false
       } else {
         characterEl.style.display = 'none'
+        characterEl._suppressed = false
       }
     }
 
     // FLIP-Play: jetzt liegt der Avatar bereits an der NEUEN Position. Inverse-Transform
     // anwenden, dann per RAF auf identity zurückanimieren → wirkt wie ein sanfter Flug.
+    // Beim Übergang in Compact (z.B. Evu zeigt Liste/Likert) zusätzlich die Lottie
+    // 'fliegt_hoch' abspielen — die Animation flattert visuell während die Box sich verschiebt.
     if (flipFromRect) {
       const av = activeAvatar()
       if (av) {
+        const goingToCompact = layout === 'compact' && lastLayout !== 'compact'
+        // Lottie-Dauer 'fliegt_hoch' = 2.43s; bei normalem Layout-Wechsel reichen 900ms
+        const durMs = goingToCompact && (node.speaker === 'evu' || node.speaker === 'mika') ? 1500 : 900
         const toRect = av.getBoundingClientRect()
         const dx = flipFromRect.left   - toRect.left
         const dy = flipFromRect.top    - toRect.top
@@ -177,8 +212,19 @@ export function NovelScreen(path) {
         av.style.transform = `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`
         // Force reflow → dann mit Transition zurück auf 0
         void av.offsetWidth
-        av.style.transition = 'transform 900ms cubic-bezier(0.34, 1.05, 0.5, 1)'
+        av.style.transition = `transform ${durMs}ms cubic-bezier(0.34, 1.05, 0.5, 1)`
         av.style.transform  = ''
+
+        // Lottie-Flugzustand für den Übergang: einmal abspielen und am letzten Frame stehen bleiben.
+        // transitionInFlight blockt typewriter-getriggerte talking/idle-Wechsel solange.
+        // Kein Auto-Reset auf idle — die Lottie ist so designed, dass Evu am Zielort
+        // (Größe + Position) frozen bleibt. Idle würde sie sonst innerhalb des Frames neu zentrieren.
+        if (goingToCompact && typeof av.setState === 'function' && !node.avatarState) {
+          transitionInFlight = true
+          av.setState('fliegt_hoch')
+          setTimeout(() => { transitionInFlight = false }, durMs + 100)
+        }
+
         const cleanup = () => {
           av.style.transition = ''
           av.style.transform = ''
@@ -186,7 +232,7 @@ export function NovelScreen(path) {
         }
         av.addEventListener('transitionend', cleanup, { once: true })
         // Safety: falls transitionend nicht feuert (z.B. Lottie-internal repaint)
-        setTimeout(cleanup, 1100)
+        setTimeout(cleanup, durMs + 200)
       }
     }
     lastLayout = layout
@@ -424,8 +470,10 @@ export function NovelScreen(path) {
   // Wenn ein Node `avatarState` setzt (z.B. 'zeigt_hilfe'), pinnen wir diesen State
   // und blocken talking/idle vom Typewriter — sonst flickert die Geste.
   let lockedAvatarState = null
+  // Während eines Layout-Übergangs (Lottie 'fliegt_hoch') soll talking/idle blockiert sein.
+  let transitionInFlight = false
   function setAvatarState(state) {
-    if (lockedAvatarState && (state === 'talking' || state === 'idle')) return
+    if ((lockedAvatarState || transitionInFlight) && (state === 'talking' || state === 'idle')) return
     const av = activeAvatar()
     if (av && typeof av.setState === 'function') av.setState(state)
   }
