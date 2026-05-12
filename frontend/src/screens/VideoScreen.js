@@ -12,6 +12,12 @@ const DEMO_VIDEOS = {
     videoSource: 'placeholder',
     transcript: 'Kopfsachen e.V. ist ein gemeinnütziger Verein, der sich für die mentale Gesundheit junger Menschen einsetzt.',
   },
+  'was-ist-kopfsachen': {
+    slug: 'was-ist-kopfsachen',
+    title: 'Was ist Kopfsachen?',
+    videoSource: 'youtube',
+    videoUrl: 'https://youtube.com/shorts/hhkigSg0jt8',
+  },
   'erholung-und-innerer-sicherer-ort': {
     slug: 'erholung-und-innerer-sicherer-ort',
     title: 'Erholung und Innerer sicherer Ort',
@@ -22,8 +28,9 @@ const DEMO_VIDEOS = {
 
 function youtubeEmbedUrl(url) {
   if (!url) return null
-  const match = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
-  return match ? `https://www.youtube-nocookie.com/embed/${match[1]}?autoplay=1&rel=0` : null
+  // Unterstützt: youtu.be/<id>, watch?v=<id>, /shorts/<id>, /embed/<id>
+  const match = url.match(/(?:v=|youtu\.be\/|\/shorts\/|\/embed\/)([a-zA-Z0-9_-]{11})/)
+  return match ? `https://www.youtube-nocookie.com/embed/${match[1]}?autoplay=1&rel=0&playsinline=1` : null
 }
 
 function vimeoEmbedUrl(url) {

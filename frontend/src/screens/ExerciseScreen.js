@@ -61,7 +61,7 @@ export function ExerciseScreen(path) {
     loadingEl.style.display = 'none'
     headingEl.textContent = exercise.title || t('exercise.heading.default', 'Übung')
 
-    // Übung kennen heißt: jetzt in der Selfcare-Schachtel verfügbar
+    // Übung kennen heißt: jetzt in der Wohlfühl-Schachtel verfügbar
     if (exercise.slug) unlockExercise(exercise.slug)
 
     if (exercise.category === 'box_atmung') {

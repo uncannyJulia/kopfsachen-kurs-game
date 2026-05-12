@@ -270,7 +270,7 @@ body {
 /* Emoji-Likert-Skala */
 .likert {
   display: flex;
-  align-items: center;
+  align-items: flex-start;   /* Emojis horizontal in einer Linie, auch wenn Labels umbrechen */
   justify-content: space-between;
   gap: var(--space-sm);
   padding: var(--space-lg);
@@ -494,8 +494,61 @@ body {
   height: auto;
   min-height: 3rem;
   max-height: 11rem;
-  overflow: hidden;
+  overflow: visible;  /* Tails dürfen unten rauspoken */
   background: rgba(255, 255, 255, 0.96);
+}
+
+/* Default-Tail vom speech-bubble in Scene-Layout deaktivieren — Tail wird per
+   --tail-left / --tail-right / --thought explizit gesetzt. */
+.novel-layout--scene .speech-bubble::before,
+.novel-layout--scene .speech-bubble::after {
+  display: none;
+}
+
+/* Geschwungener SVG-Tail unter der Bubble — Speaker-Side bestimmt Position + Mirror */
+.novel-layout--scene .novel-bubble-area {
+  position: relative;
+}
+.novel-bubble-tail {
+  display: none;            /* default versteckt — sichtbar erst per --visible */
+  position: absolute;
+  bottom: -2.6rem;
+  width: 2.5rem;
+  height: 3rem;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 1;
+}
+.novel-bubble-tail.novel-bubble-tail--visible { display: block; }
+.novel-bubble-tail path {
+  fill: rgba(255, 255, 255, 0.96);
+  stroke: var(--bubble-color, var(--accent));
+}
+/* Default-Pfad zeigt nach unten-rechts → das passt für rechte Seite (Manu).
+   Für links (Toni) horizontal spiegeln. */
+.novel-bubble-tail--left  { left:  18%; transform: scaleX(-1); transform-origin: center; }
+.novel-bubble-tail--right { right: 18%; }
+
+/* Gedankenblase: ausgeprägte Pill-Form + 2 Wölkchen-Dots als "Tail" */
+.novel-layout--scene .novel-bubble--thought {
+  border-radius: 999px;
+  padding: var(--space-md) var(--space-lg);
+}
+.novel-layout--scene .novel-bubble--thought::after {
+  content: ''; display: block; position: absolute;
+  bottom: -1.4rem; left: 22%;
+  width: 1rem; height: 1rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.96);
+  border: 0.15rem solid var(--bubble-color, var(--accent));
+}
+.novel-layout--scene .novel-bubble--thought::before {
+  content: ''; display: block; position: absolute;
+  bottom: -2.4rem; left: calc(22% - 0.5rem);
+  width: 0.5rem; height: 0.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.96);
+  border: 0.15rem solid var(--bubble-color, var(--accent));
 }
 
 .novel-layout--scene .novel-character {
@@ -596,11 +649,12 @@ body {
 }
 
 .novel-layout--compact .novel-bubble-area {
-  order: 1;
-  /* Platz für Evu rechts-oben freilassen */
-  padding-right: 6rem;
-  margin-top: var(--space-md);
-  margin-bottom: var(--space-lg);
+  /* Bubble (Frage) sitzt direkt VOR der Skala, beide gemeinsam vertikal mittig.
+     margin-top: auto schiebt die ganze Gruppe (Bubble + Skala) Richtung Mitte/unten. */
+  order: 40;
+  padding-right: 6rem;          /* Platz für Evu rechts-oben freilassen */
+  margin-top: auto;
+  margin-bottom: var(--space-sm);
 }
 
 .novel-layout--compact .novel-bubble {
@@ -626,10 +680,10 @@ body {
 .novel-layout--compact .novel-choices,
 .novel-layout--compact .novel-input {
   order: 50;
-  /* Likert/Choices/Input am unteren Rand fixieren — Bubble bleibt oben,
-     Evu schwebt rechts oben, dazwischen ist Luft. */
-  margin-top: auto;
-  margin-bottom: var(--space-sm);
+  /* Skala folgt direkt unter der Bubble (Bubble hat margin-top: auto, schiebt die ganze
+     Gruppe Bubble+Skala vertikal in die untere Hälfte). */
+  margin-top: 0;
+  margin-bottom: var(--space-md);
 }
 
 /* Liste (z.B. 8 Kapitel, 5 Schritte): mittig prominent, Evu klein oben-rechts */
@@ -851,6 +905,7 @@ body {
   line-height: 1.55;
   cursor: pointer;
   user-select: none;
+  white-space: pre-line; /* respektiere \n im Text (z.B. Mika-Aussagen) */
 }
 
 .novel-bubble--enter {
@@ -1444,6 +1499,11 @@ body {
   display: flex;
   gap: var(--space-sm);
   flex-wrap: wrap;
+}
+
+/* Buttons in Hilfsangebote-Karten sind <a>-Links — Standard-Underline entfernen */
+.hilfsangebote-card-actions a {
+  text-decoration: none;
 }
 
 /* ── Kopfsachen Screen ──────────────────────────────────────── */
@@ -2418,17 +2478,19 @@ body {
   justify-content: center;
   width: 2.25rem;
   height: 2.25rem;
-  background: var(--accent);
+  background: #22c987;        /* Kopfsachen-Mint */
   color: #fff;
   text-decoration: none;
-  border-radius: var(--radius-pill);
-  font-weight: 700;
+  border-radius: 0.5rem;      /* rounded-square (Squircle-Look) */
   flex-shrink: 0;
+  padding: 0.25rem;
+  box-sizing: border-box;
 }
 
 .top-menu-logo-k {
-  font-size: 1rem;
-  line-height: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .top-menu-hilfsangebote {

@@ -121,7 +121,7 @@ const DEFAULT_PROGRESS = {
   currentNodeId: 0,
   completedChapters: [],
   chapterCompletions: {},  // { [slug]: ISO-Timestamp } — für Zeitgate
-  unlockedExercises: [],   // Slugs aller Übungen die der User schon gesehen hat → Selfcare-Schachtel
+  unlockedExercises: [],   // Slugs aller Übungen die der User schon gesehen hat → Wohlfühl-Schachtel
   lastActive: null,
 }
 
@@ -149,7 +149,7 @@ export async function completeChapter(slug) {
   const p = await getProgress()
   const completed = [...new Set([...p.completedChapters, slug])]
   const completions = { ...(p.chapterCompletions || {}), [slug]: new Date().toISOString() }
-  // Übungen des Kapitels in Selfcare-Schachtel freischalten
+  // Übungen des Kapitels in Wohlfühl-Schachtel freischalten
   const chapterEx = await getChapterExercises()
   const newlyUnlocked = chapterEx[slug] || []
   const unlocked = [...new Set([...(p.unlockedExercises || []), ...newlyUnlocked])]

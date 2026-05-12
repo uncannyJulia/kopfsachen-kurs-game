@@ -1,4 +1,3 @@
-// screens/NovelScreen.js
 // Dialog-Engine: Sprechblasen, Choices, Likert-Inline, Character-Wechsel, Spielstand.
 
 import { getDialogScene } from '../api.js'
@@ -79,6 +78,14 @@ export function NovelScreen(path) {
       <div class="novel-speaker-label"></div>
       <div class="novel-bubble-area">
         <div class="speech-bubble novel-bubble"></div>
+        <svg class="novel-bubble-tail" viewBox="0 0 40 50" preserveAspectRatio="xMinYMid meet" aria-hidden="true">
+          <!-- Speech-Tail Drop-Form: 2 saubere Quadratic-Curves vom oberen Bubble-Anschluss
+               zur Spitze unten-rechts und zurück. Stroke/Fill via CSS (siehe main.css). -->
+          <path d="M 6 0 Q 2 28 36 48 Q 26 22 18 0 Z"
+                stroke-width="2.5"
+                stroke-linejoin="round"
+                stroke-linecap="round" />
+        </svg>
       </div>
       <div class="novel-list" hidden></div>
       <div class="novel-likert" style="display:none"></div>
@@ -102,6 +109,7 @@ export function NovelScreen(path) {
 
   const bubbleArea   = main.querySelector('.novel-bubble-area')
   const bubble       = el.querySelector('.novel-bubble')
+  const bubbleTailSvg = main.querySelector('.novel-bubble-tail')
   const speakerLabel = el.querySelector('.novel-speaker-label')
   const characterEl  = el.querySelector('.novel-character')
   const choicesEl    = el.querySelector('.novel-choices')
@@ -262,8 +270,27 @@ export function NovelScreen(path) {
     bubbleArea.classList.add(`novel-bubble--${node.speaker}`)
     bubbleArea.style.display = isEmptyUserChoice ? 'none' : ''
 
-    // Bubble-Border-Farbe
+    // Sprechblase vs Gedankenblase — und Tail-Richtung zum Speaker
+    // Default-Richtung pro Speaker basierend auf den Comic-Frames:
+    //   toni links, manu rechts, neo links. user/narrator/evu/mika ohne Richtung.
+    const SPEAKER_SIDE = { toni: 'left', neo: 'left', manu: 'right', psycholog: 'right' }
+    const side = SPEAKER_SIDE[node.speaker] || null
+    bubble.className = 'speech-bubble novel-bubble'
+    if (node.bubble === 'thought') bubble.classList.add('novel-bubble--thought')
+
+    // SVG-Tail nur bei Sprech-Nodes mit Speaker-Side, nicht bei Gedanken/Narrator/User.
+    // Visibility via CSS-Klasse (SVG-Elemente reagieren nicht zuverlässig auf das `hidden`-Attribut).
+    if (bubbleTailSvg) {
+      const showTail = !!side && node.bubble !== 'thought' && getLayoutForNode(node) === 'scene'
+      bubbleTailSvg.classList.toggle('novel-bubble-tail--visible', showTail)
+      bubbleTailSvg.classList.toggle('novel-bubble-tail--right', showTail && side === 'right')
+      bubbleTailSvg.classList.toggle('novel-bubble-tail--left',  showTail && side === 'left')
+    }
+
+    // Bubble-Border-Farbe — CSS-Variable auf BUBBLE-AREA setzen, damit Bubble UND SVG-Tail
+    // dieselbe Farbe nutzen (SVG ist Sibling der Bubble, also muss var() vom gemeinsamen Parent kommen)
     bubble.style.borderColor = config.color
+    bubbleArea.style.setProperty('--bubble-color', config.color)
     bubble.style.color = node.speaker === 'narrator' ? 'var(--text-muted)' : 'var(--text)'
 
     // Interpolate [Username] in text
@@ -398,18 +425,8 @@ export function NovelScreen(path) {
     void likertEl.offsetWidth
     likertEl.classList.add('novel-likert--enter')
 
-    // Aussage / Frage prominent über der Skala anzeigen
-    // (Wenn die questionText sich vom Bubble-Text unterscheidet, sonst weglassen
-    //  — z.B. "Was denkst du über folgende Aussage?" in der Bubble + die Aussage hier.)
-    const bubbleText = (currentNode?.text || '').trim()
-    const qText = (likert.questionText || '').trim()
-    if (qText && qText !== bubbleText) {
-      const statement = document.createElement('p')
-      statement.className = 'likert-statement'
-      statement.textContent = qText
-      likertEl.appendChild(statement)
-    }
-
+    // Kein zusätzlicher Statement-Text — Frage steht schon in der Bubble.
+    // (Mika-Aussagen müssen kombiniert in den Bubble-Text geschrieben werden.)
     const scale = document.createElement('div')
     scale.className = 'likert'
 
@@ -618,7 +635,7 @@ export function NovelScreen(path) {
       open_cave:           'Sicheren Ort öffnen',
       open_exercise:       'Übung starten',
       open_hilfsangebote:  'Hilfsangebote anzeigen',
-      open_toolbox:        'Selfcare-Schachtel',
+      open_toolbox:        'Wohlfühl-Schachtel',
       open_questionnaire:  'Fragebogen',
       open_video:          'Video abspielen',
       open_content:        'Weiter',

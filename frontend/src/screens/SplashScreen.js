@@ -12,7 +12,7 @@ export function SplashScreen() {
     <div class="splash-content">
       <div class="splash-logo">
         <span class="splash-title">${t('splash.title', 'Kopf frei!')}</span>
-        <span class="splash-subtitle">${t('splash.subtitle', 'Dein Kurs für mentale Stärke')}</span>
+        <span class="splash-subtitle">${t('splash.subtitle', 'Dein Kurs für mehr Leichtigkeit')}</span>
       </div>
     </div>
   `

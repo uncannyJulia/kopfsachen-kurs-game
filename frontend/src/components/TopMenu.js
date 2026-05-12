@@ -18,7 +18,12 @@ export function TopMenu({ progress = null } = {}) {
       </svg>
     </a>
     <a href="#/kopfsachen" class="top-menu-logo" aria-label="Kopfsachen" title="Kopfsachen">
-      <span class="top-menu-logo-k">K</span>
+      <svg class="top-menu-logo-k" viewBox="0 0 100 100" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+        <!-- Stylisiertes K: Linker Balken + nach oben+unten schwingende Arme. -->
+        <path fill="currentColor"
+              d="M24 18 H44 V42 L66 18 H86 L60 50
+                 Q78 58 86 82 H66 Q58 64 44 56 V82 H24 Z"/>
+      </svg>
     </a>
     <a href="#/hilfsangebote" class="top-menu-hilfsangebote">Hilfsangebote</a>
     <div class="top-menu-progress" ${progress === null ? 'hidden' : ''}>

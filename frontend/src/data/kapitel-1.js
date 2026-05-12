@@ -21,39 +21,40 @@ export const KAPITEL_1_NODES = [
   // ══════════════════════════════════════════════════════
   // (Frühere narrator-Platzhalter wie "Toni schaut aufs Handy" wurden entfernt —
   //  die Comic-Bilder zeigen die Aktion bereits visuell.)
-  { nodeId: 11, speaker: 'toni', text: 'Ich warte jetzt schon 10 Minuten auf Neo.', emotion: 'worried', image: '/story/01_Toni_ich_warte.webp', nextNodeId: 12 },
+  // Toni-Alleine-Phase vor dem Fitnessstudio: alles GEDANKEN, daher bubble: 'thought'.
+  { nodeId: 11, speaker: 'toni', text: 'Ich warte jetzt schon 10 Minuten auf Neo.', emotion: 'worried', bubble: 'thought', image: '/story/01_Toni_ich_warte.webp', nextNodeId: 12 },
   { nodeId: 12, speaker: 'user', text: '', image: '/story/01_Toni_ich_warte.webp', nextNodeId: null, choices: [
     { text: 'Hat Neo vielleicht etwas geschrieben?', nextNodeId: 14 },
   ]},
-  { nodeId: 14, speaker: 'toni', text: 'Keine Nachricht von Neo.', emotion: 'sad', image: '/story/02_Toni_keine_nachricht.webp', nextNodeId: 15 },
-  { nodeId: 15, speaker: 'toni', text: 'Wir wollten doch zusammen zu diesem Sportkurs.', emotion: 'sad', image: '/story/03_Toni_wir_wollten_doch.webp', nextNodeId: 16 },
-  { nodeId: 16, speaker: 'toni', text: 'Soll ich da alleine hingehen?', emotion: 'worried', image: '/story/04_Toni_soll_ich_da.webp', nextNodeId: null, choices: [
+  { nodeId: 14, speaker: 'toni', text: 'Keine Nachricht von Neo.', emotion: 'sad', bubble: 'thought', image: '/story/02_Toni_keine_nachricht.webp', nextNodeId: 15 },
+  { nodeId: 15, speaker: 'toni', text: 'Wir wollten doch zusammen zu diesem Sportkurs.', emotion: 'sad', bubble: 'thought', image: '/story/03_Toni_wir_wollten_doch.webp', nextNodeId: 16 },
+  { nodeId: 16, speaker: 'toni', text: 'Soll ich da alleine hingehen?', emotion: 'worried', bubble: 'thought', image: '/story/04_Toni_soll_ich_da.webp', nextNodeId: null, choices: [
     { text: 'Lieber nicht.',        nextNodeId: 17 },
     { text: 'Ja komm, das passt schon.', nextNodeId: 18 },
   ]},
-  { nodeId: 17, speaker: 'toni', text: 'Ich war da auch noch nie und ich kenne da niemanden.', emotion: 'worried', image: '/story/05_Toni_ich_war_da.webp', nextNodeId: 20 },
-  { nodeId: 18, speaker: 'toni', text: 'Ich war da aber noch nie und ich kenne da niemanden.', emotion: 'worried', image: '/story/05_Toni_ich_war_da.webp', nextNodeId: 20 },
-  { nodeId: 20, speaker: 'toni', text: 'Ich habe echt keine Lust, das jetzt alleine zu machen. Das ist mir zu stressig.', emotion: 'sad', image: '/story/06_Toni_ich_habe_echt_das_ist_mir_zu_wieso_meldet_sich.webp', nextNodeId: 21 },
-  { nodeId: 21, speaker: 'toni', text: 'Wieso meldet sich Neo nicht?!', emotion: 'sad', image: '/story/06_Toni_ich_habe_echt_das_ist_mir_zu_wieso_meldet_sich.webp', nextNodeId: null, choices: [
+  { nodeId: 17, speaker: 'toni', text: 'Ich war da auch noch nie und ich kenne da niemanden.', emotion: 'worried', bubble: 'thought', image: '/story/05_Toni_ich_war_da.webp', nextNodeId: 20 },
+  { nodeId: 18, speaker: 'toni', text: 'Ich war da aber noch nie und ich kenne da niemanden.', emotion: 'worried', bubble: 'thought', image: '/story/05_Toni_ich_war_da.webp', nextNodeId: 20 },
+  { nodeId: 20, speaker: 'toni', text: 'Ich habe echt keine Lust, das jetzt alleine zu machen. Das ist mir zu stressig.', emotion: 'sad', bubble: 'thought', image: '/story/06_Toni_ich_habe_echt_das_ist_mir_zu_wieso_meldet_sich.webp', nextNodeId: 21 },
+  { nodeId: 21, speaker: 'toni', text: 'Wieso meldet sich Neo nicht?!', emotion: 'sad', bubble: 'thought', image: '/story/06_Toni_ich_habe_echt_das_ist_mir_zu_wieso_meldet_sich.webp', nextNodeId: null, choices: [
     { text: 'Okay, erstmal kurz entspannen.', nextNodeId: 25 },
     { text: 'Komm schon. Reiß dich zusammen!', nextNodeId: 22 },
   ]},
-  { nodeId: 22, speaker: 'toni', text: 'Ich merke richtig Druck in der Brust.', emotion: 'worried', image: '/story/07_Toni_ich_merke_richtig.webp', nextNodeId: null, choices: [
+  { nodeId: 22, speaker: 'toni', text: 'Ich merke richtig Druck in der Brust.', emotion: 'worried', bubble: 'thought', image: '/story/07_Toni_ich_merke_richtig.webp', nextNodeId: null, choices: [
     { text: 'Vielleicht helfen ein paar tiefe Atemzüge.',     nextNodeId: 25 },
     { text: 'Das ist alles Neos Schuld.',                     nextNodeId: 23 },
   ]},
-  { nodeId: 23, speaker: 'toni', text: 'Ich glaub, ich sollte mal kurz entspannt durchatmen.', emotion: 'thinking', image: '/story/08_Toni_ich_glaube_ich_sollte.webp', nextNodeId: 25 },
+  { nodeId: 23, speaker: 'toni', text: 'Ich glaub, ich sollte mal kurz entspannt durchatmen.', emotion: 'thinking', bubble: 'thought', image: '/story/08_Toni_ich_glaube_ich_sollte.webp', nextNodeId: 25 },
 
   // ── Box-Atmung ────────────────────────────────────────
   { nodeId: 25, speaker: 'evu', text: 'Probier mal eine kurze Box-Atmung. Ich zeig dir gleich, wie das geht.', emotion: 'neutral', nextNodeId: 26, triggerAction: 'open_exercise', triggerPayload: 'box-atmung' },
-  { nodeId: 26, speaker: 'toni', text: 'Okay, jetzt fühl ich mich ein bisschen klarer.', emotion: 'calm', image: '/story/09_Toni_ok_jetzt_fuehl.webp', nextNodeId: 27 },
+  { nodeId: 26, speaker: 'toni', text: 'Okay, jetzt fühl ich mich ein bisschen klarer.', emotion: 'calm', bubble: 'thought', image: '/story/09_Toni_ok_jetzt_fuehl.webp', nextNodeId: 27 },
   { nodeId: 27, speaker: 'user', text: '', nextNodeId: null, choices: [
     { text: 'Weiter warten',            nextNodeId: 28 },
     { text: 'Alleine zum Kurs gehen',   nextNodeId: 29 },
   ]},
-  { nodeId: 28, speaker: 'toni', text: 'Ich glaube, Neo wird nicht mehr kommen — und der Kurs hat jetzt sowieso schon angefangen.', emotion: 'sad', image: '/story/10_Toni_der_kurs_hat_jetzt.webp', nextNodeId: 30 },
-  { nodeId: 29, speaker: 'toni', text: 'Mist, der Kurs hat jetzt schon angefangen.', emotion: 'sad', image: '/story/10_Toni_der_kurs_hat_jetzt.webp', nextNodeId: 30 },
-  { nodeId: 30, speaker: 'toni', text: 'Manu wohnt doch gleich hier um die Ecke.', emotion: 'thinking', image: '/story/11_Toni_manu_wohnt_doch.webp', nextNodeId: null, choices: [
+  { nodeId: 28, speaker: 'toni', text: 'Ich glaube, Neo wird nicht mehr kommen — und der Kurs hat jetzt sowieso schon angefangen.', emotion: 'sad', bubble: 'thought', image: '/story/10_Toni_der_kurs_hat_jetzt.webp', nextNodeId: 30 },
+  { nodeId: 29, speaker: 'toni', text: 'Mist, der Kurs hat jetzt schon angefangen.', emotion: 'sad', bubble: 'thought', image: '/story/10_Toni_der_kurs_hat_jetzt.webp', nextNodeId: 30 },
+  { nodeId: 30, speaker: 'toni', text: 'Manu wohnt doch gleich hier um die Ecke.', emotion: 'thinking', bubble: 'thought', image: '/story/11_Toni_manu_wohnt_doch.webp', nextNodeId: null, choices: [
     { text: 'Zu Manu gehen', nextNodeId: 35 },
   ]},
 
@@ -113,8 +114,8 @@ export const KAPITEL_1_NODES = [
   { nodeId: 70, speaker: 'evu', text: 'Super. Such dir einen bequemen Platz.', emotion: 'calm', nextNodeId: 71, triggerAction: 'open_exercise', triggerPayload: 'innerer-sicherer-ort-vorstellung' },
   { nodeId: 71, speaker: 'evu', text: 'Wie war die Übung für dich?', emotion: 'neutral', nextNodeId: null,
     likert: { questionId: 'innerer_ort_rating', questionText: 'Wie hilfreich war die Übung?', emojis: ['😟', '😕', '😐', '🙂', '😊'], labels: ['gar nicht gut', 'nicht so', 'geht so', 'gut', 'sehr gut'], nextNodeId: 75 } },
-  { nodeId: 72, speaker: 'evu', text: 'Dann mach die Übung einfach zu einem ruhigeren Zeitpunkt. Du findest sie jederzeit in deiner Selfcare-Schachtel.', emotion: 'happy', nextNodeId: 75 },
-  { nodeId: 75, speaker: 'evu', text: 'Auf dem Startbildschirm findest du ab sofort die Selfcare-Schachtel. Alle Übungen, die du kennenlernst, landen dort.', emotion: 'happy', nextNodeId: 76 },
+  { nodeId: 72, speaker: 'evu', text: 'Dann mach die Übung einfach zu einem ruhigeren Zeitpunkt. Du findest sie jederzeit in deiner Wohlfühl-Schachtel.', emotion: 'happy', nextNodeId: 75 },
+  { nodeId: 75, speaker: 'evu', text: 'Auf dem Startbildschirm findest du ab sofort die Wohlfühl-Schachtel. Alle Übungen, die du kennenlernst, landen dort.', emotion: 'happy', nextNodeId: 76 },
 
   // ── Energie-Reflexion ─────────────────────────────────
   { nodeId: 76, speaker: 'evu', text: 'Du hast jetzt einiges darüber gehört, was helfen kann, sich zu erholen.', emotion: 'neutral', nextNodeId: 77 },

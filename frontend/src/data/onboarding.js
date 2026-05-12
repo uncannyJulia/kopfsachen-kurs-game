@@ -20,32 +20,27 @@ export const ONBOARDING_NODES = [
   // ── Hilfebedürftigkeits-Abfrage ───────────────────────
   { nodeId: 10, speaker: 'evu', text: 'Dieses Angebot ersetzt keine Therapie.', emotion: 'neutral', nextNodeId: 11 },
   { nodeId: 11, speaker: 'evu', text: 'Wenn du dich gerade in einer akuten Krise befindest und dich stark überfordert fühlst, hol dir bitte menschliche Unterstützung.', emotion: 'worried', nextNodeId: 12 },
-  { nodeId: 12, speaker: 'evu', text: "Unter 'Hilfsangebote' findest du professionelle Hilfe.", emotion: 'neutral', avatarState: 'zeigt_hilfe', nextNodeId: null, choices: [
-    { text: 'Hilfsangebote anschauen', nextNodeId: 13 },
-    { text: 'Ich möchte starten',      nextNodeId: 20 },
-  ]},
-  { nodeId: 13, speaker: 'evu', text: 'Gut, schauen wir das einmal an. Danach geht es hier weiter.', emotion: 'happy', nextNodeId: 20, triggerAction: 'open_hilfsangebote' },
+  { nodeId: 12, speaker: 'evu', text: "Du findest sie jederzeit oben über 'Hilfsangebote'. Schau gerne mal rein — danach geht's hier weiter.", emotion: 'neutral', avatarState: 'zeigt_hilfe', nextNodeId: 20 },
 
   // ── Kopfsachen-Vorstellung ────────────────────────────
   // (Video-Trigger folgt in Welle 4 mit VideoScreen. Für jetzt: Evu-Text.)
   { nodeId: 20, speaker: 'evu', text: 'Das Ganze hier kommt von Kopfsachen e.V.', emotion: 'neutral', nextNodeId: 21 },
-  { nodeId: 21, speaker: 'evu', text: 'In einem kurzen Video erfährst du, wer hinter Kopfsachen steckt und worum es geht.', emotion: 'happy', nextNodeId: 22 },
-  { nodeId: 22, speaker: 'narrator', text: '🎬  Video: Wer ist Kopfsachen? (ca. 2 Min)', emotion: null, nextNodeId: 23 },
+  { nodeId: 21, speaker: 'evu', text: 'In folgendem Video erfährst du, wer und was hinter Kopfsachen steckt.', emotion: 'happy', nextNodeId: 23, triggerAction: 'open_video', triggerPayload: 'was-ist-kopfsachen' },
   { nodeId: 23, speaker: 'evu', text: 'Bei Fragen zur App findest du immer hier Hilfe von Kopfsachen — über das K-Logo oben.', emotion: 'happy', avatarState: 'zeigt_kopfsachen', nextNodeId: 30 },
 
-  // ── Zeit-Abfrage ──────────────────────────────────────
-  { nodeId: 30, speaker: 'evu', text: 'Bevor du beginnst: Hast du gerade ca. 45 Minuten Zeit und bist an einem ruhigen Ort, an dem du ungestört bist?', emotion: 'neutral', nextNodeId: null, choices: [
+  // ── Ruhiger-Ort-Abfrage ────────────────────────────────
+  { nodeId: 30, speaker: 'evu', text: 'Bevor du beginnst: Bist du gerade an einem ruhigen Ort, an dem du ungestört bist?', emotion: 'neutral', nextNodeId: null, choices: [
     { text: 'Ja, los geht\'s!',   nextNodeId: 40 },
     { text: 'Jetzt gerade nicht', nextNodeId: 31 },
   ]},
-  { nodeId: 31, speaker: 'evu', text: 'Dann plane dir am besten jetzt einen Zeitpunkt in den nächsten 3 Tagen ein, zu dem du 45 Minuten Zeit hast.', emotion: 'neutral', nextNodeId: 32 },
-  { nodeId: 32, speaker: 'evu', text: 'Komm dann einfach wieder zurück. Bis dahin!', emotion: 'happy', nextNodeId: null, choices: [
+  { nodeId: 31, speaker: 'evu', text: 'Dann komm einfach zurück, sobald du einen ruhigen Moment hast.', emotion: 'neutral', nextNodeId: 32 },
+  { nodeId: 32, speaker: 'evu', text: 'Bis dahin!', emotion: 'happy', nextNodeId: null, choices: [
     { text: 'Okay', nextNodeId: 33 },
   ]},
   { nodeId: 33, speaker: 'evu', text: 'Bis bald!', emotion: 'happy', nextNodeId: null, triggerAction: 'exit_to_home' },
 
   // ── Prä-Fragebogen Intro ──────────────────────────────
-  { nodeId: 40, speaker: 'evu', text: 'Bevor es richtig losgeht, bitte ich dich, einen Fragebogen mit 12 Fragen zu beantworten.', emotion: 'neutral', nextNodeId: 41 },
+  { nodeId: 40, speaker: 'evu', text: 'Bevor es richtig losgeht, bitte ich dich, den folgenden Fragebogen mit 14 Fragen zu beantworten.', emotion: 'neutral', nextNodeId: 41 },
   { nodeId: 41, speaker: 'evu', text: 'Das dauert maximal 5 Minuten.', emotion: 'neutral', nextNodeId: 42 },
   { nodeId: 42, speaker: 'evu', text: 'Deine Antworten helfen, den Kurs zu verbessern. Sie haben keinen Einfluss auf den Kursverlauf und werden anonym verarbeitet.', emotion: 'neutral', nextNodeId: 43 },
   { nodeId: 43, speaker: 'evu', text: 'Bitte beantworte die Fragen ganz spontan und ehrlich.', emotion: 'happy', nextNodeId: null, choices: [
@@ -53,8 +48,8 @@ export const ONBOARDING_NODES = [
   ]},
 
   // ── Frage 1: Stimmung (Smiley) ────────────────────────
-  { nodeId: 50, speaker: 'evu', text: 'Wie geht es dir?', emotion: 'neutral', nextNodeId: null,
-    likert: { questionId: 'stimmung_prae', questionText: 'Wie geht es dir?', emojis: SMILEY, labels: SMILEY_LABELS, nextNodeId: 51 } },
+  { nodeId: 50, speaker: 'evu', text: 'Wie ging es dir die letzten 2 Wochen?', emotion: 'neutral', nextNodeId: null,
+    likert: { questionId: 'stimmung_prae', questionText: 'Wie ging es dir die letzten 2 Wochen?', emojis: SMILEY, labels: SMILEY_LABELS, nextNodeId: 51 } },
 
   // ── Frage 2: Selfcare (Likert) ────────────────────────
   { nodeId: 51, speaker: 'evu', text: 'Weißt du, was dir hilft, wenn du einen schlechten Tag hast?', emotion: 'neutral', nextNodeId: null,
@@ -69,11 +64,11 @@ export const ONBOARDING_NODES = [
   { nodeId: 54, speaker: 'evu', text: 'Jetzt eine kurze Situation. Stell dir vor:', emotion: 'neutral', nextNodeId: 55 },
   { nodeId: 55, speaker: 'narrator', text: 'Mika (16) geht eigentlich gern zur Schule, aber seit einigen Wochen fühlt sich Mika oft traurig und erschöpft. Es fällt Mika schwer, sich zu konzentrieren, und Mika zieht sich immer mehr von Freund*innen zurück.', emotion: null, nextNodeId: 56 },
   { nodeId: 56, speaker: 'narrator', text: 'Manchmal hat Mika das Gefühl, dass alles sinnlos ist. Schließlich überlegt Mika, sich Hilfe bei einer Beratungsstelle zu holen.', emotion: null, nextNodeId: 57 },
-  { nodeId: 57, speaker: 'evu', text: 'Was denkst du über folgende Aussage?', emotion: 'neutral', nextNodeId: null,
+  { nodeId: 57, speaker: 'evu', text: 'Was denkst du über folgende Aussage?\n\n„Mika ist selbst schuld daran, dass es Mika so schlecht geht.“', emotion: 'neutral', nextNodeId: null,
     likert: { questionId: 'stigma_mika_1', questionText: 'Mika ist selbst schuld daran, dass es Mika so schlecht geht.', emojis: SMILEY, labels: LIKERT, nextNodeId: 58 } },
-  { nodeId: 58, speaker: 'evu', text: 'Und wie stehst du hierzu?', emotion: 'neutral', nextNodeId: null,
+  { nodeId: 58, speaker: 'evu', text: 'Und wie stehst du hierzu?\n\n„Wenn Mika sich Hilfe sucht, ist das ein Zeichen von Schwäche.“', emotion: 'neutral', nextNodeId: null,
     likert: { questionId: 'stigma_mika_2', questionText: 'Wenn Mika sich Hilfe sucht, ist das ein Zeichen von Schwäche.', emojis: SMILEY, labels: LIKERT, nextNodeId: 59 } },
-  { nodeId: 59, speaker: 'evu', text: 'Und hierzu?', emotion: 'neutral', nextNodeId: null,
+  { nodeId: 59, speaker: 'evu', text: 'Und hierzu?\n\n„Jede*r könnte sich in einer Situation wie Mika befinden.“', emotion: 'neutral', nextNodeId: null,
     likert: { questionId: 'stigma_mika_3', questionText: 'Jede*r könnte sich in einer Situation wie Mika befinden.', emojis: SMILEY, labels: LIKERT, nextNodeId: 60 } },
 
   // ── Openness professional help ────────────────────────
@@ -104,10 +99,7 @@ export const ONBOARDING_NODES = [
     likert: { questionId: 'mhl_anlaufstellen_prae', questionText: 'Kennst du Anlaufstellen für psychische Probleme?', emojis: SMILEY, labels: LIKERT, nextNodeId: 72 } },
   { nodeId: 72, speaker: 'evu', text: 'Danke fürs Beantworten!', emotion: 'happy', nextNodeId: 73 },
   { nodeId: 73, speaker: 'evu', text: 'Wenn sich etwas für dich gerade zu schwer anfühlt, musst du da nicht alleine durch. Manche Themen brauchen Unterstützung von anderen.', emotion: 'worried', nextNodeId: 74 },
-  { nodeId: 74, speaker: 'evu', text: 'Um einen Überblick über Hilfsangebote zu bekommen, schaue dir einmal die Hilfsangebote-Seite an.', emotion: 'neutral', avatarState: 'zeigt_hilfe', nextNodeId: null, choices: [
-    { text: 'Hilfsangebote öffnen', nextNodeId: 75 },
-  ]},
-  { nodeId: 75, speaker: 'evu', text: 'Danach geht es hier weiter.', emotion: 'happy', nextNodeId: 80, triggerAction: 'open_hilfsangebote' },
+  { nodeId: 74, speaker: 'evu', text: 'Schau dir gerne oben über "Hilfsangebote" einen Überblick an. Wenn du zurückkommst, geht es hier weiter.', emotion: 'neutral', avatarState: 'zeigt_hilfe', nextNodeId: 80 },
 
   // ── Wünsche abfragen ──────────────────────────────────
   { nodeId: 80, speaker: 'evu', text: 'In diesem Kurs geht es um mentale Gesundheit und darum, was dir hilft, wenn es mal schwierig wird.', emotion: 'happy', nextNodeId: 81 },
@@ -146,7 +138,7 @@ export const ONBOARDING_NODES = [
         'In deinen Alltag bringen  (5 min)',
       ],
     } },
-  { nodeId: 94, speaker: 'evu', text: 'Ein Kapitel dauert also ca. 45 Minuten.', emotion: 'neutral', nextNodeId: 95 },
+  { nodeId: 94, speaker: 'evu', text: 'Ein Kapitel dauert also ca. 45 Minuten — du kannst es jederzeit unterbrechen und später weitermachen.', emotion: 'neutral', nextNodeId: 95 },
   { nodeId: 95, speaker: 'evu', text: 'Jedes Kapitel beginnt mit einer kurzen Einleitung von mir. Dann begleitest du Toni durch eine fiktive Geschichte.', emotion: 'happy', nextNodeId: 96 },
   { nodeId: 96, speaker: 'evu', text: 'Im Trainings-Teil geht es dann ganz um dich. Zum Abschluss gibt\'s einen Impuls für deinen Alltag.', emotion: 'happy', nextNodeId: 97 },
 

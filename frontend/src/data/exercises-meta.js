@@ -3,7 +3,7 @@
 // Wird von ExerciseScreen UND ToolboxScreen genutzt.
 
 // Welche Übungen werden in welchem Kapitel kennengelernt?
-// Wird genutzt, damit die Selfcare-Schachtel auch dann gefüllt ist,
+// Wird genutzt, damit die Wohlfühl-Schachtel auch dann gefüllt ist,
 // wenn ein User das Kapitel abgeschlossen hat ohne dass beim Öffnen
 // der einzelnen Übungen explizit ge-unlockt wurde.
 export const CHAPTER_EXERCISES = {
@@ -48,7 +48,7 @@ export const EXERCISES_BY_SLUG = {
       { time: 480, text: 'Komm langsam zurück. Bewege Hände und Füße.' },
     ],
   },
-  // Reflexions-/Plan-Übungen — landen in der Selfcare-Schachtel zum Wiederholen.
+  // Reflexions-/Plan-Übungen — landen in der Wohlfühl-Schachtel zum Wiederholen.
   // targetRoute: 'content' weil sie via ContentScreen gerendert werden.
   'energie-reflexion': {
     slug: 'energie-reflexion',

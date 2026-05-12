@@ -1,7 +1,7 @@
 // screens/HomeScreen.js
 // Home-Menü mit zwei Zuständen:
 //   1. Initial (kein Onboarding abgeschlossen): Start, Hilfsangebote, Kopfsachen
-//   2. Nach Kapitel 1: Kurs fortsetzen, Kapitelauswahl, Selfcare-Schachtel, Hilfsangebote, Kopfsachen
+//   2. Nach Kapitel 1: Kurs fortsetzen, Kapitelauswahl, Wohlfühl-Schachtel, Hilfsangebote, Kopfsachen
 //
 // Start → /novel/onboarding (erstes Mal) oder /novel/<currentChapter> (Kurs fortsetzen)
 
@@ -28,7 +28,7 @@ export function HomeScreen() {
     <div class="home-content">
       <div class="home-hero">
         <h1 class="home-title">${t('home.title', 'Kopf frei!')}</h1>
-        <p class="home-tagline">${t('home.tagline', 'Dein Kurs für mentale Stärke')}</p>
+        <p class="home-tagline">${t('home.tagline', 'Dein Kurs für mehr Leichtigkeit')}</p>
       </div>
       <div class="home-actions home-actions--loading">
         <div class="home-loading">Lade …</div>
@@ -103,7 +103,7 @@ function renderPostOnboarding(container, progress) {
   container.innerHTML = `
     <button class="btn-primary home-btn home-resume" type="button">${t('home.button.resume', 'Kurs fortsetzen')}</button>
     <button class="btn-secondary home-btn home-chapters" type="button">${t('home.button.chapters', 'Kapitelauswahl')}</button>
-    <button class="btn-secondary home-btn home-toolbox" type="button">${t('home.button.toolbox', 'Selfcare-Schachtel')}</button>
+    <button class="btn-secondary home-btn home-toolbox" type="button">${t('home.button.toolbox', 'Wohlfühl-Schachtel')}</button>
     <button class="btn-secondary home-btn home-hilfsangebote" type="button">${t('home.button.hilfsangebote', 'Hilfsangebote')}</button>
     <button class="btn-secondary home-btn home-kopfsachen" type="button">${t('home.button.kopfsachen', 'Kopfsachen')}</button>
   `
