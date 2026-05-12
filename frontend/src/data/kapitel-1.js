@@ -66,29 +66,29 @@ export const KAPITEL_1_NODES = [
   { nodeId: 37, speaker: 'manu', text: 'Das hört sich stressig an.', emotion: 'calm', image: '/story/14_Manu_das_hoert_sich.webp', nextNodeId: 38 },
   { nodeId: 38, speaker: 'toni', text: 'Ich hab dann irgendwann tief durchgeatmet. Das hat mich etwas entspannt. Dann fiel mir ein, dass du hier in der Nähe wohnst.', emotion: 'calm', image: '/story/15_Toni_ich_hab_dann_irgendwann.webp', nextNodeId: 39 },
   { nodeId: 39, speaker: 'manu', text: 'Ja, ruhiges und tiefes Atmen kann bei stressigen Situationen richtig hilfreich sein, um etwas runterzukommen.', emotion: 'happy', image: '/story/16_Manu_ja_ruhiges_und_tiefes.webp', nextNodeId: 40 },
-  { nodeId: 40, speaker: 'toni', text: 'Mich ärgert, dass Neo gerade heute nicht gekommen ist. Ich hatte schon einen super vollen Tag.', emotion: 'sad', nextNodeId: 41 },
-  { nodeId: 41, speaker: 'toni', text: 'Ich war arbeiten und musste lernen. Dann hatte ich noch einen Streit am Telefon mit meinem Vater.', emotion: 'sad', nextNodeId: 42 },
-  { nodeId: 42, speaker: 'toni', text: 'Ich hatte eigentlich keine Energie mehr für den neuen Kurs.', emotion: 'sad', nextNodeId: 43 },
-  { nodeId: 43, speaker: 'manu', text: 'Vielleicht hat dich das deshalb so gestresst?', emotion: 'thinking', nextNodeId: null, choices: [
+  { nodeId: 40, speaker: 'toni', text: 'Mich ärgert, dass Neo gerade heute nicht gekommen ist. Ich hatte schon einen super vollen Tag.', emotion: 'sad', image: '/story/17_Toni_mich_aergert_dass.webp', nextNodeId: 41 },
+  { nodeId: 41, speaker: 'toni', text: 'Ich war arbeiten und musste lernen. Dann hatte ich noch einen Streit am Telefon mit meinem Vater.', emotion: 'sad', image: '/story/17_Toni_mich_aergert_dass.webp', nextNodeId: 42 },
+  { nodeId: 42, speaker: 'toni', text: 'Ich hatte eigentlich keine Energie mehr für den neuen Kurs.', emotion: 'sad', image: '/story/17_Toni_mich_aergert_dass.webp', nextNodeId: 43 },
+  { nodeId: 43, speaker: 'manu', text: 'Vielleicht hat dich das deshalb so gestresst?', emotion: 'thinking', image: '/story/18_Manu_vielleicht_hat_dich.webp', nextNodeId: null, choices: [
     { text: 'Mein Fass war schon so voll.',    nextNodeId: 44 },
     { text: 'Ich hatte heute zu wenig Pausen.', nextNodeId: 45 },
   ]},
-  { nodeId: 44, speaker: 'toni', text: 'Vermutlich hat die Situation mein Fass zum Überlaufen gebracht.', emotion: 'thinking', nextNodeId: 46 },
-  { nodeId: 45, speaker: 'toni', text: 'Ich hätte heute einfach mehr Pausen gebraucht.', emotion: 'thinking', nextNodeId: 46 },
-  { nodeId: 46, speaker: 'manu', text: 'Ja, Erholungszeiten — gerade in stressigen Zeiten — sind super wichtig.', emotion: 'happy', nextNodeId: 47 },
-  { nodeId: 47, speaker: 'manu', text: 'Als wir uns kürzlich getroffen haben, meintest du schon, dass alles gerade etwas viel ist.', emotion: 'neutral', nextNodeId: 48 },
-  { nodeId: 48, speaker: 'manu', text: 'Ich glaube, wenn du heute mit mehr Energie hingegangen wärst, hättest du den Kurs auch alleine besucht.', emotion: 'thinking', nextNodeId: 49 },
-  { nodeId: 49, speaker: 'toni', text: 'Ja, vielleicht hast du Recht.', emotion: 'thinking', nextNodeId: 51 },
+  { nodeId: 44, speaker: 'toni', text: 'Vermutlich hat die Situation mein Fass zum Überlaufen gebracht.', emotion: 'thinking', image: '/story/19_Toni_vermutlich_mein_fass_haette_mehr_pausen.webp', nextNodeId: 46 },
+  { nodeId: 45, speaker: 'toni', text: 'Ich hätte heute einfach mehr Pausen gebraucht.', emotion: 'thinking', image: '/story/19_Toni_vermutlich_mein_fass_haette_mehr_pausen.webp', nextNodeId: 46 },
+  { nodeId: 46, speaker: 'manu', text: 'Ja, Erholungszeiten — gerade in stressigen Zeiten — sind super wichtig.', emotion: 'happy', image: '/story/20_Manu_ja_erholungszeiten.webp', nextNodeId: 47 },
+  { nodeId: 47, speaker: 'manu', text: 'Als wir uns kürzlich getroffen haben, meintest du schon, dass alles gerade etwas viel ist.', emotion: 'neutral', image: '/story/20_Manu_ja_erholungszeiten.webp', nextNodeId: 48 },
+  { nodeId: 48, speaker: 'manu', text: 'Ich glaube, wenn du heute mit mehr Energie hingegangen wärst, hättest du den Kurs auch alleine besucht.', emotion: 'thinking', image: '/story/20_Manu_ja_erholungszeiten.webp', nextNodeId: 49 },
+  { nodeId: 49, speaker: 'toni', text: 'Ja, vielleicht hast du Recht.', emotion: 'thinking', image: '/story/21_Toni_ja_vielleicht_hast_du.webp', nextNodeId: 51 },
 
   // ── Nachricht von Neo ─────────────────────────────────
   // (narrator-Platzhalter "Tonis Handy vibriert" und "Toni öffnet die Nachricht" entfernt)
-  { nodeId: 51, speaker: 'toni', text: 'Eine Nachricht von Neo.', emotion: 'surprised', nextNodeId: 52 },
-  { nodeId: 52, speaker: 'manu', text: 'Na endlich.', emotion: 'happy', nextNodeId: 54 },
-  { nodeId: 54, speaker: 'toni', text: 'Mmh.', emotion: 'thinking', nextNodeId: 55 },
-  { nodeId: 55, speaker: 'manu', text: 'Alles okay?', emotion: 'worried', nextNodeId: 56 },
-  { nodeId: 56, speaker: 'toni', text: 'Ich weiß nicht. Irgendwie… erleichtert? Oder doch noch sauer? Beides gleichzeitig?', emotion: 'thinking', nextNodeId: 57 },
-  { nodeId: 57, speaker: 'manu', text: 'Gefühle sind manchmal echt komisch, oder?', emotion: 'happy', nextNodeId: 58 },
-  { nodeId: 58, speaker: 'toni', text: 'Ja. Ich glaub, ich hab da noch nie so drüber nachgedacht.', emotion: 'thinking', nextNodeId: 60 },
+  { nodeId: 51, speaker: 'toni', text: 'Eine Nachricht von Neo.', emotion: 'surprised', image: '/story/22_Toni_eine_nachricht.webp', nextNodeId: 52 },
+  { nodeId: 52, speaker: 'manu', text: 'Na endlich.', emotion: 'happy', image: '/story/23_Manu_na_endlich.webp', nextNodeId: 54 },
+  { nodeId: 54, speaker: 'toni', text: 'Mmh.', emotion: 'thinking', image: '/story/24_Toni_mmh.webp', nextNodeId: 55 },
+  { nodeId: 55, speaker: 'manu', text: 'Alles okay?', emotion: 'worried', image: '/story/25_Manu_alles_okay.webp', nextNodeId: 56 },
+  { nodeId: 56, speaker: 'toni', text: 'Ich weiß nicht. Irgendwie… erleichtert? Oder doch noch sauer? Beides gleichzeitig?', emotion: 'thinking', image: '/story/26_Toni_ich_weiss_nicht.webp', nextNodeId: 57 },
+  { nodeId: 57, speaker: 'manu', text: 'Gefühle sind manchmal echt komisch, oder?', emotion: 'happy', image: '/story/27_Manu_gefuehle_sind_manchmal.webp', nextNodeId: 58 },
+  { nodeId: 58, speaker: 'toni', text: 'Ja. Ich glaub, ich hab da noch nie so drüber nachgedacht.', emotion: 'thinking', image: '/story/28_Toni_ja_ich_glaub_ich_hab_da.webp', nextNodeId: 60 },
 
   // ══════════════════════════════════════════════════════
   // Phase 3: INFORMIEREN — Evu leitet zum Video über

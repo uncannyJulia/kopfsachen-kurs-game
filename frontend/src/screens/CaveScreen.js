@@ -7,12 +7,9 @@ import { getCave, saveCave } from '../store.js'
 
 const DEMO_ASSETS = {
   background: [
-    { key: 'forest',   label: 'Wald',          color: '#2D5016' },
-    { key: 'beach',    label: 'Strand',        color: '#0EA5E9' },
-    { key: 'mountain', label: 'Berge',         color: '#6B7280' },
-    { key: 'space',    label: 'Weltraum',      color: '#1E1B4B' },
-    { key: 'meadow',   label: 'Wiese',         color: '#84CC16' },
-    { key: 'cave',     label: 'Höhle',         color: '#44403C' },
+    { key: 'wald',     label: 'Wald',     color: '#2D5016', image: '/cave/bg/wald.webp' },
+    { key: 'berge',    label: 'Berge',    color: '#6B7280', image: '/cave/bg/berge.webp' },
+    { key: 'weltraum', label: 'Weltraum', color: '#1E1B4B', image: '/cave/bg/weltraum.webp' },
   ],
   sticker: [
     { key: 'candle',  emoji: '🕯️', label: 'Kerze' },
@@ -111,6 +108,9 @@ export function CaveScreen() {
       console.warn('Strapi nicht erreichbar, nutze Demo-Cave-Assets:', e.message)
     }
 
+    // BG-Bilder im Hintergrund vorladen — Tab-Wechsel zur ersten Auswahl ist dann instant.
+    ;(assets.background || []).forEach(b => { if (b.image) new Image().src = b.image })
+
     renderTabs()
     renderPanel()
     renderCanvas()
@@ -144,7 +144,10 @@ export function CaveScreen() {
       if (isSelected) btn.classList.add('cave-item--selected')
 
       if (activeTab === 'background') {
-        btn.innerHTML = `<span class="cave-item-swatch" style="background:${item.color || 'var(--border)'}"></span><span>${item.label}</span>`
+        const swatchStyle = item.image
+          ? `background:url('${item.image}') center/cover, ${item.color || 'var(--border)'}`
+          : `background:${item.color || 'var(--border)'}`
+        btn.innerHTML = `<span class="cave-item-swatch" style="${swatchStyle}"></span><span>${item.label}</span>`
       } else if (activeTab === 'sticker') {
         btn.innerHTML = `<span class="cave-item-emoji">${item.emoji || '·'}</span><span>${item.label}</span>`
       } else {
@@ -188,7 +191,12 @@ export function CaveScreen() {
 
   function renderCanvas() {
     const bg = (assets.background || []).find(b => b.key === selectedBg)
-    canvasEl.style.background = bg ? (bg.color || 'var(--accent-light)') : 'var(--accent-light)'
+    if (bg && bg.image) {
+      // Illustriertes BG: Bild als Cover + Farbe als Fade-In/Fallback während des Bild-Loads
+      canvasEl.style.background = `url('${bg.image}') center/cover, ${bg.color || 'var(--accent-light)'}`
+    } else {
+      canvasEl.style.background = bg ? (bg.color || 'var(--accent-light)') : 'var(--accent-light)'
+    }
     canvasEl.innerHTML = ''
 
     placedStickers.forEach(p => {
