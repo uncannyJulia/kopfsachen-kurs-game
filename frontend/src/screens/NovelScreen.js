@@ -169,16 +169,33 @@ export function NovelScreen(path) {
       storyImageActive = null
     }
 
-    // Backdrop-Render: nur bei tatsächlichem Wechsel neu einhängen
+    // Backdrop-Render: Cross-Fade. Neues Bild wird ÜBER dem alten geladen und sanft eingeblendet —
+    // sobald sichtbar, fliegt das alte raus. Kein weißer Blitz mehr zwischen den Panels.
     if (storyImageActive !== lastImage) {
-      bgEl.innerHTML = ''
       if (storyImageActive) {
         const img = document.createElement('img')
         img.src = storyImageActive
-        img.className = 'novel-bg-image'
+        img.className = 'novel-bg-image novel-bg-image--entering'
         img.alt = ''
         img.draggable = false
+        const finishFade = () => {
+          // Vorgänger ausblenden (gibt's nur, wenn schon mal ein Bild da war)
+          Array.from(bgEl.querySelectorAll('.novel-bg-image')).forEach(prev => {
+            if (prev !== img) prev.remove()
+          })
+          img.classList.remove('novel-bg-image--entering')
+        }
+        if (img.complete && img.naturalWidth) {
+          // Aus dem Preload-Cache → direkt in den nächsten Frame ein-faden
+          requestAnimationFrame(() => requestAnimationFrame(finishFade))
+        } else {
+          img.addEventListener('load',  finishFade, { once: true })
+          img.addEventListener('error', finishFade, { once: true })
+        }
         bgEl.appendChild(img)
+      } else {
+        // Story endet (Evu übernimmt) → alle Backdrops weg
+        bgEl.innerHTML = ''
       }
       lastImage = storyImageActive
     }
