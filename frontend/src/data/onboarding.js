@@ -45,6 +45,7 @@ export const ONBOARDING_NODES = [
   { nodeId: 42, speaker: 'evu', text: 'Deine Antworten helfen, den Kurs zu verbessern. Sie haben keinen Einfluss auf den Kursverlauf und werden anonym verarbeitet.', emotion: 'neutral', nextNodeId: 43 },
   { nodeId: 43, speaker: 'evu', text: 'Bitte beantworte die Fragen ganz spontan und ehrlich.', emotion: 'happy', nextNodeId: null, choices: [
     { text: 'Verstanden. Los geht\'s.', nextNodeId: 50 },
+    { text: 'Fragen überspringen',       nextNodeId: 73 },
   ]},
 
   // ── Frage 1: Stimmung (Smiley) ────────────────────────

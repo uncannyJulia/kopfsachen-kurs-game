@@ -695,6 +695,8 @@ body {
 
 .novel-layout--compact .novel-continue {
   order: 99;
+  /* Weiter-Button immer am unteren Rand fixiert — auch bei Listen-Nodes ohne sichtbare Bubble */
+  margin-top: auto;
 }
 
 .novel-list {
